@@ -42,7 +42,7 @@ export function Navbar() {
     { title: "Home", href: "/" },
     { title: "Browse Tutors", href: "/tutors" },
     { title: "Categories", href: "/categories" },
-    { title: "How It Works", href: "/#how-it-works" },
+    { title: "How It Works", href: "/how-it-works" },
   ];
 
   const dashboardHref =
