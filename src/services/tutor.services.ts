@@ -6,7 +6,7 @@ const API_URL = env.API_URL;
 
 type GetTutorsParams = {
   search?: string;
-  category?: string;
+  categoryId?: string;
   limit?: number;
   page?: number;
   sort?: "rating_desc" | "rating_asc" | string;
@@ -23,7 +23,7 @@ export const tutorService = {
       const url = new URL(`${API_URL}/api/tutor`);
 
       if (params?.search) url.searchParams.set("search", params.search);
-      if (params?.category) url.searchParams.set("category", params.category);
+      if (params?.categoryId) url.searchParams.set("categoryId", params.categoryId);
       if (params?.limit) url.searchParams.set("limit", String(params.limit));
       if (params?.page) url.searchParams.set("page", String(params.page));
       if (params?.sort) url.searchParams.set("sort", params.sort);
