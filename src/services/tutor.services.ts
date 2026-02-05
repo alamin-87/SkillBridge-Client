@@ -6,9 +6,15 @@ const API_URL = env.API_URL;
 
 type GetTutorsParams = {
   search?: string;
+  category?: string;
   limit?: number;
   page?: number;
   sort?: "rating_desc" | "rating_asc" | string;
+};
+type ApiResponse<T> = {
+  success: boolean;
+  data: T;
+  meta?: any;
 };
 
 export const tutorService = {
@@ -17,6 +23,7 @@ export const tutorService = {
       const url = new URL(`${API_URL}/api/tutor`);
 
       if (params?.search) url.searchParams.set("search", params.search);
+      if (params?.category) url.searchParams.set("category", params.category);
       if (params?.limit) url.searchParams.set("limit", String(params.limit));
       if (params?.page) url.searchParams.set("page", String(params.page));
       if (params?.sort) url.searchParams.set("sort", params.sort);
@@ -40,6 +47,21 @@ export const tutorService = {
         success: false,
         error: { message: "error", err },
       };
+    }
+  },
+   getTutorById: async function (id: string) {
+    try {
+      const res = await fetch(`${API_URL}/api/tutor/${id}`, {
+        cache: "no-store",
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch tutor");
+
+      const json = (await res.json()) as ApiResponse<any>;
+
+      return { data: json.data ?? null, error: null };
+    } catch (err) {
+      return { data: null, error: { message: "error", err } };
     }
   },
 };

@@ -2,7 +2,15 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Search, Star, Loader2, ArrowRight, Languages } from "lucide-react";
+import {
+  Search,
+  Star,
+  Loader2,
+  ArrowRight,
+  Languages,
+  BookOpen,
+  CalendarClock,
+} from "lucide-react";
 import { Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -197,47 +205,73 @@ export function DiscoverTutorsSection() {
   );
 }
 export function TutorCard({ tutor }: { tutor: Tutor }) {
-  const subjects = tutor.subjects?.slice(0, 3) ?? [];
+  const name = tutor.user?.name ?? "Tutor";
+
   const languages = Array.isArray(tutor.languages)
     ? tutor.languages.slice(0, 2)
     : typeof tutor.languages === "string"
-      ? tutor.languages.split(",").map((l) => l.trim())
+      ? tutor.languages
+          .split(",")
+          .map((l:string) => l.trim())
+          .filter(Boolean)
+          .slice(0, 3)
       : [];
+
+  const categories = tutor.categories?.slice(0, 2) ?? [];
+
+  const { nextSlotLabel, availableCount } = getAvailabilitySummary(
+    tutor.availability,
+  );
 
   return (
     <Card className="group h-full overflow-hidden border bg-card transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg">
       <CardContent className="flex h-full flex-col p-5">
-        {/* Top row */}
+        {/* Header */}
         <div className="flex items-start gap-3">
           <Avatar className="h-12 w-12 border">
-            <AvatarImage
-              src={tutor.profileImage ?? undefined}
-              alt={tutor.name}
-            />
-            <AvatarFallback>{getInitials(tutor.name)}</AvatarFallback>
+            <AvatarImage src={tutor.profileImage ?? undefined} alt={name} />
+            <AvatarFallback>{getInitials(name)}</AvatarFallback>
           </Avatar>
 
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <h4 className="truncate text-base font-semibold leading-tight">
-                  {tutor.user.name}
+                  {name}
                 </h4>
-                <p className="truncate text-sm text-muted-foreground">
-                  {tutor.title ?? "Expert Tutor"}
-                </p>
-                {typeof tutor.experienceYrs === "number" && (
-                  <p className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                    <Clock className="h-3.5 w-3.5" />
-                    {tutor.experienceYrs}+ years experience
-                  </p>
-                )}
+
+                {/* Categories */}
+                <div className="mt-1 flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                    <BookOpen className="h-3.5 w-3.5" />
+                    {categories.length ? "Teaches" : "Expert Tutor"}
+                  </span>
+
+                  {categories.length ? (
+                    categories.map((c) => (
+                      <Badge
+                        key={c.category.id}
+                        variant="outline"
+                        className="rounded-full px-2.5 py-0.5 text-xs"
+                      >
+                        {c.category.name}
+                      </Badge>
+                    ))
+                  ) : (
+                    <Badge
+                      variant="secondary"
+                      className="rounded-full px-2.5 py-0.5 text-xs"
+                    >
+                      Expert
+                    </Badge>
+                  )}
+                </div>
               </div>
 
-              <div className=" flex flex-col">
-                {/* rating pill */}
+              {/* Rating */}
+              <div className="flex flex-col items-end gap-1">
                 {typeof tutor.avgRating === "number" && (
-                  <div className="shrink-0 rounded-full bg-secondary px-2.5 py-1 text-xs font-medium">
+                  <div className="rounded-full bg-secondary px-2.5 py-1 text-xs font-medium">
                     <span className="inline-flex items-center gap-1">
                       <Star className="h-3.5 w-3.5" />
                       {tutor.avgRating.toFixed(1)}
@@ -245,55 +279,68 @@ export function TutorCard({ tutor }: { tutor: Tutor }) {
                   </div>
                 )}
                 {typeof tutor.totalReviews === "number" && (
-                  <span>{tutor.totalReviews} reviews</span>
+                  <span className="text-xs text-muted-foreground">
+                    {tutor.totalReviews} reviews
+                  </span>
                 )}
               </div>
+            </div>
+
+            {/* Bio */}
+            {tutor.bio && (
+              <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+                {tutor.bio}
+              </p>
+            )}
+
+            {/* Meta row */}
+            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
+              {typeof tutor.experienceYrs === "number" && (
+                <span className="inline-flex items-center gap-1">
+                  <Clock className="h-3.5 w-3.5" />
+                  {tutor.experienceYrs}+ yrs
+                </span>
+              )}
+
+              {languages.length > 0 && (
+                <span className="inline-flex items-center gap-1">
+                  <Languages className="h-3.5 w-3.5" />
+                  {languages.join(", ")}
+                </span>
+              )}
+
+              {/* Availability */}
+              <span className="inline-flex items-center gap-1">
+                <CalendarClock className="h-3.5 w-3.5" />
+                {availableCount > 0 ? (
+                  <>
+                    Next:{" "}
+                    <span className="font-medium text-foreground">
+                      {nextSlotLabel}
+                    </span>
+                    <span className="text-muted-foreground">•</span>
+                    {availableCount} slots
+                  </>
+                ) : (
+                  <span className="text-muted-foreground">No slots</span>
+                )}
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Subjects */}
-        {subjects.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {subjects.map((s) => (
-              <Badge key={s} variant="outline" className="rounded-full px-3">
-                {s}
-              </Badge>
-            ))}
-            {tutor.subjects && tutor.subjects.length > 3 && (
-              <Badge variant="outline" className="rounded-full px-3">
-                +{tutor.subjects.length - 3}
-              </Badge>
-            )}
-          </div>
-        )}
-
-        {/* Bio */}
-        {tutor.bio && (
-          <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
-            {tutor.bio}
-          </p>
-        )}
-
-        {/* small meta */}
-        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-          {languages && languages.length > 0 && (
-            <span className="inline-flex items-center gap-1">
-              <Languages className="h-3.5 w-3.5" />
-              {languages.join(", ")}
-            </span>
-          )}
-        </div>
-
         <Separator className="my-4" />
 
-        {/* Bottom row (price + experience + CTA) */}
-        <div className="mt-auto flex items-end justify-between gap-3">
-          <div className="space-y-1">
+        {/* Footer */}
+        <div className="mt-auto flex items-center justify-between gap-3">
+          <div>
             <p className="text-sm font-semibold">
               {tutor.hourlyRate
                 ? `৳${tutor.hourlyRate}/hr`
                 : "Flexible pricing"}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Instant booking available
             </p>
           </div>
 
@@ -320,4 +367,33 @@ function pickTopRated3(list: Tutor[]) {
   return [...list]
     .sort((a, b) => (b.avgRating ?? 0) - (a.avgRating ?? 0))
     .slice(0, 3);
+}
+function getAvailabilitySummary(availability?: any[]) {
+  if (!Array.isArray(availability) || availability.length === 0) {
+    return { nextSlotLabel: "—", availableCount: 0 };
+  }
+
+  const open = availability
+    .filter((s) => !s.isBooked && s.startTime)
+    .sort(
+      (a, b) =>
+        new Date(a.startTime).getTime() - new Date(b.startTime).getTime(),
+    );
+
+  if (open.length === 0) return { nextSlotLabel: "—", availableCount: 0 };
+
+  const next = open[0];
+  const label = formatSlot(next.startTime);
+
+  return { nextSlotLabel: label, availableCount: open.length };
+}
+function formatSlot(iso: string) {
+  const d = new Date(iso);
+  // Compact readable: "Feb 5, 7:30 PM"
+  return d.toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
 }

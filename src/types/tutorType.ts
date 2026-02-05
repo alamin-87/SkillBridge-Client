@@ -1,3 +1,9 @@
+type TutorAvailability = {
+  id: string;
+  startTime: string; // ISO
+  endTime: string;   // ISO
+  isBooked: boolean;
+};
 export type Tutor = {
   id: string;
   name: string;
@@ -17,4 +23,11 @@ export type Tutor = {
     email: string;
     profileImage?: string | null;
   };
+ categories?: {
+    category: {
+      id: string;
+      name: string;
+    };
+  }[];
+  availability?: TutorAvailability[];
 };
