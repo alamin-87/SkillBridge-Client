@@ -20,7 +20,6 @@ function initials(name?: string) {
 export default function ProfileForm({ user }: { user: any }) {
   const [name, setName] = React.useState(user?.name ?? "");
   const [phone, setPhone] = React.useState(user?.phone ?? "");
-  const [email, setEmail] = React.useState(user?.email ?? "");
   const [image, setImage] = React.useState(user?.image ?? "");
   const [saving, setSaving] = React.useState(false);
   const [msg, setMsg] = React.useState<string | null>(null);
@@ -33,7 +32,6 @@ export default function ProfileForm({ user }: { user: any }) {
     const res = await updateStudentProfileAction({
       name: name.trim() || undefined,
       phone: phone.trim() ? phone.trim() : null,
-      email: email.trim() || undefined,
       image: image.trim() ? image.trim() : null,
     });
 
@@ -73,11 +71,7 @@ export default function ProfileForm({ user }: { user: any }) {
 
           <div className="space-y-2">
             <Label>Phone</Label>
-            <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="01XXXXXXXXX" maxLength={14} />
-          </div>
-          <div className="space-y-2">
-            <Label>Email</Label>
-            <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+            <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="01XXXXXXXXX" />
           </div>
 
           <div className="space-y-2">

@@ -2,10 +2,18 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Star, Clock, Languages, CalendarClock, BookOpen, MapPin } from "lucide-react";
+import {
+  Star,
+  Clock,
+  Languages,
+  CalendarClock,
+  BookOpen,
+  MapPin,
+} from "lucide-react";
 import type { Tutor } from "@/types";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
+import { BookSessionModal } from "./book-session-modal";
 
 export function TutorProfileView({ tutor }: { tutor: Tutor }) {
   const displayName = tutor.user?.name ?? tutor.name ?? "Tutor";
@@ -13,15 +21,24 @@ export function TutorProfileView({ tutor }: { tutor: Tutor }) {
   const languagesArray = Array.isArray(tutor.languages)
     ? tutor.languages
     : typeof tutor.languages === "string"
-      ? tutor.languages.split(",").map((l: string) => l.trim()).filter(Boolean)
+      ? tutor.languages
+          .split(",")
+          .map((l: string) => l.trim())
+          .filter(Boolean)
       : [];
 
-  const categories = tutor.categories?.map((c) => c.category?.name).filter(Boolean) ?? [];
+  const categories =
+    tutor.categories?.map((c) => c.category?.name).filter(Boolean) ?? [];
 
-  const availability = Array.isArray(tutor.availability) ? tutor.availability : [];
+  const availability = Array.isArray(tutor.availability)
+    ? tutor.availability
+    : [];
   const openSlots = availability
     .filter((s) => !s.isBooked)
-    .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+    .sort(
+      (a, b) =>
+        new Date(a.startTime).getTime() - new Date(b.startTime).getTime(),
+    );
 
   return (
     <main className="container mx-auto px-4 py-10">
@@ -44,7 +61,9 @@ export function TutorProfileView({ tutor }: { tutor: Tutor }) {
                 <div className="flex-1">
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0">
-                      <h1 className="truncate text-2xl font-bold">{displayName}</h1>
+                      <h1 className="truncate text-2xl font-bold">
+                        {displayName}
+                      </h1>
                       <p className="text-muted-foreground">
                         {tutor.title ?? "Professional Tutor"}
                       </p>
@@ -66,7 +85,9 @@ export function TutorProfileView({ tutor }: { tutor: Tutor }) {
                         </Badge>
                       )}
                       {typeof tutor.totalReviews === "number" && (
-                        <Badge variant="outline">{tutor.totalReviews} reviews</Badge>
+                        <Badge variant="outline">
+                          {tutor.totalReviews} reviews
+                        </Badge>
                       )}
                       {typeof tutor.experienceYrs === "number" && (
                         <Badge variant="outline" className="gap-1">
@@ -86,7 +107,11 @@ export function TutorProfileView({ tutor }: { tutor: Tutor }) {
                     <div className="mt-2 flex flex-wrap gap-2">
                       {categories.length > 0 ? (
                         categories.map((name) => (
-                          <Badge key={name} variant="outline" className="rounded-full">
+                          <Badge
+                            key={name}
+                            variant="outline"
+                            className="rounded-full"
+                          >
                             {name}
                           </Badge>
                         ))
@@ -114,7 +139,11 @@ export function TutorProfileView({ tutor }: { tutor: Tutor }) {
                       </div>
                       <div className="mt-2 flex flex-wrap gap-2">
                         {languagesArray.map((l: string) => (
-                          <Badge key={l} variant="secondary" className="rounded-full">
+                          <Badge
+                            key={l}
+                            variant="secondary"
+                            className="rounded-full"
+                          >
                             {l}
                           </Badge>
                         ))}
@@ -134,16 +163,16 @@ export function TutorProfileView({ tutor }: { tutor: Tutor }) {
                   <CalendarClock className="h-5 w-5" />
                   Availability
                 </h2>
-                <Badge variant="outline">
-                  {openSlots.length} open slots
-                </Badge>
+                <Badge variant="outline">{openSlots.length} open slots</Badge>
               </div>
 
               <Separator className="my-4" />
 
               {openSlots.length === 0 ? (
                 <div className="rounded-lg border p-6 text-center">
-                  <p className="text-sm font-medium">No available slots right now</p>
+                  <p className="text-sm font-medium">
+                    No available slots right now
+                  </p>
                   <p className="mt-1 text-sm text-muted-foreground">
                     Try again later or message the tutor.
                   </p>
@@ -159,7 +188,8 @@ export function TutorProfileView({ tutor }: { tutor: Tutor }) {
                         {formatDateTime(slot.startTime)}
                       </p>
                       <p className="mt-1 text-xs text-muted-foreground">
-                        {formatTime(slot.startTime)} – {formatTime(slot.endTime)}
+                        {formatTime(slot.startTime)} –{" "}
+                        {formatTime(slot.endTime)}
                       </p>
                     </div>
                   ))}
@@ -197,7 +227,14 @@ export function TutorProfileView({ tutor }: { tutor: Tutor }) {
                 </p>
               </div>
 
-              <Button className="w-full">Book a Session</Button>
+              <Button className="w-full">
+                <BookSessionModal
+                  tutorProfileId={tutor.id} // tutor profile id (from your tutor page data)
+                  tutorId={tutor.user?.id ?? tutor.userId} // tutor user id
+                  hourlyRate={Number(tutor.hourlyRate ?? 0)}
+                  openSlots={openSlots} // already computed open slots
+                />
+              </Button>
 
               <Button variant="outline" className="w-full" asChild>
                 <Link href={`/messages?tutor=${tutor.id}`}>Message Tutor</Link>
@@ -218,7 +255,9 @@ export function TutorProfileView({ tutor }: { tutor: Tutor }) {
               <div className="space-y-3 text-sm">
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Experience</span>
-                  <span className="font-medium">{tutor.experienceYrs ?? 0}+ yrs</span>
+                  <span className="font-medium">
+                    {tutor.experienceYrs ?? 0}+ yrs
+                  </span>
                 </div>
 
                 <div className="flex items-center justify-between">

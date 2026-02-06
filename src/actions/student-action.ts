@@ -13,7 +13,6 @@ export async function getStudentMeAction() {
 export async function updateStudentProfileAction(payload: {
   name?: string;
   phone?: string | null;
-  email?: string;
   image?: string | null;
 }) {
   try {

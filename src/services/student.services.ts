@@ -1,6 +1,5 @@
 import { env } from "@/env";
 import { cookies } from "next/headers";
-import { email } from "zod";
 
 const API_URL = env.API_URL;
 
@@ -46,12 +45,12 @@ export const studentService = {
     }
     return res.json();
   },
-   async updateMe(payload: { name?: string; phone?: string | null; email?: string | null; image?: string | null }) {
+   async updateMe(payload: { name?: string; phone?: string | null; image?: string | null }) {
     const res = await fetch(`${API_URL}/api/user/me`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        ...(await withAuthHeaders() ?? {}),
+        ...(await withAuthHeaders()??{}),
       },
       body: JSON.stringify(payload),
     });
