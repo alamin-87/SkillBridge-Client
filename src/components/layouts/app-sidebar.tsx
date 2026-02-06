@@ -79,7 +79,6 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
           </SidebarGroup>
         ))}
       </SidebarContent>
-
       <SidebarRail />
     </Sidebar>
   );

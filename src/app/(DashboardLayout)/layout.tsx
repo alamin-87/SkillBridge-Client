@@ -71,7 +71,7 @@ export default async function DashboardLayout({
                   <Breadcrumb>
                     <BreadcrumbList>
                       {/* Home */}
-                      <BreadcrumbItem className="hidden md:block">
+                      <BreadcrumbItem className="md:block">
                         <BreadcrumbLink asChild>
                           <Link href="/" className="flex items-center gap-1">
                             <Home className="h-3.5 w-3.5" />
