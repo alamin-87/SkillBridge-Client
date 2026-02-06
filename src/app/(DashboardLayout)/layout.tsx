@@ -14,6 +14,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Roles } from "@/constance/role";
 import { userService } from "@/services/user.services";
 import { Home } from "lucide-react";
@@ -38,6 +39,15 @@ export default async function DashboardLayout({
   const userInfo = data?.user;
 
   const roleLabel = getRoleLabel(userInfo?.role);
+
+  function getInitials(name: string = ""): string {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  }
 
   return (
     <SidebarProvider>
@@ -105,13 +115,21 @@ export default async function DashboardLayout({
 
               {/* Right: small user display */}
               <div className="hidden items-center gap-2 md:flex">
-                <div className="text-right">
-                  <p className="text-sm font-medium leading-none">
-                    {userInfo?.name ?? "User"}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {userInfo?.email ?? ""}
-                  </p>
+                <div className="text-right flex items-center gap-2">
+                  <Avatar className="h-12 w-12 border">
+                    <AvatarImage
+                      src={userInfo?.image ?? undefined}
+                      alt={userInfo?.name ?? "User"}
+                    />
+                  </Avatar>
+                  <div>
+                    <p className="text-sm font-medium leading-none">
+                      {userInfo?.name ?? "User"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {userInfo?.email ?? ""}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>

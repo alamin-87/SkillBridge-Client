@@ -18,20 +18,4 @@ export const userService = {
       return { data: null, error: { message: "error", err } };
     }
   },
-//    logout: async function () {
-//     try {
-//       const cookieStore = await cookies();
-//       const res = await fetch(`${auth_url}/api/auth/sign-out`, {
-//         method: "POST",
-//         headers: { Cookie: cookieStore.toString() },
-//         cache: "no-store",
-//       });
-
-//       // backend should clear cookie via Set-Cookie
-//       const data = await res.json().catch(() => ({}));
-//       return { data, error: null };
-//     } catch (err) {
-//       return { data: null, error: { message: "error", err } };
-//     }
-//   },
 };
