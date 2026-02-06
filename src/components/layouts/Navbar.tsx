@@ -22,6 +22,7 @@ import {
 import { ModeToggle } from "./ModeToggle";
 import { getSessionAction } from "@/actions/user-action";
 import { authClient } from "@/lib/auth-client";
+import { Roles } from "@/constance/role";
 
 type Role = "STUDENT" | "TUTOR" | "ADMIN";
 
@@ -75,6 +76,11 @@ export function Navbar() {
       },
     });
   };
+  function getProfilePath(role?: string) {
+    if (role === Roles.ADMIN) return "/admin/profile";
+    if (role === Roles.TUTOR) return "/tutor/profile";
+    return "/dashboard/profile"; // student default
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background">
@@ -127,7 +133,7 @@ export function Navbar() {
               </Button>
 
               <Button asChild variant="ghost" size="sm">
-                <Link href="/dashboard/profile">
+                <Link href={getProfilePath(user?.role)}>
                   <UserIcon className="mr-2 h-4 w-4" />
                   Profile
                 </Link>

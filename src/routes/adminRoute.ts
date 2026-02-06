@@ -20,6 +20,10 @@ export const adminRoute: Route[] = [
         title: "Categories",
         url: "/admin/categories",
       },
+      {
+        title: "Profile",
+        url: "/admin/profile",
+      },
     ],
   },
 ];

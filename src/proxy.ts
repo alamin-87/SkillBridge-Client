@@ -48,7 +48,9 @@ export async function proxy(request: NextRequest) {
   // Optional: if they open "/admin" but role is wrong, above already catches.
   // Optional: if they open root dashboards, you can normalize:
   // if (pathname === "/admin") ...
-
+  // const res = NextResponse.next();
+  // res.headers.set("x-pathname", pathname);
+  // return res;
   return NextResponse.next();
 }
 
