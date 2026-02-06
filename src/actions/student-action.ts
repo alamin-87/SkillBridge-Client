@@ -10,6 +10,29 @@ export async function getStudentMeAction() {
     return { success: false, data: null, error: err };
   }
 }
+export async function updateStudentProfileAction(payload: {
+  name?: string;
+  phone?: string | null;
+  email?: string;
+  image?: string | null;
+}) {
+  try {
+    const json = await studentService.updateMe(payload);
+    return {
+      success: true,
+      data: json.data ?? null,
+      message: json.message ?? "Updated",
+      error: null,
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      data: null,
+      message: "Update failed",
+      error: { message: err?.message ?? "error", err },
+    };
+  }
+}
 
 export async function getStudentBookingsAction(params?: {
   page?: number;

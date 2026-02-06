@@ -1,8 +1,9 @@
-export default function StudentProfilePage() {
-  return (
-    <div className="space-y-2">
-      <h1 className="text-2xl font-bold">Profile</h1>
-      <p className="text-muted-foreground">Edit info</p>
-    </div>
-  );
+import { getStudentMeAction } from "@/actions/student-action";
+import ProfileForm from "./profile-form";
+
+export default async function StudentProfilePage() {
+  const { success, data } = await getStudentMeAction();
+  if (!success) return <div>Failed to load profile</div>;
+
+  return <ProfileForm user={data} />;
 }

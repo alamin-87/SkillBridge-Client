@@ -1,5 +1,6 @@
 import { env } from "@/env";
 import { cookies } from "next/headers";
+import { email } from "zod";
 
 const API_URL = env.API_URL;
 
@@ -43,6 +44,18 @@ export const studentService = {
       const txt = await res.text().catch(() => "");
       throw new Error(`getBookings failed: ${res.status} ${txt}`);
     }
+    return res.json();
+  },
+   async updateMe(payload: { name?: string; phone?: string | null; email?: string | null; image?: string | null }) {
+    const res = await fetch(`${API_URL}/api/user/me`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        ...(await withAuthHeaders() ?? {}),
+      },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error(`updateMe failed: ${res.status}`);
     return res.json();
   },
 };
