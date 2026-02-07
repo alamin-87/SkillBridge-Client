@@ -61,12 +61,9 @@ export const studentService = {
     if (!res.ok) throw new Error(`updateMe failed: ${res.status}`);
     return res.json();
   },
-   // ✅ NEW: get student (user) by id
   async getStudentById(userId: string) {
     if (!userId) throw new Error("userId is required");
-
     try {
-      // Try endpoint /api/user/:id
       const res = await fetch(`${API_URL}/api/user/${userId}`, {
         cache: "no-store",
         headers: {

@@ -45,7 +45,7 @@ export const availabilityService = {
       };
 
       console.log("Creating slot with payload:", payload);
-      console.log("Request headers:", { ...headers, Cookie: headers.Cookie ? "[set]" : "[none]" });
+      console.log("Request headers:", { ...headers, Cookie: (headers as any).Cookie ? "[set]" : "[none]" });
 
       const res = await fetch(`${API_URL}/api/availability`, {
         method: "POST",

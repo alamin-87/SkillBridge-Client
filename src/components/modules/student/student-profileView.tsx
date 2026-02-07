@@ -71,7 +71,7 @@ export function StudentProfileView({ student }: { student: Student }) {
                     </div>
                   </div>
 
-                  <Separator className="my-5" />
+                  {/* <Separator className="my-5" /> */}
 
                   {/* Contact */}
                   <div className="grid gap-3 sm:grid-cols-2">
@@ -107,24 +107,24 @@ export function StudentProfileView({ student }: { student: Student }) {
                   </div>
 
                   {/* Extra IDs (optional) */}
-                  <div className="mt-5 rounded-xl border bg-muted/20 p-4">
+                  {/* <div className="mt-5 rounded-xl border bg-muted/20 p-4">
                     <p className="text-xs font-medium text-muted-foreground">User ID</p>
                     <p className="mt-1 break-all text-sm font-semibold">{student?.id}</p>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Bookings placeholder (if you add later) */}
-          <Card>
+          {/* <Card>
             <CardContent className="p-6">
               <h2 className="text-lg font-semibold">Bookings</h2>
               <p className="mt-2 text-sm text-muted-foreground">
                 Booking history will appear here (upcoming / completed / cancelled).
               </p>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
 
         {/* RIGHT SIDEBAR */}
