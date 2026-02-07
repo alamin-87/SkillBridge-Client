@@ -57,6 +57,7 @@ export default function ProfileForm({ user }: { user: any }) {
 
           <div className="min-w-0">
             <p className="truncate font-semibold">{user?.email ?? ""}</p>
+            <p className="truncate font-semibold">{user?.id ?? ""}</p>
             <p className="text-xs text-muted-foreground">
               Role: {user?.role ?? "STUDENT"}
             </p>

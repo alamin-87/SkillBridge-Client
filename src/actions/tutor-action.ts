@@ -74,3 +74,56 @@ export async function searchTutorsAction(query: string) {
   if (error) return { tutors: [] };
   return { tutors: data };
 }
+export async function getTutorSessionsAction(params?: {
+  page?: number;
+  limit?: number;
+}) {
+  try {
+    const json = await tutorService.getSessions(params);
+    if (!json || !json.data) {
+      return {
+        success: true,
+        data: [],
+        meta: null,
+        error: null,
+      };
+    }
+    return {
+      success: true,
+      data: json.data,
+      meta: json.meta ?? null,
+      error: null,
+    };
+  } catch (err) {
+    return {
+      success: false,
+      data: [],
+      meta: null,
+      error: err,
+    };
+  }
+}
+export async function getMyTutorProfileAction() {
+  try {
+    const res = await tutorService.getMyProfile(); 
+    return { success: res.success, data: res.data ?? null, error: res.error };
+  } catch (err) {
+    return { success: false, data: null, error: err };
+  }
+}
+export async function updateMyTutorProfileAction(payload: {
+  bio?: string;
+  hourlyRate?: number;
+  experienceYrs?: number;
+  location?: string;
+  languages?: string[] | string;
+  profileImage?: string | null;
+  categories?: string[];
+}) {
+  try {
+    const json = await tutorService.updateMyProfile(payload);
+    return { success: true, data: json.data ?? null, message: json.message ?? "Updated", error: null };
+  } catch (err: any) {
+    return { success: false, data: null, message: "Update failed", error: { message: err?.message ?? "error", err } };
+  }
+}

@@ -14,7 +14,7 @@ export const studentService = {
     const res = await fetch(`${API_URL}/api/user/me`, {
       cache: "no-store",
       headers: {
-        ...(await withAuthHeaders() ?? {}),
+        ...((await withAuthHeaders()) ?? {}),
       },
     });
 
@@ -34,10 +34,10 @@ export const studentService = {
     const res = await fetch(url.toString(), {
       cache: "no-store",
       headers: {
-        ...(await withAuthHeaders() ?? {}),
+        ...((await withAuthHeaders()) ?? {}),
       },
     });
-    console.log(res)
+    console.log(res);
 
     if (!res.ok) {
       const txt = await res.text().catch(() => "");
@@ -45,12 +45,16 @@ export const studentService = {
     }
     return res.json();
   },
-   async updateMe(payload: { name?: string; phone?: string | null; image?: string | null }) {
+  async updateMe(payload: {
+    name?: string;
+    phone?: string | null;
+    image?: string | null;
+  }) {
     const res = await fetch(`${API_URL}/api/user/me`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        ...(await withAuthHeaders()??{}),
+        ...((await withAuthHeaders()) ?? {}),
       },
       body: JSON.stringify(payload),
     });

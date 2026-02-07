@@ -229,10 +229,10 @@ export function TutorProfileView({ tutor }: { tutor: Tutor }) {
 
               <Button className="w-full">
                 <BookSessionModal
-                  tutorProfileId={tutor.id} // tutor profile id (from your tutor page data)
-                  tutorId={tutor.user?.id ?? tutor.userId} // tutor user id
+                  tutorProfileId={tutor.id} 
+                  tutorId={tutor.user?.id ?? tutor.userId} 
                   hourlyRate={Number(tutor.hourlyRate ?? 0)}
-                  openSlots={openSlots} // already computed open slots
+                  openSlots={openSlots} 
                 />
               </Button>
 

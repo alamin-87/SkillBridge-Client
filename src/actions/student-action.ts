@@ -4,7 +4,7 @@ import { studentService } from "@/services/student.services";
 
 export async function getStudentMeAction() {
   try {
-    const res = await studentService.getMe(); // GET /api/auth/me OR /api/user/me (your backend is /me)
+    const res = await studentService.getMe();
     return { success: true, data: res.data ?? null, error: null };
   } catch (err) {
     return { success: false, data: null, error: err };
@@ -17,6 +17,7 @@ export async function updateStudentProfileAction(payload: {
 }) {
   try {
     const json = await studentService.updateMe(payload);
+    // console.log(json)
     return {
       success: true,
       data: json.data ?? null,
