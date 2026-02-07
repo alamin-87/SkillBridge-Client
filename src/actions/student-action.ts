@@ -50,3 +50,39 @@ export async function getStudentBookingsAction(params?: {
     return { success: false, data: [], meta: null, error: err };
   }
 }
+export async function getStudentByIdAction(userId: string) {
+  try {
+    if (!userId) {
+      return {
+        success: false,
+        message: "User ID is required",
+        data: null,
+      };
+    }
+
+    const res = await studentService.getStudentById(userId);
+
+    if (!res?.success) {
+      return {
+        success: false,
+        message: res?.error || "Failed to fetch student",
+        data: null,
+      };
+    }
+
+    return {
+      success: true,
+      data: res.data,
+      message: "Student loaded",
+    };
+  } catch (error: any) {
+    console.error("getStudentByIdAction error:", error);
+    const message = error.message || "Failed to fetch student";
+    
+    return {
+      success: false,
+      message: message.includes("404") ? `Student not found` : message,
+      data: null,
+    };
+  }
+}

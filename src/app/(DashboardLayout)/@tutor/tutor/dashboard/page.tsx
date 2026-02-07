@@ -27,7 +27,10 @@ function countByStatus(list: any[]) {
 }
 
 export default async function TutorDashboardPage() {
-  const { success, data } = await getTutorSessionsAction({ page: 1, limit: 10 });
+  const { success, data } = await getTutorSessionsAction({
+    page: 1,
+    limit: 10,
+  });
   if (!success) return <div>Failed to load sessions</div>;
 
   const sessions = Array.isArray(data) ? data : [];
@@ -136,9 +139,15 @@ export default async function TutorDashboardPage() {
 
                   <div className="flex items-center gap-3">
                     <Badge variant="secondary">{s.status}</Badge>
-                    <span className="text-sm font-semibold">
-                      ৳{s.price}
-                    </span>
+                    <span className="text-sm font-semibold">৳{s.price}</span>
+                    {/* 👇 Student profile link */}
+                    {s.student?.id && (
+                      <Button asChild variant="outline" size="sm">
+                        <Link href={`/users/${s.student.id}`}>
+                          View profile
+                        </Link>
+                      </Button>
+                    )}
                   </div>
                 </div>
               ))}

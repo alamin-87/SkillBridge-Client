@@ -61,4 +61,37 @@ export const studentService = {
     if (!res.ok) throw new Error(`updateMe failed: ${res.status}`);
     return res.json();
   },
+   // ✅ NEW: get student (user) by id
+  async getStudentById(userId: string) {
+    if (!userId) throw new Error("userId is required");
+
+    try {
+      // Try endpoint /api/user/:id
+      const res = await fetch(`${API_URL}/api/user/${userId}`, {
+        cache: "no-store",
+        headers: {
+          ...((await withAuthHeaders()) ?? {}),
+        },
+      });
+
+      if (!res.ok) {
+        const txt = await res.text().catch(() => "");
+        throw new Error(`getStudentById failed: ${res.status} ${txt}`);
+      }
+
+      const json = await res.json();
+      return {
+        success: true,
+        data: json?.data || json,
+        error: null,
+      };
+    } catch (err: any) {
+      console.error("getStudentById error:", err);
+      return {
+        success: false,
+        data: null,
+        error: err?.message ?? "Failed to fetch student",
+      };
+    }
+  },
 };

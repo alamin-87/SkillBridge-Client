@@ -10,3 +10,5 @@ export async function getSessionAction() {
 //   await userService.logout();
 //   return { ok: true };
 // }
+// ✅ NEW: get user by id
+
