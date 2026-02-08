@@ -1,4 +1,4 @@
-# SkillBridge — Client (A→Z Guide)
+# SkillBridge
 
 Comprehensive documentation for the SkillBridge frontend client (Next.js App Router + TypeScript).
 
