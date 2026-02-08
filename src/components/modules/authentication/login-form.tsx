@@ -79,7 +79,7 @@ export function LoginForm({
     try {
       const { error } = await authClient.signIn.social({
         provider: "google",
-        callbackURL: `${window.location.origin}`,
+        callbackURL:"https://skillbridge-client-black.vercel.app",
       });
 
       if (error)

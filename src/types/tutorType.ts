@@ -12,7 +12,7 @@ export type Tutor = {
   subjects?: string[];
   hourlyRate?: number;
   experienceYrs?: number;
-  languages?: string[];
+  languages?: string | string[];
   avgRating?: number;
   totalReviews?: number;
   tutorAvailability?: string[];
