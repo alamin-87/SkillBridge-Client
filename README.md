@@ -254,3 +254,7 @@ For questions or help, open an issue on the repository or contact the maintainer
 
 ---
 
+**Last Updated**: February 8, 2026  
+**Maintainer**: alamin-87  
+**Repository**: https://github.com/alamin-87/SkillBridge-client
+
