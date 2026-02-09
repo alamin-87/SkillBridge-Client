@@ -5,11 +5,11 @@ const API_URL = env.API_URL;
 
 async function withAuthHeaders(): Promise<Record<string, string> | undefined> {
   const cookieStore = await cookies();
-  const cookieHeader = cookieStore.toString(); 
+  const cookieHeader = cookieStore.toString();
   return cookieHeader ? { Cookie: cookieHeader } : undefined;
 }
 
-export  const bookingService = {
+export const bookingService = {
   async createBooking(payload: {
     tutorProfileId: string;
     tutorId: string;
@@ -23,7 +23,7 @@ export  const bookingService = {
       cache: "no-store",
       headers: {
         "Content-Type": "application/json",
-        ... (await withAuthHeaders()),
+        ...(await withAuthHeaders()),
       },
       body: JSON.stringify(payload),
     });

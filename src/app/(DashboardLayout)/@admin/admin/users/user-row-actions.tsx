@@ -41,13 +41,28 @@ export default function AdminUserRowActions({
       </Button>
 
       {/* simple role buttons (easy to understand) */}
-      <Button size="sm" variant={role === "STUDENT" ? "secondary" : "outline"} onClick={() => setRole("STUDENT")} disabled={pending}>
+      <Button
+        size="sm"
+        variant={role === "STUDENT" ? "secondary" : "outline"}
+        onClick={() => setRole("STUDENT")}
+        disabled={pending}
+      >
         Student
       </Button>
-      <Button size="sm" variant={role === "TUTOR" ? "secondary" : "outline"} onClick={() => setRole("TUTOR")} disabled={pending}>
+      <Button
+        size="sm"
+        variant={role === "TUTOR" ? "secondary" : "outline"}
+        onClick={() => setRole("TUTOR")}
+        disabled={pending}
+      >
         Tutor
       </Button>
-      <Button size="sm" variant={role === "ADMIN" ? "secondary" : "outline"} onClick={() => setRole("ADMIN")} disabled={pending}>
+      <Button
+        size="sm"
+        variant={role === "ADMIN" ? "secondary" : "outline"}
+        onClick={() => setRole("ADMIN")}
+        disabled={pending}
+      >
         Admin
       </Button>
     </div>

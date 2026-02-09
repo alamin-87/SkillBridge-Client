@@ -1,17 +1,17 @@
 import { env } from "@/env";
-import { cookies } from "next/headers";
-const auth_url = env.AUTH_URL;
-export const userService = {
-  async getSession() {
-    try {
-      const cookieStore = await cookies();
 
+const auth_url = env.AUTH_URL;
+
+export const userServiceMiddleware = {
+  async getSession(cookieHeader: string) {
+    try {
       const res = await fetch(`${auth_url}/get-session`, {
         headers: {
-          cookie: cookieStore.toString(),
+          cookie: cookieHeader,
         },
         cache: "no-store",
       });
+
       const session = await res.json();
       return { data: session, error: null };
     } catch (err) {

@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import { updateMyTutorProfileAction } from "@/actions/tutor-action";
+import { getCategoriesAction } from "@/actions/category-action";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,11 +21,89 @@ function initials(name?: string) {
     .join("");
 }
 
-function parseCommaList(value: string) {
-  return value
+// ✅ normalize categories for comparisons + backend payload
+function normalizeCategory(name: string) {
+  return name.trim().toUpperCase();
+}
+
+// ✅ nicer UI label
+function prettyCategory(name: string) {
+  return name
+    .toLowerCase()
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+type Category = {
+  id?: string;
+  name: string;
+};
+
+// ✅ remove duplicates in category list (math/Math/MATH => one)
+function dedupeCategories(categories: Category[]): Category[] {
+  const map = new Map<string, Category>();
+
+  for (const cat of categories) {
+    const key = normalizeCategory(cat.name);
+    if (!map.has(key)) {
+      map.set(key, { ...cat, name: prettyCategory(cat.name) });
+    }
+  }
+
+  return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/** ✅ Robust language parser: handles array | JSON string | comma string */
+function parseLanguages(value: any): string[] {
+  if (!value) return [];
+
+  if (Array.isArray(value)) {
+    return value.map(String).map((s) => s.trim()).filter(Boolean);
+  }
+
+  if (typeof value === "string") {
+    const s = value.trim();
+
+    // JSON string: '["English","Bangla"]'
+    if (s.startsWith("[") && s.endsWith("]")) {
+      try {
+        const arr = JSON.parse(s);
+        if (Array.isArray(arr)) {
+          return arr.map(String).map((x) => x.trim()).filter(Boolean);
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    // comma-separated fallback
+    return s.split(",").map((x) => x.trim()).filter(Boolean);
+  }
+
+  return [];
+}
+
+/**
+ * ✅ Convert UI string "English, Bangla" -> ["English","Bangla"]
+ * - split by comma ONLY
+ * - removes duplicates (case-insensitive)
+ */
+function languagesTextToArray(text: string): string[] {
+  const raw = text
     .split(",")
-    .map((s) => s.trim())
+    .map((x) => x.trim())
     .filter(Boolean);
+
+  const seen = new Set<string>();
+  const out: string[] = [];
+
+  for (const l of raw) {
+    const key = l.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(l);
+  }
+
+  return out;
 }
 
 export default function TutorProfileForm({ profile }: { profile: any }) {
@@ -38,57 +118,128 @@ export default function TutorProfileForm({ profile }: { profile: any }) {
   );
   const [location, setLocation] = React.useState(profile?.location ?? "");
 
-  // languages stored as CSV string in DB
-  const [languages, setLanguages] = React.useState(() => {
-    if (typeof profile?.languages === "string") return profile.languages;
-    if (Array.isArray(profile?.languages)) return profile.languages.join(", ");
-    return "";
+  /**
+   * ✅ IMPORTANT:
+   * UI must ALWAYS keep languages as a STRING, never array.
+   * So we convert to array -> join(", ") here.
+   */
+  const [languagesText, setLanguagesText] = React.useState<string>(() => {
+    const arr = parseLanguages(profile?.languages);
+    return arr.join(", "); // ✅ "English, Bangla"
   });
 
   const [profileImage, setProfileImage] = React.useState(
-    profile?.profileImage ?? "",
+    (profile?.profileImage ?? "") as string,
   );
 
-  // ✅ Categories: backend returns include { categories: [{ category: { name } }] }
-  const [categories, setCategories] = React.useState(() => {
-    const names =
-      profile?.categories?.map((c: any) => c?.category?.name).filter(Boolean) ??
-      [];
-    return names.join(", ");
-  });
+  // ✅ categories from server action (deduped for UI)
+  const [allCategories, setAllCategories] = React.useState<Category[]>([]);
+  const [catLoading, setCatLoading] = React.useState(false);
+  const [catError, setCatError] = React.useState<string | null>(null);
+
+  // ✅ selected categories stored as UPPERCASE, max 2, deduped
+  const [selectedCategories, setSelectedCategories] = React.useState<string[]>(
+    (): string[] => {
+      const raw: string[] =
+        (profile?.categories
+          ?.map((c: any) => c?.category?.name)
+          .filter(Boolean) as string[]) ?? [];
+
+      const normalized = Array.from(new Set(raw.map(normalizeCategory)));
+      return normalized.slice(0, 2);
+    },
+  );
 
   const [saving, setSaving] = React.useState(false);
   const [msg, setMsg] = React.useState<string | null>(null);
+
+  // ✅ load categories on mount + dedupe
+  React.useEffect(() => {
+    let mounted = true;
+
+    (async () => {
+      setCatLoading(true);
+      setCatError(null);
+      try {
+        const res = await getCategoriesAction();
+        if (!mounted) return;
+
+        if (res?.error) {
+          setAllCategories([]);
+          setCatError(res.error);
+        } else {
+          const raw = (res.categories ?? []) as Category[];
+          setAllCategories(dedupeCategories(raw));
+        }
+      } catch {
+        if (!mounted) return;
+        setAllCategories([]);
+        setCatError("Failed to load categories");
+      } finally {
+        if (!mounted) return;
+        setCatLoading(false);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const toggleCategory = (name: string) => {
+    const normalized = normalizeCategory(name);
+
+    setSelectedCategories((prev) => {
+      const exists = prev.includes(normalized);
+
+      // remove
+      if (exists) return prev.filter((x) => x !== normalized);
+
+      // add (max 2)
+      if (prev.length >= 2) return prev;
+
+      return [...prev, normalized];
+    });
+  };
 
   const onSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     setMsg(null);
 
-    const langs = parseCommaList(languages);
-    const cats = parseCommaList(categories);
+    // ✅ Convert UI string -> array for backend
+    const languagesArray = languagesTextToArray(languagesText);
 
     const res = await updateMyTutorProfileAction({
       bio: bio.trim() || undefined,
       hourlyRate: hourlyRate ? Number(hourlyRate) : undefined,
       experienceYrs: experienceYrs ? Number(experienceYrs) : undefined,
       location: location.trim() || undefined,
-      languages: langs, // backend will stringify if needed
+
+      // ✅ send array (backend stores JSON string)
+      languages: languagesArray,
+
       profileImage: profileImage.trim() ? profileImage.trim() : null,
-      categories: cats, // ✅ add categories by name
+      categories: selectedCategories,
     });
 
     setSaving(false);
-    setMsg(res.success ? "Profile updated ✅" : "Update failed ❌");
+
+    if (res.success) {
+      setMsg("Profile updated ✅");
+
+      // ✅ CRITICAL FIX:
+      // never do setLanguagesText(updated.languages) directly
+      // because that can be an ARRAY and will show ["English","Bangla"] in UI
+      const arr = parseLanguages(res.data?.languages);
+      setLanguagesText(arr.join(", ")); // ✅ "English, Bangla"
+    } else {
+      setMsg("Update failed ❌");
+    }
   };
 
   const avatarSrc = profileImage?.trim() || user?.image || "";
   const displayName = user?.name ?? "Tutor";
-
-  const categoryPreview = React.useMemo(
-    () => parseCommaList(categories).slice(0, 10),
-    [categories],
-  );
 
   return (
     <Card className="shadow-sm">
@@ -155,37 +306,76 @@ export default function TutorProfileForm({ profile }: { profile: any }) {
             />
           </div>
 
+          {/* ✅ Languages as comma-separated TEXT (no array in UI) */}
           <div className="space-y-2">
-            <Label>Languages (comma separated)</Label>
+            <Label>Languages</Label>
             <Input
-              value={languages}
-              onChange={(e) => setLanguages(e.target.value)}
+              value={languagesText} // ✅ ALWAYS string
+              onChange={(e) => setLanguagesText(e.target.value)} // ✅ ALWAYS string
               placeholder="English, Bangla"
             />
+            <p className="text-xs text-muted-foreground">
+              Separate languages with comma. Example: English, Bangla
+            </p>
           </div>
 
-          {/* ✅ Categories */}
+          {/* ✅ Categories SELECT (max 2) */}
           <div className="space-y-2">
-            <Label>Categories (comma separated max 2)</Label>
-            <Input
-              value={categories}
-              onChange={(e) => setCategories(e.target.value)}
-              placeholder="Math, Physics, IELTS"
-            />
+            <Label>Categories (select max 2)</Label>
 
-            {categoryPreview.length > 0 && (
-              <div className="flex flex-wrap gap-2 pt-2">
-                {categoryPreview.map((c) => (
-                  <Badge key={c} variant="secondary">
-                    {c}
-                  </Badge>
-                ))}
+            {catLoading ? (
+              <p className="text-sm text-muted-foreground">Loading...</p>
+            ) : catError ? (
+              <p className="text-sm text-red-500">{catError}</p>
+            ) : (
+              <div className="rounded-md border p-3">
+                <div className="mb-2 flex flex-wrap gap-2">
+                  {selectedCategories.length ? (
+                    selectedCategories.map((c) => (
+                      <Badge key={c} variant="secondary">
+                        {prettyCategory(c)}
+                      </Badge>
+                    ))
+                  ) : (
+                    <span className="text-sm text-muted-foreground">
+                      No categories selected
+                    </span>
+                  )}
+                </div>
+
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {allCategories.map((cat) => {
+                    const normalizedName = normalizeCategory(cat.name);
+                    const checked = selectedCategories.includes(normalizedName);
+                    const disabled =
+                      !checked && selectedCategories.length >= 2;
+
+                    return (
+                      <label
+                        key={cat.id ?? cat.name}
+                        className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm ${
+                          disabled ? "opacity-50" : "cursor-pointer"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          disabled={disabled}
+                          onChange={() => toggleCategory(cat.name)}
+                        />
+                        <span className="truncate">{cat.name}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+
+                <p className="mt-2 text-xs text-muted-foreground">
+                  You can select up to <span className="font-medium">2</span>{" "}
+                  categories. Duplicates are merged automatically
+                  (case-insensitive).
+                </p>
               </div>
             )}
-
-            <p className="text-xs text-muted-foreground">
-              Example: <span className="font-medium">Math, React, English</span>
-            </p>
           </div>
 
           <div className="space-y-2">

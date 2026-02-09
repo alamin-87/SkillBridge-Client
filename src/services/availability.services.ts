@@ -5,7 +5,7 @@ const API_URL = env.API_URL;
 
 async function withAuthHeaders(): Promise<Record<string, string> | undefined> {
   const cookieStore = await cookies();
-  const cookieHeader = cookieStore.toString(); 
+  const cookieHeader = cookieStore.toString();
   return cookieHeader ? { Cookie: cookieHeader } : undefined;
 }
 
@@ -21,7 +21,7 @@ export const availabilityService = {
         const txt = await res.text().catch(() => "");
         throw new Error(`getMyAvailability failed: ${res.status} ${txt}`);
       }
-      
+
       const json = await res.json();
       return {
         success: true,
@@ -37,7 +37,10 @@ export const availabilityService = {
     }
   },
 
-  async createSlot(payload: { tutorProfileId: string; slots: Array<{ startTime: string; endTime: string }> }) {
+  async createSlot(payload: {
+    tutorProfileId: string;
+    slots: Array<{ startTime: string; endTime: string }>;
+  }) {
     try {
       const headers = {
         "Content-Type": "application/json",
@@ -45,7 +48,10 @@ export const availabilityService = {
       };
 
       console.log("Creating slot with payload:", payload);
-      console.log("Request headers:", { ...headers, Cookie: (headers as any).Cookie ? "[set]" : "[none]" });
+      console.log("Request headers:", {
+        ...headers,
+        Cookie: (headers as any).Cookie ? "[set]" : "[none]",
+      });
 
       const res = await fetch(`${API_URL}/api/availability`, {
         method: "POST",
@@ -78,7 +84,7 @@ export const availabilityService = {
       };
     }
   },
-    // ✅ Update slot
+  //  Update slot
   async updateSlot(payload: {
     availabilityId: string;
     startTime: string;
@@ -109,7 +115,7 @@ export const availabilityService = {
     return json;
   },
 
-  // ✅ Delete slot
+  //  Delete slot
   async deleteSlot(availabilityId: string) {
     const res = await fetch(`${API_URL}/api/availability/${availabilityId}`, {
       method: "DELETE",

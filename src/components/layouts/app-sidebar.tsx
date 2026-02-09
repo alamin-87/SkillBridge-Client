@@ -64,8 +64,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
                         <Link
                           href={item.url}
                           className={cn(
-                            active &&
-                              "bg-primary/10 text-primary font-medium",
+                            active && "bg-primary/10 text-primary font-medium",
                           )}
                         >
                           {item.title}

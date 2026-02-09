@@ -5,7 +5,7 @@ const API_URL = env.API_URL;
 export type Category = {
   id: string;
   name: string;
-  tutorCount?: number; // optional if backend provides
+  tutorCount?: number;
 };
 
 type ApiResponse<T> = {

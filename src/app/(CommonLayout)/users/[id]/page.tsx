@@ -34,5 +34,5 @@ export default async function StudentDetailsPage({
     );
   }
 
-   return <StudentProfileView student={student} />;
+  return <StudentProfileView student={student} />;
 }

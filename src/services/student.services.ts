@@ -5,7 +5,7 @@ const API_URL = env.API_URL;
 
 async function withAuthHeaders(): Promise<Record<string, string> | undefined> {
   const cookieStore = await cookies();
-  const cookieHeader = cookieStore.toString(); // ✅ all cookies in one header
+  const cookieHeader = cookieStore.toString(); // all cookies in one header
   return cookieHeader ? { Cookie: cookieHeader } : undefined;
 }
 

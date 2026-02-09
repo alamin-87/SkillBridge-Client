@@ -51,7 +51,8 @@ const tutorSteps = [
   },
   {
     title: "Teach securely",
-    description: "Manage sessions, track bookings, and build trust with reviews.",
+    description:
+      "Manage sessions, track bookings, and build trust with reviews.",
     icon: ShieldCheck,
   },
 ];
@@ -169,24 +170,25 @@ export default function HowItWorksPage() {
           <AccordionItem value="q1">
             <AccordionTrigger>How do I book a tutor?</AccordionTrigger>
             <AccordionContent>
-              Browse tutors, open a profile, choose an available slot, and confirm
-              booking. Your upcoming sessions will show in your dashboard.
+              Browse tutors, open a profile, choose an available slot, and
+              confirm booking. Your upcoming sessions will show in your
+              dashboard.
             </AccordionContent>
           </AccordionItem>
 
           <AccordionItem value="q2">
             <AccordionTrigger>How do tutors set availability?</AccordionTrigger>
             <AccordionContent>
-              Tutors add time slots from their dashboard. Students can book those
-              slots instantly.
+              Tutors add time slots from their dashboard. Students can book
+              those slots instantly.
             </AccordionContent>
           </AccordionItem>
 
           <AccordionItem value="q3">
             <AccordionTrigger>When can I leave a review?</AccordionTrigger>
             <AccordionContent>
-              Students can leave reviews after a session is completed, helping the
-              community make better choices.
+              Students can leave reviews after a session is completed, helping
+              the community make better choices.
             </AccordionContent>
           </AccordionItem>
         </Accordion>

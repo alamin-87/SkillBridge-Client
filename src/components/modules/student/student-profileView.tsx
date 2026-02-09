@@ -6,7 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
-import { Mail, Phone, CalendarDays, MapPin, User2, ShieldCheck } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  CalendarDays,
+  MapPin,
+  User2,
+  ShieldCheck,
+} from "lucide-react";
 
 export type Student = {
   id: string;
@@ -45,7 +52,9 @@ export function StudentProfileView({ student }: { student: Student }) {
                 <div className="flex-1">
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0">
-                      <h1 className="truncate text-2xl font-bold">{displayName}</h1>
+                      <h1 className="truncate text-2xl font-bold">
+                        {displayName}
+                      </h1>
                       <p className="text-muted-foreground">
                         {student?.role ? `${student.role}` : "STUDENT"}
                       </p>
@@ -101,7 +110,9 @@ export function StudentProfileView({ student }: { student: Student }) {
                       </p>
                       <p className="mt-1 inline-flex items-center gap-2 text-sm font-semibold">
                         <CalendarDays className="h-4 w-4 text-muted-foreground" />
-                        {student?.createdAt ? formatDate(student.createdAt) : "—"}
+                        {student?.createdAt
+                          ? formatDate(student.createdAt)
+                          : "—"}
                       </p>
                     </div>
                   </div>
@@ -151,12 +162,16 @@ export function StudentProfileView({ student }: { student: Student }) {
               <div className="space-y-3 text-sm">
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Role</span>
-                  <span className="font-medium">{student?.role ?? "STUDENT"}</span>
+                  <span className="font-medium">
+                    {student?.role ?? "STUDENT"}
+                  </span>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Status</span>
-                  <span className="font-medium">{student?.status ?? "ACTIVE"}</span>
+                  <span className="font-medium">
+                    {student?.status ?? "ACTIVE"}
+                  </span>
                 </div>
 
                 <div className="flex items-center justify-between">

@@ -3,17 +3,20 @@
 import { adminService } from "@/services/admin.services";
 import { revalidatePath } from "next/cache";
 
-// ✅ Dashboard
+// Dashboard
 export async function getAdminDashboardAction() {
   try {
     const res = await adminService.getDashboard();
     return { success: true, data: res.data };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to load dashboard" };
+    return {
+      success: false,
+      message: error.message || "Failed to load dashboard",
+    };
   }
 }
 
-// ✅ Users
+// Users
 export async function getAdminUsersAction() {
   try {
     const res = await adminService.getUsers();
@@ -25,7 +28,10 @@ export async function getAdminUsersAction() {
 
 export async function updateAdminUserAction(
   userId: string,
-  payload: { status?: "ACTIVE" | "BANNED"; role?: "STUDENT" | "TUTOR" | "ADMIN" }
+  payload: {
+    status?: "ACTIVE" | "BANNED";
+    role?: "STUDENT" | "TUTOR" | "ADMIN";
+  },
 ) {
   try {
     const res = await adminService.updateUser(userId, payload);
@@ -33,29 +39,42 @@ export async function updateAdminUserAction(
     // revalidate admin users page
     revalidatePath("/admin/users");
 
-    return { success: true, data: res.data, message: res.message || "User updated" };
+    return {
+      success: true,
+      data: res.data,
+      message: res.message || "User updated",
+    };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to update user" };
+    return {
+      success: false,
+      message: error.message || "Failed to update user",
+    };
   }
 }
 
-// ✅ Bookings
+// Bookings
 export async function getAdminBookingsAction() {
   try {
     const res = await adminService.getBookings();
     return { success: true, data: res.data };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to load bookings" };
+    return {
+      success: false,
+      message: error.message || "Failed to load bookings",
+    };
   }
 }
 
-// ✅ Categories
+// Categories
 export async function getAdminCategoriesAction() {
   try {
     const res = await adminService.getCategories();
     return { success: true, data: res.data };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to load categories" };
+    return {
+      success: false,
+      message: error.message || "Failed to load categories",
+    };
   }
 }
 
@@ -65,21 +84,38 @@ export async function createAdminCategoryAction(payload: { name: string }) {
 
     revalidatePath("/admin/categories");
 
-    return { success: true, data: res.data, message: res.message || "Category created" };
+    return {
+      success: true,
+      data: res.data,
+      message: res.message || "Category created",
+    };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to create category" };
+    return {
+      success: false,
+      message: error.message || "Failed to create category",
+    };
   }
 }
 
-export async function updateAdminCategoryAction(categoryId: string, payload: { name: string }) {
+export async function updateAdminCategoryAction(
+  categoryId: string,
+  payload: { name: string },
+) {
   try {
     const res = await adminService.updateCategory(categoryId, payload);
 
     revalidatePath("/admin/categories");
 
-    return { success: true, data: res.data, message: res.message || "Category updated" };
+    return {
+      success: true,
+      data: res.data,
+      message: res.message || "Category updated",
+    };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to update category" };
+    return {
+      success: false,
+      message: error.message || "Failed to update category",
+    };
   }
 }
 
@@ -89,9 +125,16 @@ export async function deleteAdminCategoryAction(categoryId: string) {
 
     revalidatePath("/admin/categories");
 
-    return { success: true, data: res.data, message: res.message || "Category deleted" };
+    return {
+      success: true,
+      data: res.data,
+      message: res.message || "Category deleted",
+    };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to delete category" };
+    return {
+      success: false,
+      message: error.message || "Failed to delete category",
+    };
   }
 }
 
@@ -100,7 +143,10 @@ export async function getAdminMeAction() {
     const res = await adminService.getMe();
     return { success: true, data: res.data };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to load profile" };
+    return {
+      success: false,
+      message: error.message || "Failed to load profile",
+    };
   }
 }
 
@@ -113,8 +159,15 @@ export async function updateAdminMeAction(payload: {
   try {
     const res = await adminService.updateMe(payload);
     revalidatePath("/admin/profile");
-    return { success: true, data: res.data, message: res.message || "Profile updated" };
+    return {
+      success: true,
+      data: res.data,
+      message: res.message || "Profile updated",
+    };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to update profile" };
+    return {
+      success: false,
+      message: error.message || "Failed to update profile",
+    };
   }
 }

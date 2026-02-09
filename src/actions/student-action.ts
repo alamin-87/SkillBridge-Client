@@ -78,7 +78,7 @@ export async function getStudentByIdAction(userId: string) {
   } catch (error: any) {
     console.error("getStudentByIdAction error:", error);
     const message = error.message || "Failed to fetch student";
-    
+
     return {
       success: false,
       message: message.includes("404") ? `Student not found` : message,

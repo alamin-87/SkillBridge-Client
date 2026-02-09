@@ -27,7 +27,9 @@ export default function AdminProfileForm({
         email: email.trim() || undefined,
       });
 
-      setMsg(res.success ? "Profile updated ✅" : res.message || "Update failed");
+      setMsg(
+        res.success ? "Profile updated ✅" : res.message || "Update failed",
+      );
     });
   };
 

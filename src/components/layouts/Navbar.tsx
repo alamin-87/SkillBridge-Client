@@ -58,6 +58,7 @@ export function Navbar() {
       setLoading(true);
       try {
         const res = await getSessionAction();
+        console.log(res);
         setUser(res.user ?? null);
       } finally {
         setLoading(false);
@@ -66,7 +67,17 @@ export function Navbar() {
 
     load();
   }, [pathname]);
-
+  //   React.useEffect(() => {
+  //   (async () => {
+  //     const res = await fetch(`${process.env.FRONTEND_URL}/get-session`, {
+  //       credentials: "include",
+  //       cache: "no-store",
+  //     });
+  //     const data = await res.json();
+  //     setUser(data?.user ?? null);
+  //     setLoading(false);
+  //   })();
+  // }, [pathname]);
   const handleLogout = async () => {
     await authClient.signOut({
       fetchOptions: {
@@ -79,7 +90,7 @@ export function Navbar() {
   function getProfilePath(role?: string) {
     if (role === Roles.ADMIN) return "/admin/profile";
     if (role === Roles.TUTOR) return "/tutor/profile";
-    return "/dashboard/profile"; // student default
+    return "/dashboard/profile";
   }
 
   return (

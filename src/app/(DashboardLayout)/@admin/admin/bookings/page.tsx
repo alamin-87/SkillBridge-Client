@@ -32,7 +32,9 @@ export default async function AdminBookingsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold">Bookings</h2>
-          <p className="text-sm text-muted-foreground">All bookings across the platform</p>
+          <p className="text-sm text-muted-foreground">
+            All bookings across the platform
+          </p>
         </div>
 
         <Button asChild size="sm" variant="outline">
@@ -59,7 +61,8 @@ export default async function AdminBookingsPage() {
                 >
                   <div>
                     <p className="font-medium">
-                      {b.student?.name ?? "Student"} → {b.tutor?.name ?? "Tutor"}
+                      {b.student?.name ?? "Student"} →{" "}
+                      {b.tutor?.name ?? "Tutor"}
                     </p>
                     <p className="text-sm text-muted-foreground">
                       {fmt(b.scheduledStart)} – {fmt(b.scheduledEnd)}

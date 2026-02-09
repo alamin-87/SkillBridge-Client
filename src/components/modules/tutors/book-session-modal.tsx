@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -46,7 +45,9 @@ export function BookSessionModal({
   openSlots: Slot[];
 }) {
   const [open, setOpen] = React.useState(false);
-  const [selected, setSelected] = React.useState<Slot | null>(openSlots?.[0] ?? null);
+  const [selected, setSelected] = React.useState<Slot | null>(
+    openSlots?.[0] ?? null,
+  );
   const [loading, setLoading] = React.useState(false);
   const [msg, setMsg] = React.useState<string | null>(null);
 
@@ -121,19 +122,33 @@ export function BookSessionModal({
                       onClick={() => setSelected(s)}
                       className={[
                         "w-full rounded-lg border p-3 text-left transition",
-                        active ? "border-primary/50 bg-primary/5" : "hover:bg-muted/50",
+                        active
+                          ? "border-primary/50 bg-primary/5"
+                          : "hover:bg-muted/50",
                       ].join(" ")}
                     >
                       <div className="flex items-center justify-between gap-2">
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold">{fmt(s.startTime)}</p>
+                          <p className="truncate text-sm font-semibold">
+                            {fmt(s.startTime)}
+                          </p>
                           <p className="text-xs text-muted-foreground">
-                            {new Date(s.startTime).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}{" "}
+                            {new Date(s.startTime).toLocaleTimeString(
+                              undefined,
+                              { hour: "numeric", minute: "2-digit" },
+                            )}{" "}
                             –{" "}
-                            {new Date(s.endTime).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}
+                            {new Date(s.endTime).toLocaleTimeString(undefined, {
+                              hour: "numeric",
+                              minute: "2-digit",
+                            })}
                           </p>
                         </div>
-                        {active ? <Badge>Selected</Badge> : <Badge variant="outline">Pick</Badge>}
+                        {active ? (
+                          <Badge>Selected</Badge>
+                        ) : (
+                          <Badge variant="outline">Pick</Badge>
+                        )}
                       </div>
                     </button>
                   );
@@ -146,10 +161,17 @@ export function BookSessionModal({
         </div>
 
         <DialogFooter className="gap-2 sm:gap-0">
-          <Button variant="outline" onClick={() => setOpen(false)} disabled={loading}>
+          <Button
+            variant="outline"
+            onClick={() => setOpen(false)}
+            disabled={loading}
+          >
             Cancel
           </Button>
-          <Button onClick={onConfirm} disabled={loading || !selected || openSlots.length === 0}>
+          <Button
+            onClick={onConfirm}
+            disabled={loading || !selected || openSlots.length === 0}
+          >
             {loading ? "Booking..." : "Confirm booking"}
           </Button>
         </DialogFooter>

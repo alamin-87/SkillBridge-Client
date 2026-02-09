@@ -71,24 +71,32 @@ export function LoginForm({
       }
     },
   });
+  // const handleGoogleLogin = async () => {
+  //   const toastId = toast.loading("Redirecting to Google...");
+  //   setIsGoogleLoading(true);
 
-  const handleGoogleLogin = async () => {
-    const toastId = toast.loading("Redirecting to Google...");
-    setIsGoogleLoading(true);
+  //   try {
+  //     const { error } = await authClient.signIn.social({
+  //       provider: "google",
+  //       callbackURL:`${window.location.origin}`,
+  //     });
 
-    try {
-      const { error } = await authClient.signIn.social({
-        provider: "google",
-        callbackURL:"https://skillbridge-client-black.vercel.app",
-      });
-
-      if (error)
-        toast.error(error.message || "Google sign-in failed", { id: toastId });
-    } catch {
-      toast.error("Google sign-in failed. Try again.", { id: toastId });
-    } finally {
-      setIsGoogleLoading(false);
-    }
+  //     if (error)
+  //       toast.error(error.message || "Google sign-in failed", { id: toastId });
+  //   } catch {
+  //     toast.error("Google sign-in failed. Try again.", { id: toastId });
+  //   } finally {
+  //     setIsGoogleLoading(false);
+  //   }
+  // };
+  const handelGoogleLogin = async () => {
+    console.log("Login started");
+    console.log("Origin:", window.location.origin);
+    const data = await authClient.signIn.social({
+      provider: "google",
+      callbackURL: `${window.location.origin}`,
+    });
+    console.log(data);
   };
 
   return (
@@ -106,8 +114,8 @@ export function LoginForm({
           type="button"
           variant="outline"
           className="w-full"
-          onClick={handleGoogleLogin}
-          disabled={isGoogleLoading}
+          onClick={handelGoogleLogin}
+          // disabled={isGoogleLoading}
         >
           {isGoogleLoading ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

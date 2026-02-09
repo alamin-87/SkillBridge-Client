@@ -1,11 +1,20 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { deleteAdminCategoryAction, updateAdminCategoryAction } from "@/actions/admin-action";
+import {
+  deleteAdminCategoryAction,
+  updateAdminCategoryAction,
+} from "@/actions/admin-action";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export default function AdminCategoryRow({ id, name }: { id: string; name: string }) {
+export default function AdminCategoryRow({
+  id,
+  name,
+}: {
+  id: string;
+  name: string;
+}) {
   const [value, setValue] = useState(name);
   const [pending, start] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +48,12 @@ export default function AdminCategoryRow({ id, name }: { id: string; name: strin
           >
             {pending ? "Saving..." : "Update"}
           </Button>
-          <Button size="sm" variant="destructive" onClick={onDelete} disabled={pending}>
+          <Button
+            size="sm"
+            variant="destructive"
+            onClick={onDelete}
+            disabled={pending}
+          >
             Delete
           </Button>
         </div>

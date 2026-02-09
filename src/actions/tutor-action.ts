@@ -105,7 +105,7 @@ export async function getTutorSessionsAction(params?: {
 }
 export async function getMyTutorProfileAction() {
   try {
-    const res = await tutorService.getMyProfile(); 
+    const res = await tutorService.getMyProfile();
     return { success: res.success, data: res.data ?? null, error: res.error };
   } catch (err) {
     return { success: false, data: null, error: err };
@@ -122,8 +122,18 @@ export async function updateMyTutorProfileAction(payload: {
 }) {
   try {
     const json = await tutorService.updateMyProfile(payload);
-    return { success: true, data: json.data ?? null, message: json.message ?? "Updated", error: null };
+    return {
+      success: true,
+      data: json.data ?? null,
+      message: json.message ?? "Updated",
+      error: null,
+    };
   } catch (err: any) {
-    return { success: false, data: null, message: "Update failed", error: { message: err?.message ?? "error", err } };
+    return {
+      success: false,
+      data: null,
+      message: "Update failed",
+      error: { message: err?.message ?? "error", err },
+    };
   }
 }

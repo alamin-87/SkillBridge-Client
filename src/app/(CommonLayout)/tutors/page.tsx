@@ -1,7 +1,6 @@
 import { getTutorsAction, getTutorsListAction } from "@/actions/tutor-action";
 import { TutorsPageClient } from "@/components/modules/tutors/Tutors";
 
-
 type SearchParams = {
   search?: string;
   sort?: string;

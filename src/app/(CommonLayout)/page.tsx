@@ -3,14 +3,13 @@ import { DiscoverTutorsSection } from "@/components/modules/home/DiscoverTutorsS
 import { HeroSection } from "@/components/modules/home/HeroSection";
 import { HowItWorksSection } from "@/components/modules/home/HowItWorksSection";
 
-
 export default function HomePage() {
   return (
     <main>
       <HeroSection />
-      <DiscoverTutorsSection/>
-      <HowItWorksSection/>
-      <CtaSection/>
+      <DiscoverTutorsSection />
+      <HowItWorksSection />
+      <CtaSection />
     </main>
   );
 }

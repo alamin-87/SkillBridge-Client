@@ -9,7 +9,11 @@ export default async function AdminDashboardPage() {
   if (!success) return <div>Failed to load dashboard: {message}</div>;
 
   const stats = data ?? {};
-  const bookingStatus = stats.bookingStatus ?? { confirmed: 0, completed: 0, cancelled: 0 };
+  const bookingStatus = stats.bookingStatus ?? {
+    confirmed: 0,
+    completed: 0,
+    cancelled: 0,
+  };
 
   return (
     <div className="space-y-6">
@@ -36,37 +40,57 @@ export default async function AdminDashboardPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">Total users</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground">
+              Total users
+            </CardTitle>
           </CardHeader>
-          <CardContent className="text-2xl font-semibold">{stats.totalUsers ?? 0}</CardContent>
+          <CardContent className="text-2xl font-semibold">
+            {stats.totalUsers ?? 0}
+          </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">Tutors</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground">
+              Tutors
+            </CardTitle>
           </CardHeader>
-          <CardContent className="text-2xl font-semibold">{stats.totalTutors ?? 0}</CardContent>
+          <CardContent className="text-2xl font-semibold">
+            {stats.totalTutors ?? 0}
+          </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">Students</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground">
+              Students
+            </CardTitle>
           </CardHeader>
-          <CardContent className="text-2xl font-semibold">{stats.totalStudents ?? 0}</CardContent>
+          <CardContent className="text-2xl font-semibold">
+            {stats.totalStudents ?? 0}
+          </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">Bookings</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground">
+              Bookings
+            </CardTitle>
           </CardHeader>
-          <CardContent className="text-2xl font-semibold">{stats.totalBookings ?? 0}</CardContent>
+          <CardContent className="text-2xl font-semibold">
+            {stats.totalBookings ?? 0}
+          </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">Categories</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground">
+              Categories
+            </CardTitle>
           </CardHeader>
-          <CardContent className="text-2xl font-semibold">{stats.totalCategories ?? 0}</CardContent>
+          <CardContent className="text-2xl font-semibold">
+            {stats.totalCategories ?? 0}
+          </CardContent>
         </Card>
       </div>
 
@@ -80,9 +104,15 @@ export default async function AdminDashboardPage() {
         </CardHeader>
 
         <CardContent className="flex flex-wrap gap-3">
-          <Badge variant="secondary">CONFIRMED: {bookingStatus.confirmed ?? 0}</Badge>
-          <Badge variant="secondary">COMPLETED: {bookingStatus.completed ?? 0}</Badge>
-          <Badge variant="secondary">CANCELLED: {bookingStatus.cancelled ?? 0}</Badge>
+          <Badge variant="secondary">
+            CONFIRMED: {bookingStatus.confirmed ?? 0}
+          </Badge>
+          <Badge variant="secondary">
+            COMPLETED: {bookingStatus.completed ?? 0}
+          </Badge>
+          <Badge variant="secondary">
+            CANCELLED: {bookingStatus.cancelled ?? 0}
+          </Badge>
         </CardContent>
       </Card>
     </div>

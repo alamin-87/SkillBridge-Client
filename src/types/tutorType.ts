@@ -1,7 +1,7 @@
 type TutorAvailability = {
   id: string;
   startTime: string; // ISO
-  endTime: string;   // ISO
+  endTime: string; // ISO
   isBooked: boolean;
 };
 export type Tutor = {
@@ -23,7 +23,7 @@ export type Tutor = {
     email: string;
     profileImage?: string | null;
   };
- categories?: {
+  categories?: {
     category: {
       id: string;
       name: string;

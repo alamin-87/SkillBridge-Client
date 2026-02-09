@@ -22,7 +22,9 @@ export default async function AdminUsersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold">Users</h2>
-          <p className="text-sm text-muted-foreground">Manage user status (ban/unban) and roles</p>
+          <p className="text-sm text-muted-foreground">
+            Manage user status (ban/unban) and roles
+          </p>
         </div>
 
         <Button asChild size="sm" variant="outline">
@@ -50,12 +52,18 @@ export default async function AdminUsersPage() {
                   <div>
                     <p className="font-medium">{u.name ?? "—"}</p>
                     <p className="text-sm text-muted-foreground">{u.email}</p>
-                    <p className="text-xs text-muted-foreground">Joined: {fmtDate(u.createdAt)}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Joined: {fmtDate(u.createdAt)}
+                    </p>
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge variant="secondary">{u.role}</Badge>
-                    <Badge variant={u.status === "BANNED" ? "destructive" : "secondary"}>
+                    <Badge
+                      variant={
+                        u.status === "BANNED" ? "destructive" : "secondary"
+                      }
+                    >
                       {u.status}
                     </Badge>
 
@@ -65,7 +73,11 @@ export default async function AdminUsersPage() {
                     </Button>
 
                     {/* actions */}
-                    <AdminUserRowActions userId={u.id} status={u.status} role={u.role} />
+                    <AdminUserRowActions
+                      userId={u.id}
+                      status={u.status}
+                      role={u.role}
+                    />
                   </div>
                 </div>
               ))}

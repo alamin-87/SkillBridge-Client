@@ -17,7 +17,9 @@ export default async function AdminCategoriesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold">Categories</h2>
-          <p className="text-sm text-muted-foreground">Create, update, and delete categories</p>
+          <p className="text-sm text-muted-foreground">
+            Create, update, and delete categories
+          </p>
         </div>
 
         <Button asChild size="sm" variant="outline">

@@ -18,7 +18,7 @@ async function handle(res: Response, label: string) {
 }
 
 export const adminService = {
-  // ✅ Dashboard Stats
+  // Dashboard Stats
   async getDashboard() {
     const res = await fetch(`${API_URL}/api/admin`, {
       cache: "no-store",
@@ -27,7 +27,7 @@ export const adminService = {
     return handle(res, "getDashboard");
   },
 
-  // ✅ Users
+  // Users
   async getUsers() {
     const res = await fetch(`${API_URL}/api/admin/users`, {
       cache: "no-store",
@@ -55,7 +55,7 @@ export const adminService = {
     return handle(res, "updateUser");
   },
 
-  // ✅ Bookings
+  //  Bookings
   async getBookings() {
     const res = await fetch(`${API_URL}/api/admin/bookings`, {
       cache: "no-store",
@@ -64,7 +64,7 @@ export const adminService = {
     return handle(res, "getBookings");
   },
 
-  // ✅ Categories
+  //  Categories
   async getCategories() {
     const res = await fetch(`${API_URL}/api/admin/categories`, {
       cache: "no-store",

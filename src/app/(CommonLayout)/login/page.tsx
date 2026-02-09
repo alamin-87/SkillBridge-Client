@@ -18,8 +18,7 @@ export default function LoginPage() {
         {/* Left: 3D animation + text */}
         <div className="hidden lg:flex flex-col items-center justify-center gap-8 px-10 text-center">
           <h1 className="text-4xl font-bold tracking-tight animate-in fade-in slide-in-from-left-6 duration-700">
-            Learn Smarter with{" "}
-            <span className="text-primary">SkillBridge</span>
+            Learn Smarter with <span className="text-primary">SkillBridge</span>
           </h1>
 
           <p className="max-w-md text-lg text-muted-foreground animate-in fade-in slide-in-from-left-8 duration-700 delay-150">

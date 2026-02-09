@@ -212,7 +212,7 @@ export function TutorCard({ tutor }: { tutor: Tutor }) {
     : typeof tutor.languages === "string"
       ? tutor.languages
           .split(",")
-          .map((l:string) => l.trim())
+          .map((l: string) => l.trim())
           .filter(Boolean)
           .slice(0, 3)
       : [];

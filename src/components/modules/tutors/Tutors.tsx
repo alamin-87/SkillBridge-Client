@@ -119,8 +119,8 @@ export function TutorsPageClient({
         <>
           <div className="mb-4 flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              Showing <span className="font-medium">{initialTutors.length}</span>{" "}
-              tutors
+              Showing{" "}
+              <span className="font-medium">{initialTutors.length}</span> tutors
             </p>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <ArrowUpDown className="h-4 w-4" />

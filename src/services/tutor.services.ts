@@ -97,7 +97,6 @@ export const tutorService = {
       throw new Error(`getMyProfile failed: ${res.status} ${txt}`);
     }
     return res.json();
-
   },
 
   async updateMyProfile(payload: {

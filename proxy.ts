@@ -1,4 +1,5 @@
 import { userService } from "@/services/user.services";
+import { userServiceMiddleware } from "@/services/user.services.middleware";
 import { NextRequest, NextResponse } from "next/server";
 enum UserRole {
   STUDENT = "STUDENT",
@@ -7,7 +8,10 @@ enum UserRole {
 }
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-  const { data } = await userService.getSession();
+  // const { data } = await userService.getSession();
+  const cookieHeader = request.headers.get("cookie") ?? "";
+  const { data, error } = await userServiceMiddleware.getSession(cookieHeader);
+  console.log("Session data:", data);
   const user = data?.user;
   if (!user) {
     return NextResponse.redirect(new URL("/login", request.url));
@@ -16,7 +20,7 @@ export async function proxy(request: NextRequest) {
   const homeByRole = () => {
     if (role === UserRole.ADMIN) return "/admin";
     if (role === UserRole.TUTOR) return "/tutor/dashboard";
-    return "/dashboard"; 
+    return "/dashboard";
   };
   const isStudentRoute = pathname.startsWith("/dashboard");
   const isTutorRoute = pathname.startsWith("/tutor");
