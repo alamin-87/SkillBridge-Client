@@ -98,7 +98,32 @@ export const tutorService = {
     }
     return res.json();
   },
+   async createMyProfile(payload: {
+    bio?: string;
+    hourlyRate?: number;
+    experienceYrs?: number;
+    location?: string;
+    languages?: string[] | string;
+    profileImage?: string | null;
+    categories?: string[];
+  }) {
+    const res = await fetch(`${API_URL}/api/tutor`, {
+      method: "POST",
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+        ...((await withAuthHeaders()) ?? {}),
+      },
+      body: JSON.stringify(payload),
+    });
 
+    if (!res.ok) {
+      const txt = await res.text().catch(() => "");
+      throw new Error(`createMyProfile failed: ${res.status} ${txt}`);
+    }
+
+    return res.json();
+  },
   async updateMyProfile(payload: {
     bio?: string;
     hourlyRate?: number;

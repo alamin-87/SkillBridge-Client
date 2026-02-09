@@ -111,6 +111,32 @@ export async function getMyTutorProfileAction() {
     return { success: false, data: null, error: err };
   }
 }
+export async function createMyTutorProfileAction(payload: {
+  bio?: string;
+  hourlyRate?: number;
+  experienceYrs?: number;
+  location?: string;
+  languages?: string[] | string;
+  profileImage?: string | null;
+  categories?: string[];
+}) {
+  try {
+    const json = await tutorService.createMyProfile(payload);
+    return {
+      success: true,
+      data: json.data ?? null,
+      message: json.message ?? "Created",
+      error: null,
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      data: null,
+      message: "Create failed",
+      error: { message: err?.message ?? "error", err },
+    };
+  }
+}
 export async function updateMyTutorProfileAction(payload: {
   bio?: string;
   hourlyRate?: number;
