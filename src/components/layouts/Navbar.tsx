@@ -208,24 +208,25 @@ export function Navbar() {
                     <span className="text-lg font-semibold tracking-tight">
                       SkillBridge
                     </span>
+                    <ModeToggle />
                   </Link>
                 </SheetTitle>
               </SheetHeader>
 
               <div className="mt-6 flex flex-col gap-4">
-                {menu.map((m) => (
-                  <Link
-                    key={m.title}
-                    href={m.href}
-                    className="text-sm font-semibold"
-                  >
-                    {m.title}
-                  </Link>
-                ))}
+                <div className="flex flex-col justify-center items-center gap-4 border-1 rounded-lg border-muted bg-popover p-4">
+                  {menu.map((m) => (
+                    <Link
+                      key={m.title}
+                      href={m.href}
+                      className="text-sm text-black font-semibold bg-amber-100 border-1 border-amber-300 rounded-lg px-3 py-2 w-full text-center"
+                    >
+                      {m.title}
+                    </Link>
+                  ))}
+                </div>
 
                 <div className="mt-4 flex flex-col gap-3">
-                  <ModeToggle />
-
                   {!loading && !user && (
                     <>
                       <Button asChild variant="outline">
