@@ -66,7 +66,7 @@ export function Navbar() {
     };
 
     load();
-  }, [pathname]);
+  }, []);
   const handleLogout = async () => {
     await authClient.signOut({
       fetchOptions: {
@@ -109,7 +109,7 @@ export function Navbar() {
         </nav>
 
         {/* Desktop actions */}
-        <div className="hidden items-center gap-2 lg:flex">
+        {/* <div className="hidden items-center gap-2 lg:flex">
           <ModeToggle />
 
           {!loading && !user && (
@@ -124,6 +124,48 @@ export function Navbar() {
           )}
 
           {!loading && user && (
+            <>
+              <Button asChild variant="outline" size="sm">
+                <Link href={dashboardHref}>
+                  <LayoutDashboard className="mr-2 h-4 w-4" />
+                  Dashboard
+                </Link>
+              </Button>
+
+              <Button asChild variant="ghost" size="sm">
+                <Link href={getProfilePath(user?.role)}>
+                  <UserIcon className="mr-2 h-4 w-4" />
+                  Profile
+                </Link>
+              </Button>
+
+              <Button variant="destructive" size="sm" onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </Button>
+            </>
+          )}
+        </div> */}
+        {/* Desktop actions */}
+        <div className="hidden items-center gap-2 lg:flex min-w-[260px] justify-end">
+          <ModeToggle />
+
+          {loading ? (
+            // 🔒 keeps space so navbar never moves
+            <div className="flex items-center gap-2">
+              <div className="h-9 w-[72px] opacity-0" />
+              <div className="h-9 w-[88px] opacity-0" />
+            </div>
+          ) : !user ? (
+            <>
+              <Button asChild variant="outline" size="sm">
+                <Link href="/login">Login</Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link href="/register">Sign up</Link>
+              </Button>
+            </>
+          ) : (
             <>
               <Button asChild variant="outline" size="sm">
                 <Link href={dashboardHref}>
