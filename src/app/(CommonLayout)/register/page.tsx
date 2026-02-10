@@ -2,18 +2,14 @@
 
 import Lottie from "lottie-react";
 import { SignupForm } from "@/components/modules/authentication/signup-form";
-import signupLottie from "../../../../public/lottie/loginLottie.json"; // ✅ replace with signup lottie if you have
+import signupLottie from "../../../../public/lottie/loginLottie.json"; 
 
 export default function Page() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
-      {/* Shared subtle gradient background */}
       <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/10 via-background to-secondary/10" />
-
-      {/* Soft accent blobs */}
       <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/20 blur-3xl" />
       <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-secondary/20 blur-3xl" />
-
       <div className="relative grid min-h-screen grid-cols-1 lg:grid-cols-2">
         {/* Left: animation + text */}
         <div className="hidden lg:flex flex-col items-center justify-center gap-8 px-10 text-center">

@@ -147,12 +147,12 @@ export default async function StudentMyBookingsPage({
                         </Button>
                       ) : null}
 
-                      {/* Optional: booking details route if you have it */}
-                      {b.id ? (
+                      {/* Optional: booking details route */}
+                      {/* {b.id ? (
                         <Button asChild size="sm" variant="ghost">
                           <Link href={`/dashboard/bookings/${b.id}`}>Details</Link>
                         </Button>
-                      ) : null}
+                      ) : null} */}
                     </div>
                   </div>
                 );
@@ -161,8 +161,6 @@ export default async function StudentMyBookingsPage({
           )}
         </CardContent>
       </Card>
-
-      {/* Optional pagination UI (only if you want later) */}
     </div>
   );
 }

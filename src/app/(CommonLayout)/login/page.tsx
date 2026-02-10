@@ -7,10 +7,7 @@ import loginLottie from "../../../../public/lottie/Login Leady.json";
 export default function LoginPage() {
   return (
     <div className="relative min-h-screen bg-background overflow-hidden">
-      {/* Shared subtle gradient background */}
       <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/10 via-background to-secondary/10" />
-
-      {/* Soft accent blobs (same for both sides) */}
       <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/20 blur-3xl" />
       <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-secondary/20 blur-3xl" />
 
@@ -20,7 +17,6 @@ export default function LoginPage() {
           <h1 className="text-4xl font-bold tracking-tight animate-in fade-in slide-in-from-left-6 duration-700">
             Learn Smarter with <span className="text-primary">SkillBridge</span>
           </h1>
-
           <p className="max-w-md text-lg text-muted-foreground animate-in fade-in slide-in-from-left-8 duration-700 delay-150">
             Connect with expert tutors, book sessions instantly, and grow your
             skills with confidence.
