@@ -7,7 +7,7 @@ import { Search, ArrowUpDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { TutorCard } from "@/components/modules/home/DiscoverTutorsSection"; // or move TutorCard to shared component
+import { TutorCard } from "@/components/modules/home/DiscoverTutorsSection"; 
 import { Tutor } from "@/types";
 
 export function TutorsPageClient({

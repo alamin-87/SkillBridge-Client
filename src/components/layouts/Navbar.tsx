@@ -67,17 +67,6 @@ export function Navbar() {
 
     load();
   }, [pathname]);
-  //   React.useEffect(() => {
-  //   (async () => {
-  //     const res = await fetch(`${process.env.FRONTEND_URL}/get-session`, {
-  //       credentials: "include",
-  //       cache: "no-store",
-  //     });
-  //     const data = await res.json();
-  //     setUser(data?.user ?? null);
-  //     setLoading(false);
-  //   })();
-  // }, [pathname]);
   const handleLogout = async () => {
     await authClient.signOut({
       fetchOptions: {
