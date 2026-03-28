@@ -2,7 +2,7 @@
 
 import Lottie from "lottie-react";
 import { SignupForm } from "@/components/modules/authentication/signup-form";
-import signupLottie from "../../../../public/lottie/loginLottie.json"; 
+import signupLottie from "../../../../../public/lottie/loginLottie.json"; 
 
 export default function Page() {
   return (
@@ -18,8 +18,7 @@ export default function Page() {
           </h1>
 
           <p className="max-w-md text-lg text-muted-foreground animate-in fade-in slide-in-from-left-8 duration-700 delay-150">
-            Create your account as a student or tutor and start learning or
-            teaching instantly.
+            Create your student account and start learning your favorite skills instantly.
           </p>
 
           <Lottie
@@ -28,12 +27,12 @@ export default function Page() {
             className="h-[360px] w-[360px] animate-in fade-in zoom-in-95 duration-700 delay-300"
           />
 
-          <div className="mt-4 space-y-2 text-sm text-muted-foreground flex gap-2">
+          <div className="mt-4 space-y-2 text-sm text-muted-foreground flex flex-col items-start gap-2">
             <p className="animate-in fade-in slide-in-from-left-10 duration-700 delay-500">
               🎓 Learn from verified tutors
             </p>
             <p className="animate-in fade-in slide-in-from-left-10 duration-700 delay-700">
-              🧑‍🏫 Teach and earn as a tutor
+              🚀 Master new skills interactively
             </p>
             <p className="animate-in fade-in slide-in-from-left-10 duration-700 delay-900">
               📅 Book sessions with flexible scheduling

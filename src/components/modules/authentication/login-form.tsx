@@ -4,8 +4,8 @@ import * as React from "react";
 import Link from "next/link";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import * as z from "zod";
 
+import { loginSchema } from "@/zod/auth.validation";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
@@ -30,11 +30,6 @@ import { Separator } from "@/components/ui/separator";
 import { useForm } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
 
-const formSchema = z.object({
-  email: z.string().email("Please enter a valid email"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-});
-
 export function LoginForm({
   className,
   ...props
@@ -49,7 +44,8 @@ export function LoginForm({
       password: "",
     },
     validators: {
-      onSubmit: formSchema,
+      onSubmit: loginSchema,
+      onChange: loginSchema,
     },
     onSubmit: async ({ value }) => {
       const toastId = toast.loading("Signing in...");
@@ -71,67 +67,66 @@ export function LoginForm({
       }
     },
   });
-  // const handleGoogleLogin = async () => {
-  //   const toastId = toast.loading("Redirecting to Google...");
-  //   setIsGoogleLoading(true);
 
-  //   try {
-  //     const { error } = await authClient.signIn.social({
-  //       provider: "google",
-  //       callbackURL:`${window.location.origin}`,
-  //     });
+  const handleGoogleLogin = async () => {
+    const toastId = toast.loading("Redirecting to Google...");
+    setIsGoogleLoading(true);
+    try {
+      const { error } = await authClient.signIn.social({
+        provider: "google",
+        callbackURL: `${window.location.origin}`,
+      });
 
-  //     if (error)
-  //       toast.error(error.message || "Google sign-in failed", { id: toastId });
-  //   } catch {
-  //     toast.error("Google sign-in failed. Try again.", { id: toastId });
-  //   } finally {
-  //     setIsGoogleLoading(false);
-  //   }
-  // };
-  const handelGoogleLogin = async () => {
-    console.log("Login started");
-    console.log("Origin:", window.location.origin);
-    const data = await authClient.signIn.social({
-      provider: "google",
-      callbackURL: `${window.location.origin}`,
-    });
-    console.log(data);
+      if (error) {
+        toast.error(error.message || "Google sign-in failed", { id: toastId });
+      }
+    } catch {
+      toast.error("Google sign-in failed. Try again.", { id: toastId });
+    } finally {
+      setIsGoogleLoading(false);
+    }
   };
 
   return (
-    <Card className={cn("w-full max-w-md shadow-sm", className)} {...props}>
-      <CardHeader className="space-y-2">
-        <CardTitle className="text-2xl">Welcome back</CardTitle>
-        <CardDescription>
-          Sign in to continue booking and managing your tutoring sessions.
+    <Card
+      className={cn("w-full max-w-md shadow-lg border-primary/10", className)}
+      {...props}
+    >
+      <CardHeader className="space-y-2 text-center pb-8 pt-8">
+        <CardTitle className="text-3xl font-bold tracking-tight">
+          Welcome back
+        </CardTitle>
+        <CardDescription className="text-md">
+          Sign in to continue your learning journey with SkillBridge.
         </CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-6">
-        {/* Google */}
+        {/* Google Authentication */}
         <Button
           type="button"
           variant="outline"
-          className="w-full"
-          onClick={handelGoogleLogin}
-          // disabled={isGoogleLoading}
+          className="w-full h-11 bg-background hover:bg-muted font-medium transition-all"
+          onClick={handleGoogleLogin}
+          disabled={isGoogleLoading}
         >
           {isGoogleLoading ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
           ) : (
-            <GoogleIcon className="mr-2 h-4 w-4" />
+            <GoogleIcon className="mr-2 h-5 w-5" />
           )}
           Continue with Google
         </Button>
 
         <div className="flex items-center gap-3">
           <Separator className="flex-1" />
-          <span className="text-xs text-muted-foreground">or</span>
+          <span className="text-xs font-semibold uppercase text-muted-foreground">
+            Or sign in with email
+          </span>
           <Separator className="flex-1" />
         </div>
 
-        {/* Email/Password */}
+        {/* Login Form */}
         <form
           id="login-form"
           className="space-y-4"
@@ -141,7 +136,8 @@ export function LoginForm({
             form.handleSubmit();
           }}
         >
-          <FieldGroup>
+          <div className="grid gap-5">
+            {/* Email Field */}
             <form.Field
               name="email"
               children={(field) => {
@@ -150,13 +146,15 @@ export function LoginForm({
 
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel>Email</FieldLabel>
+                    <FieldLabel>Email Address</FieldLabel>
                     <Input
                       type="email"
                       value={field.state.value}
                       onChange={(e) => field.handleChange(e.target.value)}
+                      onBlur={field.handleBlur}
                       placeholder="you@example.com"
                       autoComplete="email"
+                      className="h-11"
                     />
                     {isInvalid && (
                       <FieldError errors={field.state.meta.errors} />
@@ -166,6 +164,7 @@ export function LoginForm({
               }}
             />
 
+            {/* Password Field */}
             <form.Field
               name="password"
               children={(field) => {
@@ -178,7 +177,7 @@ export function LoginForm({
                       <FieldLabel>Password</FieldLabel>
                       <Link
                         href="/forgot-password"
-                        className="text-xs text-muted-foreground hover:text-primary"
+                        className="text-xs font-medium text-primary hover:underline underline-offset-4"
                       >
                         Forgot password?
                       </Link>
@@ -189,23 +188,23 @@ export function LoginForm({
                         type={showPassword ? "text" : "password"}
                         value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
+                        onBlur={field.handleBlur}
                         placeholder="Enter your password"
                         autoComplete="current-password"
-                        className="pr-10"
+                        className="h-11 pr-10"
                       />
-
                       <button
                         type="button"
                         onClick={() => setShowPassword((s) => !s)}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-2 text-muted-foreground hover:text-foreground"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                         aria-label={
                           showPassword ? "Hide password" : "Show password"
                         }
                       >
                         {showPassword ? (
-                          <EyeOff className="h-4 w-4" />
+                          <EyeOff className="h-5 w-5" />
                         ) : (
-                          <Eye className="h-4 w-4" />
+                          <Eye className="h-5 w-5" />
                         )}
                       </button>
                     </div>
@@ -217,31 +216,35 @@ export function LoginForm({
                 );
               }}
             />
-          </FieldGroup>
+          </div>
 
           <Button
             form="login-form"
             type="submit"
-            className="w-full"
-            disabled={form.state.isSubmitting}
+            size="lg"
+            className="w-full mt-4 font-semibold text-md"
+            disabled={form.state.isSubmitting || !form.state.canSubmit}
           >
             {form.state.isSubmitting ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                 Signing in...
               </>
             ) : (
-              "Sign in"
+              "Sign In"
             )}
           </Button>
         </form>
       </CardContent>
 
-      <CardFooter className="flex flex-col gap-2">
-        <p className="text-sm text-muted-foreground">
+      <CardFooter className="flex flex-col gap-2 pb-8">
+        <p className="text-sm text-center text-muted-foreground">
           Don&apos;t have an account?{" "}
-          <Link href="/register" className="font-medium text-primary underline">
-            Sign up
+          <Link
+            href="/register"
+            className="font-semibold text-primary underline-offset-4 hover:underline"
+          >
+            Create one now
           </Link>
         </p>
       </CardFooter>
