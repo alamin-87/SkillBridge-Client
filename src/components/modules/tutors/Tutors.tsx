@@ -1,14 +1,16 @@
 "use client";
 
 import * as React from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Search, ArrowUpDown } from "lucide-react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { Search, ArrowUpDown, Loader2, Star, Sparkles, FilterX } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { TutorCard } from "@/components/modules/home/DiscoverTutorsSection"; 
 import { Tutor } from "@/types";
+import { searchTutorsAction } from "@/actions/tutor-action";
 
 export function TutorsPageClient({
   initialTutors,
@@ -24,23 +26,74 @@ export function TutorsPageClient({
   initialPage: number;
 }) {
   const router = useRouter();
-  const sp = useSearchParams();
+  const pathname = usePathname();
+  const searchParamsHook = useSearchParams();
 
   const [search, setSearch] = React.useState(initialSearch);
   const [sort, setSort] = React.useState(initialSort);
+  const [isNavigating, setIsNavigating] = React.useState(false);
+  
+  // Suggestion States
+  const [suggestions, setSuggestions] = React.useState<Tutor[]>([]);
+  const [showSuggestions, setShowSuggestions] = React.useState(false);
 
-  const submit = () => {
-    const params = new URLSearchParams(sp.toString());
-    params.set("search", search);
-    params.set("sort", sort);
-    params.set("page", "1");
-    router.push(`/tutors?${params.toString()}`);
-  };
+  // Auto-Complete Suggestions Effect
+  React.useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (!search || search.length < 2) {
+        setSuggestions([]);
+        return;
+      }
+      try {
+        const { tutors: sugTutors } = await searchTutorsAction(search);
+        setSuggestions(sugTutors ?? []);
+      } catch (e) {
+        setSuggestions([]);
+      }
+    };
 
-  const clear = () => {
+    const handler = setTimeout(fetchSuggestions, 300);
+    return () => clearTimeout(handler);
+  }, [search]);
+
+  // Main debounced search/sort effect that triggers URL updates
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      // Don't trigger if it hasn't changed from URL
+      const currentUrlSearch = searchParamsHook.get('search') || '';
+      const currentUrlSort = searchParamsHook.get('sort') || 'rating_desc';
+      
+      if (search === currentUrlSearch && sort === currentUrlSort) return;
+      
+      setIsNavigating(true);
+      const params = new URLSearchParams(searchParamsHook.toString());
+      if (search) {
+        params.set("search", search);
+      } else {
+        params.delete("search");
+      }
+      if (sort !== 'rating_desc') {
+        params.set("sort", sort);
+      } else {
+        params.delete("sort");
+      }
+      params.set("page", "1"); // reset to page 1 on new search/sort
+      
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [search, sort, pathname, router, searchParamsHook]);
+
+  // End loading state when URL finishes changing
+  React.useEffect(() => {
+    setIsNavigating(false);
+  }, [searchParamsHook]);
+
+  const clearFilters = () => {
     setSearch("");
     setSort("rating_desc");
-    router.push("/tutors");
+    router.push(pathname);
   };
 
   const page = meta?.page ?? initialPage ?? 1;
@@ -49,116 +102,187 @@ export function TutorsPageClient({
   const totalPages = Math.max(1, Math.ceil(total / limit));
 
   const goPage = (p: number) => {
-    const params = new URLSearchParams(sp.toString());
+    const params = new URLSearchParams(searchParamsHook.toString());
     params.set("page", String(p));
-    router.push(`/tutors?${params.toString()}`);
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   return (
-    <main className="container mx-auto px-4 py-10">
-      {/* Header */}
-      <div className="mb-8 flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">Browse Tutors</h1>
-        <p className="text-sm text-muted-foreground">
-          Search and compare tutors by subject, price, and rating.
-        </p>
-      </div>
+    <main className="min-h-screen bg-gradient-to-b from-background to-muted/20 pb-20">
+      
+      {/* 🚀 Premium Hero Banner */}
+      <section className="relative overflow-hidden pt-16 pb-20 mb-10 border-b border-border/40">
+        <div className="absolute inset-0 z-0 bg-gradient-to-br from-[#1a1035] via-[#2d1b54] to-[#1a1035] dark:from-[#0f0a1e] dark:via-[#1a1230] dark:to-[#0f0a1e]" />
+        <div className="absolute -top-32 -left-32 h-[500px] w-[500px] bg-gradient-to-br from-[#7c3aed] to-[#ec4899] opacity-20 blur-[120px] rounded-full animate-blob pointer-events-none z-0" />
+        <div className="absolute -bottom-32 -right-32 h-[500px] w-[500px] bg-gradient-to-br from-[#06b6d4] to-[#10b981] opacity-20 blur-[120px] rounded-full animate-blob [animation-delay:3s] pointer-events-none z-0" />
+        
+        <div className="relative z-10 container mx-auto px-4 text-center">
+          <Badge variant="outline" className="mb-6 border-white/20 bg-white/5 text-white backdrop-blur-md px-4 py-1.5 shadow-xl inline-flex items-center gap-2">
+            <Star className="h-4 w-4 text-[#f59e0b]" fill="currentColor" /> Top Rated Experts
+          </Badge>
+          <h1 className="text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tight text-white mb-6">
+            Find Your <span className="bg-gradient-to-r from-[#a855f7] via-[#f472b6] to-[#22d3ee] bg-clip-text text-transparent">Perfect</span> Tutor
+          </h1>
+          <p className="max-w-2xl mx-auto text-lg text-white/70 font-medium mb-10">
+            Search and connect with elite educators across the globe. Compare ratings, read reviews, and book sessions seamlessly.
+          </p>
 
-      {/* Filters */}
-      <Card className="mb-8">
-        <CardContent className="p-5">
-          <div className="grid gap-3 md:grid-cols-12">
-            <div className="relative md:col-span-7">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <div className="max-w-3xl mx-auto grid gap-4 md:grid-cols-12 relative z-50">
+            
+            {/* Live Search Input with Suggestions */}
+            <div className="relative md:col-span-8 group z-50">
+              <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none z-10">
+                <Search className="h-5 w-5 text-muted-foreground group-focus-within:text-[#7c3aed] transition-colors" />
+              </div>
               <Input
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search tutors (Math, IELTS, React...)"
-                className="pl-9"
-                onKeyDown={(e) => e.key === "Enter" && submit()}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setShowSuggestions(true);
+                }}
+                onFocus={() => setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                placeholder="Search by name, subject, or keyword..."
+                className="relative z-10 h-14 pl-12 pr-4 rounded-xl bg-background/95 border-0 shadow-[0_0_40px_-10px_rgba(124,58,237,0.3)] text-base font-semibold focus-visible:ring-2 focus-visible:ring-[#7c3aed]"
               />
+              {isNavigating && (
+                <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none z-10">
+                  <Loader2 className="h-5 w-5 text-[#a855f7] animate-spin" />
+                </div>
+              )}
+
+              {/* Suggestions Dropdown */}
+              {showSuggestions && suggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-background/95 backdrop-blur-xl border border-border/40 rounded-xl shadow-2xl overflow-hidden z-20 animate-in fade-in slide-in-from-top-4">
+                  <ul className="py-2">
+                    {suggestions.map((sug) => (
+                      <li key={sug.id}>
+                        <button
+                          className="w-full text-left px-5 py-3 hover:bg-muted/50 transition-colors flex items-center gap-3 group/item border-b border-border/30 last:border-0"
+                          onClick={() => {
+                            setSearch(sug.user.name);
+                            setShowSuggestions(false);
+                            // Set instantly
+                            setIsNavigating(true);
+                            const params = new URLSearchParams(searchParamsHook.toString());
+                            params.set("search", sug.user.name);
+                            params.set("page", "1");
+                            router.push(`${pathname}?${params.toString()}`);
+                          }}
+                        >
+                          <div className="h-8 w-8 rounded-full bg-[#7c3aed]/10 flex items-center justify-center flex-shrink-0">
+                            <Sparkles className="h-4 w-4 text-[#7c3aed]" />
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="font-bold text-foreground group-hover/item:text-[#7c3aed] transition-colors">
+                              {sug.user.name}
+                            </span>
+                            <span className="text-xs text-muted-foreground line-clamp-1">
+                              {sug.bio || "Top rated tutor"}
+                            </span>
+                          </div>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
 
-            <div className="md:col-span-3">
+            {/* Sort Dropdown */}
+            <div className="relative md:col-span-4 z-40">
               <select
                 value={sort}
                 onChange={(e) => setSort(e.target.value)}
-                className="h-10 w-full rounded-md border bg-background px-3 text-sm"
+                className="h-14 w-full rounded-xl border-0 bg-background/95 px-4 text-base font-semibold shadow-[0_0_40px_-10px_rgba(236,72,153,0.3)] focus:ring-2 focus:ring-[#ec4899] appearance-none cursor-pointer"
               >
-                <option value="rating_desc">Top rated</option>
-                <option value="rating_asc">Lowest rated</option>
-                <option value="price_asc">Lowest price</option>
-                <option value="price_desc">Highest price</option>
+                <option value="rating_desc">⭐ Top Rated</option>
+                <option value="rating_asc">📉 Lowest Rated</option>
+                <option value="price_asc">💵 Lowest Price</option>
+                <option value="price_desc">💎 Highest Price</option>
               </select>
+              <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+                <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
+              </div>
             </div>
 
-            <div className="flex gap-2 md:col-span-2">
-              <Button className="flex-1" onClick={submit}>
-                Apply
-              </Button>
-              <Button variant="outline" onClick={clear}>
-                Clear
-              </Button>
-            </div>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Results */}
-      {initialTutors.length === 0 ? (
-        <div className="rounded-lg border p-10 text-center">
-          <p className="text-lg font-semibold">No tutors found</p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Try different keywords or clear filters.
-          </p>
-          <Button className="mt-4" variant="outline" onClick={clear}>
-            Reset filters
-          </Button>
         </div>
-      ) : (
-        <>
-          <div className="mb-4 flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              Showing{" "}
-              <span className="font-medium">{initialTutors.length}</span> tutors
-            </p>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <ArrowUpDown className="h-4 w-4" />
-              Sorted by <span className="font-medium">{sort}</span>
+      </section>
+
+      {/* 🧩 Dynamic Grid Section */}
+      <section className="container mx-auto px-4">
+        <div className="mb-8 flex items-center justify-between">
+          <h2 className="text-2xl font-bold flex items-center gap-2">
+            <Sparkles className="h-6 w-6 text-[#ec4899]" /> Available Tutors
+          </h2>
+          <div className="flex items-center gap-3">
+            {searchParamsHook.toString() && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={clearFilters}
+                className="h-8 rounded-full border-destructive/30 text-destructive hover:bg-destructive dark:hover:text-white"
+              >
+                <FilterX className="mr-1.5 h-3.5 w-3.5" /> Clear Filters
+              </Button>
+            )}
+            <Badge variant="secondary" className="px-3 py-1 text-sm bg-muted/80">
+              Showing {initialTutors.length} of {total}
+            </Badge>
+          </div>
+        </div>
+
+        {initialTutors.length === 0 ? (
+          <div className="rounded-3xl border border-border/50 bg-card/40 p-16 text-center flex flex-col items-center justify-center shadow-inner min-h-[400px]">
+            <div className="flex size-20 items-center justify-center rounded-full bg-muted shadow-inner mb-6">
+                <Search className="h-10 w-10 text-muted-foreground opacity-50" />
             </div>
-          </div>
-
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {initialTutors.map((t) => (
-              <TutorCard key={t.id} tutor={t} />
-            ))}
-          </div>
-
-          {/* Pagination */}
-          <div className="mt-10 flex items-center justify-center gap-2">
-            <Button
-              variant="outline"
-              disabled={page <= 1}
-              onClick={() => goPage(page - 1)}
-            >
-              Prev
-            </Button>
-
-            <p className="text-sm text-muted-foreground">
-              Page <span className="font-medium">{page}</span> of{" "}
-              <span className="font-medium">{totalPages}</span>
+            <p className="text-2xl font-bold mb-2">No tutors found</p>
+            <p className="max-w-md text-muted-foreground font-medium mb-8">
+              We couldn't find any educators matching your search criteria. Try using different keywords, general subjects, or clear your filters.
             </p>
-
-            <Button
-              variant="outline"
-              disabled={page >= totalPages}
-              onClick={() => goPage(page + 1)}
-            >
-              Next
+            <Button size="lg" className="rounded-xl px-8" onClick={clearFilters}>
+              Clear All Filters
             </Button>
           </div>
-        </>
-      )}
+        ) : (
+          <>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {initialTutors.map((t) => (
+                <TutorCard key={t.id} tutor={t} />
+              ))}
+            </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="mt-16 mb-8 flex items-center justify-center gap-3">
+                <Button
+                  variant="outline"
+                  className="rounded-xl px-6 h-12 font-bold border-border/50 shadow-sm"
+                  disabled={page <= 1}
+                  onClick={() => goPage(page - 1)}
+                >
+                  Previous
+                </Button>
+
+                <div className="h-12 flex items-center justify-center px-6 rounded-xl bg-card border border-border/50 shadow-sm font-semibold tracking-wide text-muted-foreground">
+                  Page <span className="text-foreground mx-1">{page}</span> of <span className="text-foreground ml-1">{totalPages}</span>
+                </div>
+
+                <Button
+                  variant="outline"
+                  className="rounded-xl px-6 h-12 font-bold border-border/50 shadow-sm"
+                  disabled={page >= totalPages}
+                  onClick={() => goPage(page + 1)}
+                >
+                  Next
+                </Button>
+              </div>
+            )}
+          </>
+        )}
+      </section>
     </main>
   );
 }

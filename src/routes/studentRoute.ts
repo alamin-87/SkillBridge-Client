@@ -13,6 +13,14 @@ export const studentRoute: Route[] = [
         url: "/dashboard/bookings",
       },
       {
+        title: "Assignments",
+        url: "/dashboard/assignments",
+      },
+      {
+        title: "Payments",
+        url: "/dashboard/payments",
+      },
+      {
         title: "Profile",
         url: "/dashboard/profile",
       },

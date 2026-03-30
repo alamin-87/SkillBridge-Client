@@ -36,8 +36,8 @@ const Footer = ({
       links: [
         { text: "Browse Tutors", url: "/tutors" },
         { text: "Categories", url: "/categories" },
-        { text: "How It Works", url: "/#how-it-works" },
-        { text: "Featured Tutors", url: "/#featured" },
+        { text: "How It Works", url: "/how-it-works" },
+        { text: "About Us", url: "/about" },
       ],
     },
     {
@@ -52,9 +52,9 @@ const Footer = ({
     {
       title: "Support",
       links: [
-        { text: "Contact", url: "/#contact" },
-        { text: "FAQ", url: "/#faq" },
-        { text: "Help Center", url: "/help" },
+        { text: "Contact", url: "/contact" },
+        { text: "FAQ", url: "/how-it-works" },
+        { text: "Become a Tutor", url: "/how-it-works" },
       ],
     },
     {

@@ -23,6 +23,16 @@ import { ModeToggle } from "./ModeToggle";
 import { getSessionAction } from "@/actions/user-action";
 import { authClient } from "@/lib/auth-client";
 import { Roles } from "@/constance/role";
+import { NotificationBell } from "@/components/shared/NotificationBell";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type Role = "STUDENT" | "TUTOR" | "ADMIN";
 
@@ -44,6 +54,8 @@ export function Navbar() {
     { title: "Browse Tutors", href: "/tutors" },
     { title: "Categories", href: "/categories" },
     { title: "How It Works", href: "/how-it-works" },
+    { title: "About Us", href: "/about" },
+    { title: "Contact", href: "/contact" },
   ];
 
   const dashboardHref =
@@ -86,17 +98,19 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b bg-background">
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
+        <div className="flex flex-1 justify-start">
+          <Link href="/" className="flex items-center gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
             <GraduationCap className="h-5 w-5" />
           </div>
           <span className="text-lg font-semibold tracking-tight">
             SkillBridge
           </span>
-        </Link>
+          </Link>
+        </div>
 
         {/* Desktop links */}
-        <nav className="hidden items-center gap-6 lg:flex">
+        <nav className="hidden lg:flex items-center justify-center gap-6">
           {menu.map((m) => (
             <Link
               key={m.title}
@@ -147,7 +161,7 @@ export function Navbar() {
           )}
         </div> */}
         {/* Desktop actions */}
-        <div className="hidden items-center gap-2 lg:flex min-w-[260px] justify-end">
+        <div className="hidden lg:flex flex-1 items-center justify-end gap-2">
           <ModeToggle />
 
           {loading ? (
@@ -167,30 +181,58 @@ export function Navbar() {
             </>
           ) : (
             <>
-              <Button asChild variant="outline" size="sm">
-                <Link href={dashboardHref}>
-                  <LayoutDashboard className="mr-2 h-4 w-4" />
-                  Dashboard
-                </Link>
-              </Button>
-
-              <Button asChild variant="ghost" size="sm">
-                <Link href={getProfilePath(user?.role)}>
-                  <UserIcon className="mr-2 h-4 w-4" />
-                  Profile
-                </Link>
-              </Button>
-
-              <Button variant="destructive" size="sm" onClick={handleLogout}>
-                <LogOut className="mr-2 h-4 w-4" />
-                Logout
-              </Button>
+              <NotificationBell />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-9 w-9 rounded-full ml-1">
+                    <Avatar className="h-9 w-9 shadow-sm border border-border/50">
+                      <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.email || "user"}`} alt="User Avatar" />
+                      <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                        {user?.name?.[0]?.toUpperCase() || <UserIcon className="h-4 w-4" />}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <DropdownMenuLabel className="font-normal border-b border-border/40 pb-3 mb-2">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-bold leading-none">{user?.name || "SkillBridge User"}</p>
+                      <p className="text-xs text-muted-foreground leading-none">
+                        {user?.email}
+                      </p>
+                      <div className="mt-2 text-[10px] font-bold tracking-widest text-[#7c3aed] uppercase">
+                        {user?.role} ACCOUNT
+                      </div>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem asChild className="cursor-pointer font-medium mb-1">
+                    <Link href={dashboardHref} className="flex items-center w-full">
+                      <LayoutDashboard className="mr-2 h-4 w-4 text-muted-foreground" />
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="cursor-pointer font-medium">
+                    <Link href={getProfilePath(user?.role)} className="flex items-center w-full">
+                      <UserIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                      Profile Settings
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="my-2 border-border/40" />
+                  <DropdownMenuItem 
+                    className="cursor-pointer font-semibold text-red-500 focus:bg-red-50 focus:text-red-600 dark:focus:bg-red-500/10 dark:focus:text-red-500" 
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Secure Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </>
           )}
         </div>
 
         {/* Mobile */}
-        <div className="lg:hidden">
+        <div className="flex lg:hidden flex-1 items-center justify-end">
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" aria-label="Open menu">
@@ -200,7 +242,7 @@ export function Navbar() {
 
             <SheetContent side="right" className="overflow-y-auto">
               <SheetHeader>
-                <SheetTitle>
+                <SheetTitle className="flex justify-between items-center">
                   <Link href="/" className="flex items-center gap-2">
                     <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
                       <GraduationCap className="h-5 w-5" />
@@ -208,8 +250,11 @@ export function Navbar() {
                     <span className="text-lg font-semibold tracking-tight">
                       SkillBridge
                     </span>
-                    <ModeToggle />
                   </Link>
+                  <div className="flex items-center gap-2">
+                    {!loading && user && <NotificationBell />}
+                    <ModeToggle />
+                  </div>
                 </SheetTitle>
               </SheetHeader>
 

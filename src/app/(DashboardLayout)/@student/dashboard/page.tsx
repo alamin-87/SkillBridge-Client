@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { getStudentMeAction, getStudentBookingsAction } from "@/actions/student-action";
+import { getAssignmentsAction } from "@/actions/assignment-action";
+import { getMyPaymentsAction } from "@/actions/payment-action";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -65,9 +67,11 @@ function getInitials(name: string) {
 }
 
 export default async function StudentDashboardHistoryPage() {
-  const [meRes, bookingsRes] = await Promise.all([
+  const [meRes, bookingsRes, assignmentsRes, paymentsRes] = await Promise.all([
     getStudentMeAction(),
     getStudentBookingsAction({ page: 1, limit: 10 }),
+    getAssignmentsAction({ page: 1, limit: 10 }),
+    getMyPaymentsAction({ page: 1, limit: 10 })
   ]);
 
   if (!meRes.success) return <div>Failed to load student info</div>;
@@ -75,6 +79,8 @@ export default async function StudentDashboardHistoryPage() {
 
   const me = meRes.data;
   const bookings = Array.isArray(bookingsRes.data) ? bookingsRes.data : [];
+  const assignments = Array.isArray(assignmentsRes?.data) ? assignmentsRes.data : [];
+  const payments = Array.isArray(paymentsRes?.data) ? paymentsRes.data : [];
 
   const stats = countByStatus(bookings);
 
@@ -121,16 +127,16 @@ export default async function StudentDashboardHistoryPage() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">Completed</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground">Assignments</CardTitle>
           </CardHeader>
-          <CardContent className="text-2xl font-semibold">{stats.COMPLETED}</CardContent>
+          <CardContent className="text-2xl font-semibold text-emerald-600">{assignments.length}</CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">Cancelled</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground">Payments</CardTitle>
           </CardHeader>
-          <CardContent className="text-2xl font-semibold">{stats.CANCELLED}</CardContent>
+          <CardContent className="text-2xl font-semibold text-blue-600">{payments.length}</CardContent>
         </Card>
       </div>
 

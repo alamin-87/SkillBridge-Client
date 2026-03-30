@@ -66,7 +66,7 @@ export async function getTopRatedTutorsAction() {
 
 export async function searchTutorsAction(query: string) {
   const { data, error } = await tutorService.getTutors({
-    search: query,
+    searchTerm: query,
     sort: "rating_desc",
     limit: 3,
   });
