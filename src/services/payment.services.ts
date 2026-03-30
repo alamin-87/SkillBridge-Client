@@ -11,7 +11,7 @@ async function withAuthHeaders(): Promise<Record<string, string> | undefined> {
 
 export const paymentService = {
   async getMyPayments(params?: { page?: number; limit?: number }) {
-    const url = new URL(`${API_URL}/api/payment`);
+    const url = new URL(`${API_URL}/api/v1/payments`);
     if (params?.page) url.searchParams.set("page", String(params.page));
     if (params?.limit) url.searchParams.set("limit", String(params.limit));
 
@@ -35,7 +35,7 @@ export const paymentService = {
 
   async createPaymentIntent(bookingId: string) {
     try {
-      const res = await fetch(`${API_URL}/api/payment/create-payment-intent`, {
+      const res = await fetch(`${API_URL}/api/v1/payments/create-payment-intent`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

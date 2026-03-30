@@ -1,13 +1,24 @@
 import Link from "next/link";
-import { getTutorSessionsAction } from "@/actions/tutor-action";
+import {
+  getTutorSessionsAction,
+  getTutorAssignmentsAction,
+  getTutorEarningsAction,
+} from "@/actions/tutor-action";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  CalendarCheck,
+  ClipboardList,
+  Wallet,
+  TrendingUp,
+  ArrowRight,
+  Users,
+} from "lucide-react";
 
 function fmt(dt?: string) {
   if (!dt) return "—";
-  const d = new Date(dt);
-  return d.toLocaleString(undefined, {
+  return new Date(dt).toLocaleString(undefined, {
     month: "short",
     day: "numeric",
     hour: "numeric",
@@ -15,122 +26,158 @@ function fmt(dt?: string) {
   });
 }
 
-function countByStatus(list: any[]) {
-  const base = { CONFIRMED: 0, COMPLETED: 0, CANCELLED: 0 };
-  for (const b of list) {
-    const s = b?.status;
-    if (s && base[s as keyof typeof base] !== undefined) {
-      base[s as keyof typeof base] += 1;
-    }
-  }
-  return base;
-}
+const statusColor: Record<string, string> = {
+  CONFIRMED: "bg-blue-500/10 text-blue-600 border-blue-200",
+  COMPLETED: "bg-emerald-500/10 text-emerald-600 border-emerald-200",
+  CANCELLED: "bg-red-500/10 text-red-600 border-red-200",
+  PENDING: "bg-amber-500/10 text-amber-600 border-amber-200",
+};
 
 export default async function TutorDashboardPage() {
-  const { success, data } = await getTutorSessionsAction({
-    page: 1,
-    limit: 10,
-  });
-  if (!success) return <div>Failed to load sessions</div>;
+  const [sessionsRes, assignmentsRes, earningsRes] = await Promise.all([
+    getTutorSessionsAction({ page: 1, limit: 50 }),
+    getTutorAssignmentsAction({ limit: 50 }),
+    getTutorEarningsAction({ limit: 50 }),
+  ]);
 
-  const sessions = Array.isArray(data) ? data : [];
-  const stats = countByStatus(sessions);
+  const sessions = Array.isArray(sessionsRes.data) ? sessionsRes.data : [];
+  const assignments = Array.isArray(assignmentsRes.data)
+    ? assignmentsRes.data
+    : [];
+  const earnings = Array.isArray(earningsRes.data) ? earningsRes.data : [];
 
-  const recent = [...sessions]
+  const confirmed = sessions.filter(
+    (s: any) => s.status === "CONFIRMED"
+  ).length;
+  const completed = sessions.filter(
+    (s: any) => s.status === "COMPLETED"
+  ).length;
+  const totalRevenue = earnings.reduce(
+    (sum: number, e: any) => sum + (e?.amount ?? 0),
+    0
+  );
+
+  const upcoming = [...sessions]
+    .filter((s: any) => s.status === "CONFIRMED")
     .sort(
-      (a, b) =>
+      (a: any, b: any) =>
         new Date(a.scheduledStart ?? 0).getTime() -
-        new Date(b.scheduledStart ?? 0).getTime(),
+        new Date(b.scheduledStart ?? 0).getTime()
     )
     .slice(0, 5);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-500">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold">Tutor Dashboard</h2>
+          <h2 className="text-xl font-bold tracking-tight">
+            Tutor Dashboard
+          </h2>
           <p className="text-sm text-muted-foreground">
-            Manage your upcoming and past sessions
+            Overview of your sessions, assignments &amp; earnings
           </p>
         </div>
-
-        <Button asChild size="sm" variant="outline">
-          <Link href="/tutor/availability">Manage availability</Link>
+        <Button asChild size="sm">
+          <Link href="/tutor/availability">
+            Manage availability
+          </Link>
         </Button>
       </div>
 
-      {/* Stats */}
+      {/* Stat Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">
-              Total sessions
+        <Card className="border-l-4 border-l-blue-500">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Sessions
             </CardTitle>
+            <CalendarCheck className="h-4 w-4 text-blue-500" />
           </CardHeader>
-          <CardContent className="text-2xl font-semibold">
-            {sessions.length}
+          <CardContent>
+            <p className="text-2xl font-bold">{sessions.length}</p>
+            <p className="text-xs text-muted-foreground">
+              {confirmed} upcoming
+            </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">
-              Upcoming
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-2xl font-semibold">
-            {stats.CONFIRMED}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">
+        <Card className="border-l-4 border-l-emerald-500">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               Completed
             </CardTitle>
+            <TrendingUp className="h-4 w-4 text-emerald-500" />
           </CardHeader>
-          <CardContent className="text-2xl font-semibold">
-            {stats.COMPLETED}
+          <CardContent>
+            <p className="text-2xl font-bold">{completed}</p>
+            <p className="text-xs text-muted-foreground">sessions done</p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">
-              Cancelled
+        <Card className="border-l-4 border-l-violet-500">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Assignments
             </CardTitle>
+            <ClipboardList className="h-4 w-4 text-violet-500" />
           </CardHeader>
-          <CardContent className="text-2xl font-semibold">
-            {stats.CANCELLED}
+          <CardContent>
+            <p className="text-2xl font-bold">{assignments.length}</p>
+            <p className="text-xs text-muted-foreground">total given</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-l-4 border-l-amber-500">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Earnings
+            </CardTitle>
+            <Wallet className="h-4 w-4 text-amber-500" />
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold">
+              ৳{totalRevenue.toLocaleString()}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {earnings.length} transactions
+            </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Recent Sessions */}
+      {/* Upcoming Sessions */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Upcoming sessions</CardTitle>
-          <Button asChild variant="outline" size="sm">
-            <Link href="/tutor/sessions">View all</Link>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Users className="h-4 w-4" /> Upcoming Sessions
+          </CardTitle>
+          <Button asChild variant="ghost" size="sm">
+            <Link
+              href="/tutor/dashboard/sessions"
+              className="flex items-center gap-1"
+            >
+              View all <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
           </Button>
         </CardHeader>
 
         <CardContent>
-          {recent.length === 0 ? (
-            <div className="rounded-lg border p-6 text-center text-sm text-muted-foreground">
-              No sessions scheduled yet.
+          {upcoming.length === 0 ? (
+            <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+              No upcoming sessions. Update your availability to start
+              receiving bookings.
             </div>
           ) : (
             <div className="space-y-3">
-              {recent.map((s: any) => (
+              {upcoming.map((s: any) => (
                 <div
                   key={s.id}
-                  className="flex items-center justify-between rounded-lg border p-4"
+                  className="group flex items-center justify-between rounded-lg border p-4 transition-colors hover:bg-muted/50"
                 >
-                  <div>
-                    <p className="font-medium">
-                      Student: {s.student?.name ?? "Student"}
+                  <div className="min-w-0">
+                    <p className="font-medium truncate">
+                      {s.student?.name ?? "Student"}
                     </p>
                     <p className="text-sm text-muted-foreground">
                       {fmt(s.scheduledStart)} – {fmt(s.scheduledEnd)}
@@ -138,16 +185,15 @@ export default async function TutorDashboardPage() {
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <Badge variant="secondary">{s.status}</Badge>
-                    <span className="text-sm font-semibold">৳{s.price}</span>
-                    {/* 👇 Student profile link */}
-                    {s.student?.id && (
-                      <Button asChild variant="outline" size="sm">
-                        <Link href={`/users/${s.student.id}`}>
-                          View profile
-                        </Link>
-                      </Button>
-                    )}
+                    <Badge
+                      variant="outline"
+                      className={statusColor[s.status] ?? ""}
+                    >
+                      {s.status}
+                    </Badge>
+                    <span className="text-sm font-semibold tabular-nums">
+                      ৳{s.price}
+                    </span>
                   </div>
                 </div>
               ))}

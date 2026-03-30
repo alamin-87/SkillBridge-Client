@@ -12,7 +12,7 @@ async function withAuthHeaders(): Promise<Record<string, string> | undefined> {
 export const availabilityService = {
   async getMyAvailability(tutorProfileId: string) {
     try {
-      const res = await fetch(`${API_URL}/api/availability/${tutorProfileId}`, {
+      const res = await fetch(`${API_URL}/api/v1/availability/${tutorProfileId}`, {
         cache: "no-store",
         headers: { ...((await withAuthHeaders()) ?? {}) },
       });
@@ -53,7 +53,7 @@ export const availabilityService = {
         Cookie: (headers as any).Cookie ? "[set]" : "[none]",
       });
 
-      const res = await fetch(`${API_URL}/api/availability`, {
+      const res = await fetch(`${API_URL}/api/v1/availability`, {
         method: "POST",
         cache: "no-store",
         headers,
@@ -91,7 +91,7 @@ export const availabilityService = {
     endTime: string;
   }) {
     const res = await fetch(
-      `${API_URL}/api/tutor/availability/${payload.availabilityId}`,
+      `${API_URL}/api/v1/tutor/availability/${payload.availabilityId}`,
       {
         method: "PATCH",
         cache: "no-store",
@@ -117,7 +117,7 @@ export const availabilityService = {
 
   //  Delete slot
   async deleteSlot(availabilityId: string) {
-    const res = await fetch(`${API_URL}/api/availability/${availabilityId}`, {
+    const res = await fetch(`${API_URL}/api/v1/availability/${availabilityId}`, {
       method: "DELETE",
       cache: "no-store",
       headers: { ...((await withAuthHeaders()) ?? {}) },

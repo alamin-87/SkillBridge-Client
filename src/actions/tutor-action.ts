@@ -137,17 +137,32 @@ export async function createMyTutorProfileAction(payload: {
     };
   }
 }
-export async function updateMyTutorProfileAction(payload: {
-  bio?: string;
-  hourlyRate?: number;
-  experienceYrs?: number;
-  location?: string;
-  languages?: string[] | string;
-  profileImage?: string | null;
-  categories?: string[];
-}) {
+export async function updateMyTutorProfileAction(payload: any | FormData) {
   try {
-    const json = await tutorService.updateMyProfile(payload);
+    if (payload instanceof FormData) {
+      const json = await tutorService.updateMyProfile(payload);
+      return {
+        success: true,
+        data: json.data ?? null,
+        message: json.message ?? "Updated",
+        error: null,
+      };
+    }
+
+    // ✅ Backend expects 'languages' as a string, but frontend might send array
+    const languagesStr = Array.isArray(payload.languages)
+      ? payload.languages.join(", ")
+      : payload.languages;
+
+    const formattedPayload: any = {
+      ...payload,
+      languages: languagesStr,
+    };
+    if (formattedPayload.profileImage === null) {
+      delete formattedPayload.profileImage;
+    }
+
+    const json = await tutorService.updateMyProfile(formattedPayload);
     return {
       success: true,
       data: json.data ?? null,
@@ -161,5 +176,92 @@ export async function updateMyTutorProfileAction(payload: {
       message: "Update failed",
       error: { message: err?.message ?? "error", err },
     };
+  }
+}
+
+// ─── Assignment Actions ───────────────────────────────────────────────────
+export async function createAssignmentAction(payload: {
+  title: string;
+  description?: string;
+  bookingId?: string;
+}) {
+  try {
+    const res = await tutorService.createAssignment(payload);
+    return { success: true, data: res.data ?? null, message: res.message };
+  } catch (err: any) {
+    return { success: false, data: null, message: err?.message ?? "Failed" };
+  }
+}
+
+export async function getTutorAssignmentsAction(params?: {
+  page?: number;
+  limit?: number;
+}) {
+  try {
+    const res = await tutorService.getAssignments(params);
+    return { success: true, data: res.data ?? [] };
+  } catch {
+    return { success: false, data: [] };
+  }
+}
+
+export async function getTutorAssignmentDetailsAction(id: string) {
+  try {
+    const res = await tutorService.getAssignmentDetails(id);
+    return { success: true, data: res.data ?? null };
+  } catch {
+    return { success: false, data: null };
+  }
+}
+
+export async function evaluateSubmissionAction(
+  assignmentId: string,
+  submissionId: string,
+  payload: { grade: number; feedback?: string }
+) {
+  try {
+    const res = await tutorService.evaluateSubmission(
+      assignmentId,
+      submissionId,
+      payload
+    );
+    return { success: true, data: res.data ?? null, message: res.message };
+  } catch (err: any) {
+    return { success: false, data: null, message: err?.message ?? "Failed" };
+  }
+}
+
+// ─── Booking Actions ──────────────────────────────────────────────────────
+export async function completeBookingAction(bookingId: string) {
+  try {
+    const res = await tutorService.completeBooking(bookingId);
+    return { success: true, data: res.data ?? null, message: res.message };
+  } catch (err: any) {
+    return { success: false, data: null, message: err?.message ?? "Failed" };
+  }
+}
+
+export async function cancelBookingAction(
+  bookingId: string,
+  reason?: string
+) {
+  try {
+    const res = await tutorService.cancelBooking(bookingId, reason);
+    return { success: true, data: res.data ?? null, message: res.message };
+  } catch (err: any) {
+    return { success: false, data: null, message: err?.message ?? "Failed" };
+  }
+}
+
+// ─── Earnings ─────────────────────────────────────────────────────────────
+export async function getTutorEarningsAction(params?: {
+  page?: number;
+  limit?: number;
+}) {
+  try {
+    const res = await tutorService.getEarnings(params);
+    return { success: true, data: res.data ?? [] };
+  } catch {
+    return { success: false, data: [] };
   }
 }

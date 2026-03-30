@@ -28,7 +28,7 @@ export const categoryService = {
       }
 
       const queryString = q.toString() ? `?${q.toString()}` : "";
-      const res = await fetch(`${API_URL}/api/categories${queryString}`, {
+      const res = await fetch(`${API_URL}/api/v1/categories${queryString}`, {
         cache: "no-store",
       });
 

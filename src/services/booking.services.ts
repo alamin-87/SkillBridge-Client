@@ -18,7 +18,7 @@ export const bookingService = {
     scheduledEnd: string;
     price: number;
   }) {
-    const res = await fetch(`${API_URL}/api/bookings`, {
+    const res = await fetch(`${API_URL}/api/v1/bookings`, {
       method: "POST",
       cache: "no-store",
       headers: {

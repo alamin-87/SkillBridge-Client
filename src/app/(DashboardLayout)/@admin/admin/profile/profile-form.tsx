@@ -16,16 +16,26 @@ export default function AdminProfileForm({
   const [email, setEmail] = useState(defaultValues?.email ?? "");
   const [pending, start] = useTransition();
   const [msg, setMsg] = useState<string | null>(null);
+  const [useUpload, setUseUpload] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
 
   const onSave = () => {
     setMsg(null);
     start(async () => {
-      const res = await updateAdminMeAction({
+      const formData = new FormData();
+      const payload = {
         name: name.trim() || undefined,
         phone: phone.trim() ? phone.trim() : null,
-        image: image.trim() ? image.trim() : null,
+        image: useUpload ? undefined : (image.trim() ? image.trim() : null),
         email: email.trim() || undefined,
-      });
+      };
+
+      formData.append("data", JSON.stringify(payload));
+      if (useUpload && file) {
+        formData.append("profilePhoto", file);
+      }
+
+      const res = await updateAdminMeAction(useUpload && file ? formData : payload);
 
       setMsg(
         res.success ? "Profile updated ✅" : res.message || "Update failed",
@@ -51,8 +61,21 @@ export default function AdminProfileForm({
         </div>
 
         <div className="sm:col-span-2">
-          <p className="text-sm text-muted-foreground mb-1">Image URL</p>
-          <Input value={image} onChange={(e) => setImage(e.target.value)} />
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground mb-1">Image URL</p>
+            <button
+              type="button"
+              className="text-xs text-blue-500 hover:underline"
+              onClick={() => { setUseUpload(!useUpload); setFile(null); setImage(""); }}
+            >
+              {useUpload ? "Use URL instead" : "Upload File instead"}
+            </button>
+          </div>
+          {useUpload ? (
+            <Input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+          ) : (
+            <Input value={image} onChange={(e) => setImage(e.target.value)} />
+          )}
         </div>
       </div>
 

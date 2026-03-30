@@ -20,7 +20,7 @@ async function handle(res: Response, label: string) {
 export const adminService = {
   // Dashboard Stats
   async getDashboard() {
-    const res = await fetch(`${API_URL}/api/admin`, {
+    const res = await fetch(`${API_URL}/api/v1/stats/admin`, {
       cache: "no-store",
       headers: { ...((await withAuthHeaders()) ?? {}) },
     });
@@ -29,7 +29,7 @@ export const adminService = {
 
   // Users
   async getUsers() {
-    const res = await fetch(`${API_URL}/api/admin/users`, {
+    const res = await fetch(`${API_URL}/api/v1/admin/users`, {
       cache: "no-store",
       headers: { ...((await withAuthHeaders()) ?? {}) },
     });
@@ -43,7 +43,7 @@ export const adminService = {
       role?: "STUDENT" | "TUTOR" | "ADMIN";
     },
   ) {
-    const res = await fetch(`${API_URL}/api/admin/users/${userId}`, {
+    const res = await fetch(`${API_URL}/api/v1/admin/users/${userId}`, {
       method: "PATCH",
       cache: "no-store",
       headers: {
@@ -57,7 +57,7 @@ export const adminService = {
 
   //  Bookings
   async getBookings() {
-    const res = await fetch(`${API_URL}/api/admin/bookings`, {
+    const res = await fetch(`${API_URL}/api/v1/admin/bookings`, {
       cache: "no-store",
       headers: { ...((await withAuthHeaders()) ?? {}) },
     });
@@ -66,7 +66,7 @@ export const adminService = {
 
   //  Categories
   async getCategories() {
-    const res = await fetch(`${API_URL}/api/admin/categories`, {
+    const res = await fetch(`${API_URL}/api/v1/admin/categories`, {
       cache: "no-store",
       headers: { ...((await withAuthHeaders()) ?? {}) },
     });
@@ -74,7 +74,7 @@ export const adminService = {
   },
 
   async createCategory(payload: { name: string }) {
-    const res = await fetch(`${API_URL}/api/admin/categories`, {
+    const res = await fetch(`${API_URL}/api/v1/admin/categories`, {
       method: "POST",
       cache: "no-store",
       headers: {
@@ -87,7 +87,7 @@ export const adminService = {
   },
 
   async updateCategory(categoryId: string, payload: { name: string }) {
-    const res = await fetch(`${API_URL}/api/admin/categories/${categoryId}`, {
+    const res = await fetch(`${API_URL}/api/v1/admin/categories/${categoryId}`, {
       method: "PATCH",
       cache: "no-store",
       headers: {
@@ -100,7 +100,7 @@ export const adminService = {
   },
 
   async deleteCategory(categoryId: string) {
-    const res = await fetch(`${API_URL}/api/admin/categories/${categoryId}`, {
+    const res = await fetch(`${API_URL}/api/v1/admin/categories/${categoryId}`, {
       method: "DELETE",
       cache: "no-store",
       headers: { ...((await withAuthHeaders()) ?? {}) },
@@ -108,7 +108,7 @@ export const adminService = {
     return handle(res, "deleteCategory");
   },
   async getMe() {
-    const res = await fetch(`${API_URL}/api/user/me`, {
+    const res = await fetch(`${API_URL}/api/v1/auth/me`, {
       cache: "no-store",
       headers: {
         ...((await withAuthHeaders()) ?? {}),
@@ -123,21 +123,90 @@ export const adminService = {
     return res.json();
   },
 
-  async updateMe(payload: {
-    name?: string;
-    phone?: string | null;
-    image?: string | null;
-    email?: string;
-  }) {
-    const res = await fetch(`${API_URL}/api/user/me`, {
+  async updateMe(payload: any | FormData) {
+    const isFormData = payload instanceof FormData;
+    const headers: Record<string, string> = {
+      ...((await withAuthHeaders()) ?? {}),
+    };
+    if (!isFormData) {
+      headers["Content-Type"] = "application/json";
+    }
+
+    const res = await fetch(`${API_URL}/api/v1/user/me`, {
       method: "PATCH",
+      headers,
+      body: isFormData ? payload : JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error(`updateMe failed: ${res.status}`);
+    return res.json();
+  },
+
+  // ─── Tutor Request Management (Admin) ─────────────────────────────────
+  async getTutorRequests() {
+    const res = await fetch(`${API_URL}/api/v1/tutors/requests`, {
+      cache: "no-store",
+      headers: { ...((await withAuthHeaders()) ?? {}) },
+    });
+    return handle(res, "getTutorRequests");
+  },
+
+  async getPendingTutorRequests() {
+    const res = await fetch(`${API_URL}/api/v1/tutors/requests/pending`, {
+      cache: "no-store",
+      headers: { ...((await withAuthHeaders()) ?? {}) },
+    });
+    return handle(res, "getPendingTutorRequests");
+  },
+
+  async approveTutorRequest(requestId: string) {
+    const res = await fetch(
+      `${API_URL}/api/v1/tutors/requests/${requestId}/approve`,
+      {
+        method: "PATCH",
+        cache: "no-store",
+        headers: { ...((await withAuthHeaders()) ?? {}) },
+      }
+    );
+    return handle(res, "approveTutorRequest");
+  },
+
+  async rejectTutorRequest(requestId: string, rejectionReason: string) {
+    const res = await fetch(
+      `${API_URL}/api/v1/tutors/requests/${requestId}/reject`,
+      {
+        method: "PATCH",
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json",
+          ...((await withAuthHeaders()) ?? {}),
+        },
+        body: JSON.stringify({ rejectionReason }),
+      }
+    );
+    return handle(res, "rejectTutorRequest");
+  },
+
+  async createTutor(payload: {
+    email: string;
+    password: string;
+    name: string;
+    tutor: {
+      bio: string;
+      hourlyRate: number;
+      experienceYrs: number;
+      location?: string;
+      languages?: string;
+    };
+  }) {
+    const res = await fetch(`${API_URL}/api/v1/tutors`, {
+      method: "POST",
+      cache: "no-store",
       headers: {
         "Content-Type": "application/json",
         ...((await withAuthHeaders()) ?? {}),
       },
       body: JSON.stringify(payload),
     });
-    if (!res.ok) throw new Error(`updateMe failed: ${res.status}`);
-    return res.json();
+    return handle(res, "createTutor");
   },
 };

@@ -57,7 +57,8 @@ export function LoginForm({
           return;
         }
         toast.success("Signed in successfully.", { id: toastId });
-        router.push("/");
+        router.refresh();
+        router.push("/dashboard");
       } catch {
         toast.error("Something went wrong. Try again.", { id: toastId });
       }

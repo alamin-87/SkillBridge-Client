@@ -21,6 +21,8 @@ export default function ProfileForm({ user }: { user: any }) {
   const [name, setName] = React.useState(user?.name ?? "");
   const [phone, setPhone] = React.useState(user?.phone ?? "");
   const [image, setImage] = React.useState(user?.image ?? "");
+  const [useUpload, setUseUpload] = React.useState(false);
+  const [file, setFile] = React.useState<File | null>(null);
   const [saving, setSaving] = React.useState(false);
   const [msg, setMsg] = React.useState<string | null>(null);
 
@@ -29,11 +31,19 @@ export default function ProfileForm({ user }: { user: any }) {
     setSaving(true);
     setMsg(null);
 
-    const res = await updateStudentProfileAction({
+    const formData = new FormData();
+    const payload = {
       name: name.trim() || undefined,
       phone: phone.trim() ? phone.trim() : null,
-      image: image.trim() ? image.trim() : null,
-    });
+      image: useUpload ? undefined : (image.trim() ? image.trim() : null),
+    };
+    
+    formData.append("data", JSON.stringify(payload));
+    if (useUpload && file) {
+      formData.append("profilePhoto", file);
+    }
+
+    const res = await updateStudentProfileAction(useUpload && file ? formData : payload);
 
     setSaving(false);
     setMsg(res.success ? "Profile updated ✅" : "Update failed ❌");
@@ -76,8 +86,21 @@ export default function ProfileForm({ user }: { user: any }) {
           </div>
 
           <div className="space-y-2">
-            <Label>Profile image URL</Label>
-            <Input value={image} onChange={(e) => setImage(e.target.value)} placeholder="https://..." />
+            <div className="flex items-center justify-between">
+              <Label>Profile image</Label>
+              <button
+                type="button"
+                className="text-xs text-blue-500 hover:underline"
+                onClick={() => { setUseUpload(!useUpload); setFile(null); setImage(""); }}
+              >
+                {useUpload ? "Use URL instead" : "Upload File instead"}
+              </button>
+            </div>
+            {useUpload ? (
+              <Input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+            ) : (
+              <Input value={image} onChange={(e) => setImage(e.target.value)} placeholder="https://..." />
+            )}
           </div>
 
           <div className="flex items-center gap-3">

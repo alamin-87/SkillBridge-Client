@@ -21,6 +21,10 @@ export const adminRoute: Route[] = [
         url: "/admin/categories",
       },
       {
+        title: "Tutor Requests",
+        url: "/admin/tutor-requests",
+      },
+      {
         title: "Profile",
         url: "/admin/profile",
       },

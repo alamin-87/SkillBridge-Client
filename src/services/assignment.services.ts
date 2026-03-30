@@ -11,7 +11,7 @@ async function withAuthHeaders(): Promise<Record<string, string> | undefined> {
 
 export const assignmentService = {
   async getAssignments(params?: { page?: number; limit?: number }) {
-    const url = new URL(`${API_URL}/api/assignment`);
+    const url = new URL(`${API_URL}/api/v1/assignments`);
     if (params?.page) url.searchParams.set("page", String(params.page));
     if (params?.limit) url.searchParams.set("limit", String(params.limit));
 
@@ -34,7 +34,7 @@ export const assignmentService = {
 
   async getAssignmentDetails(id: string) {
     try {
-      const res = await fetch(`${API_URL}/api/assignment/${id}`, {
+      const res = await fetch(`${API_URL}/api/v1/assignments/${id}`, {
         cache: "no-store",
         headers: {
           ...((await withAuthHeaders()) ?? {}),
@@ -54,7 +54,7 @@ export const assignmentService = {
       const headers: Record<string, string> = {};
       if (auth?.Cookie) headers.Cookie = auth.Cookie;
       
-      const res = await fetch(`${API_URL}/api/assignment/${id}/submit`, {
+      const res = await fetch(`${API_URL}/api/v1/assignments/${id}/submit`, {
         method: "POST",
         headers, // Do not set Content-Type because it's multipart/form-data with boundary
         body: formData,

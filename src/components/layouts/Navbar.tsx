@@ -83,6 +83,7 @@ export function Navbar() {
     await authClient.signOut({
       fetchOptions: {
         onSuccess: () => {
+          router.refresh();
           router.push("/login");
         },
       },

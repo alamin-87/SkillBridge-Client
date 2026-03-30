@@ -20,6 +20,9 @@ import { userService } from "@/services/user.services";
 import { Home } from "lucide-react";
 import Link from "next/link";
 
+// Prevent Next.js from caching dashboard pages — always fetch fresh session
+export const dynamic = "force-dynamic";
+
 function getRoleLabel(role?: string) {
   if (role === Roles.ADMIN) return "Admin";
   if (role === Roles.TUTOR) return "Tutor";

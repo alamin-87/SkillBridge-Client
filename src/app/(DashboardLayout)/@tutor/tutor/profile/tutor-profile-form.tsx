@@ -202,6 +202,9 @@ export default function TutorProfileForm({ profile }: { profile: any }) {
     });
   };
 
+  const [useUpload, setUseUpload] = React.useState(false);
+  const [file, setFile] = React.useState<File | null>(null);
+
   const onSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -210,18 +213,23 @@ export default function TutorProfileForm({ profile }: { profile: any }) {
     // ✅ Convert UI string -> array for backend
     const languagesArray = languagesTextToArray(languagesText);
 
-    const res = await updateMyTutorProfileAction({
+    const formData = new FormData();
+    const payloadData = {
       bio: bio.trim() || undefined,
       hourlyRate: hourlyRate ? Number(hourlyRate) : undefined,
       experienceYrs: experienceYrs ? Number(experienceYrs) : undefined,
       location: location.trim() || undefined,
-
-      // ✅ send array (backend stores JSON string)
       languages: languagesArray,
-
-      profileImage: profileImage.trim() ? profileImage.trim() : null,
+      profileImage: useUpload ? undefined : (profileImage.trim() || undefined),
       categories: selectedCategories,
-    });
+    };
+
+    formData.append("data", JSON.stringify(payloadData));
+    if (useUpload && file) {
+      formData.append("profileImage", file);
+    }
+
+    const res = await updateMyTutorProfileAction(useUpload && file ? formData : payloadData);
 
     setSaving(false);
 
@@ -379,12 +387,25 @@ export default function TutorProfileForm({ profile }: { profile: any }) {
           </div>
 
           <div className="space-y-2">
-            <Label>Profile image URL</Label>
-            <Input
-              value={profileImage}
-              onChange={(e) => setProfileImage(e.target.value)}
-              placeholder="https://..."
-            />
+            <div className="flex items-center justify-between">
+              <Label>Profile image</Label>
+              <button
+                type="button"
+                className="text-xs text-blue-500 hover:underline"
+                onClick={() => { setUseUpload(!useUpload); setFile(null); setProfileImage(""); }}
+              >
+                {useUpload ? "Use URL instead" : "Upload File instead"}
+              </button>
+            </div>
+            {useUpload ? (
+              <Input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+            ) : (
+              <Input
+                value={profileImage}
+                onChange={(e) => setProfileImage(e.target.value)}
+                placeholder="https://..."
+              />
+            )}
           </div>
 
           <div className="flex items-center gap-3">

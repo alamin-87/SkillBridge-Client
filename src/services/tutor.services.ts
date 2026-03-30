@@ -26,7 +26,7 @@ async function withAuthHeaders(): Promise<Record<string, string> | undefined> {
 export const tutorService = {
   getTutors: async function (params?: GetTutorsParams) {
     try {
-      const url = new URL(`${API_URL}/api/tutor`);
+      const url = new URL(`${API_URL}/api/v1/tutor`);
 
       if (params?.search) url.searchParams.set("searchTerm", params.search);
       if (params?.searchTerm)
@@ -60,7 +60,7 @@ export const tutorService = {
   },
   getTutorById: async function (id: string) {
     try {
-      const res = await fetch(`${API_URL}/api/tutor/${id}`, {
+      const res = await fetch(`${API_URL}/api/v1/tutor/${id}`, {
         cache: "no-store",
       });
 
@@ -74,7 +74,7 @@ export const tutorService = {
     }
   },
   async getSessions(params?: { page?: number; limit?: number }) {
-    const url = new URL(`${API_URL}/api/bookings`);
+    const url = new URL(`${API_URL}/api/v1/bookings`);
     if (params?.page) url.searchParams.set("page", String(params.page));
     if (params?.limit) url.searchParams.set("limit", String(params.limit));
 
@@ -89,7 +89,7 @@ export const tutorService = {
     return res.json();
   },
   async getMyProfile() {
-    const res = await fetch(`${API_URL}/api/tutor/profile`, {
+    const res = await fetch(`${API_URL}/api/v1/tutor/profile`, {
       cache: "no-store",
       headers: {
         ...((await withAuthHeaders()) ?? {}),
@@ -110,7 +110,7 @@ export const tutorService = {
     profileImage?: string | null;
     categories?: string[];
   }) {
-    const res = await fetch(`${API_URL}/api/tutor`, {
+    const res = await fetch(`${API_URL}/api/v1/tutor`, {
       method: "POST",
       cache: "no-store",
       headers: {
@@ -127,23 +127,20 @@ export const tutorService = {
 
     return res.json();
   },
-  async updateMyProfile(payload: {
-    bio?: string;
-    hourlyRate?: number;
-    experienceYrs?: number;
-    location?: string;
-    languages?: string[] | string;
-    profileImage?: string | null;
-    categories?: string[];
-  }) {
-    const res = await fetch(`${API_URL}/api/tutor/profile`, {
+  async updateMyProfile(payload: any | FormData) {
+    const isFormData = payload instanceof FormData;
+    const headers: Record<string, string> = {
+      ...((await withAuthHeaders()) ?? {}),
+    };
+    if (!isFormData) {
+      headers["Content-Type"] = "application/json";
+    }
+
+    const res = await fetch(`${API_URL}/api/v1/tutors/profile`, {
       method: "PATCH",
       cache: "no-store",
-      headers: {
-        "Content-Type": "application/json",
-        ...((await withAuthHeaders()) ?? {}),
-      },
-      body: JSON.stringify(payload),
+      headers,
+      body: isFormData ? payload : JSON.stringify(payload),
     });
 
     if (!res.ok) {
@@ -151,6 +148,119 @@ export const tutorService = {
       throw new Error(`updateMyProfile failed: ${res.status} ${txt}`);
     }
 
+    return res.json();
+  },
+
+  // ─── Assignment Management ──────────────────────────────────────────────
+  async createAssignment(payload: {
+    title: string;
+    description?: string;
+    bookingId?: string;
+  }) {
+    const res = await fetch(`${API_URL}/api/v1/assignments`, {
+      method: "POST",
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+        ...((await withAuthHeaders()) ?? {}),
+      },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const txt = await res.text().catch(() => "");
+      throw new Error(`createAssignment failed: ${res.status} ${txt}`);
+    }
+    return res.json();
+  },
+
+  async getAssignments(params?: { page?: number; limit?: number }) {
+    const url = new URL(`${API_URL}/api/v1/assignments`);
+    if (params?.page) url.searchParams.set("page", String(params.page));
+    if (params?.limit) url.searchParams.set("limit", String(params.limit));
+
+    const res = await fetch(url.toString(), {
+      cache: "no-store",
+      headers: { ...((await withAuthHeaders()) ?? {}) },
+    });
+    if (!res.ok) return { success: false, data: [] };
+    return res.json();
+  },
+
+  async getAssignmentDetails(id: string) {
+    const res = await fetch(`${API_URL}/api/v1/assignments/${id}`, {
+      cache: "no-store",
+      headers: { ...((await withAuthHeaders()) ?? {}) },
+    });
+    if (!res.ok) return { success: false, data: null };
+    return res.json();
+  },
+
+  async evaluateSubmission(
+    assignmentId: string,
+    submissionId: string,
+    payload: { grade: number; feedback?: string }
+  ) {
+    const res = await fetch(
+      `${API_URL}/api/v1/assignments/${assignmentId}/submissions/${submissionId}/evaluate`,
+      {
+        method: "PATCH",
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json",
+          ...((await withAuthHeaders()) ?? {}),
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+    if (!res.ok) {
+      const txt = await res.text().catch(() => "");
+      throw new Error(`evaluateSubmission failed: ${res.status} ${txt}`);
+    }
+    return res.json();
+  },
+
+  // ─── Booking Actions ──────────────────────────────────────────────────
+  async completeBooking(bookingId: string) {
+    const res = await fetch(`${API_URL}/api/v1/bookings/${bookingId}/complete`, {
+      method: "PATCH",
+      cache: "no-store",
+      headers: { ...((await withAuthHeaders()) ?? {}) },
+    });
+    if (!res.ok) {
+      const txt = await res.text().catch(() => "");
+      throw new Error(`completeBooking failed: ${res.status} ${txt}`);
+    }
+    return res.json();
+  },
+
+  async cancelBooking(bookingId: string, reason?: string) {
+    const res = await fetch(`${API_URL}/api/v1/bookings/${bookingId}/cancel`, {
+      method: "PATCH",
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+        ...((await withAuthHeaders()) ?? {}),
+      },
+      body: JSON.stringify({ reason }),
+    });
+    if (!res.ok) {
+      const txt = await res.text().catch(() => "");
+      throw new Error(`cancelBooking failed: ${res.status} ${txt}`);
+    }
+    return res.json();
+  },
+
+  // ─── Earnings / Payments ──────────────────────────────────────────────
+  async getEarnings(params?: { page?: number; limit?: number }) {
+    const url = new URL(`${API_URL}/api/v1/payments`);
+    if (params?.page) url.searchParams.set("page", String(params.page));
+    if (params?.limit) url.searchParams.set("limit", String(params.limit));
+
+    const res = await fetch(url.toString(), {
+      cache: "no-store",
+      headers: { ...((await withAuthHeaders()) ?? {}) },
+    });
+    if (!res.ok) return { success: false, data: [] };
     return res.json();
   },
 };

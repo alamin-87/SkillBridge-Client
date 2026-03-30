@@ -10,11 +10,7 @@ export async function getStudentMeAction() {
     return { success: false, data: null, error: err };
   }
 }
-export async function updateStudentProfileAction(payload: {
-  name?: string;
-  phone?: string | null;
-  image?: string | null;
-}) {
+export async function updateStudentProfileAction(payload: any | FormData) {
   try {
     const json = await studentService.updateMe(payload);
     // console.log(json)
@@ -84,5 +80,50 @@ export async function getStudentByIdAction(userId: string) {
       message: message.includes("404") ? `Student not found` : message,
       data: null,
     };
+  }
+}
+
+// ─── Tutor Request Actions ────────────────────────────────────────────────
+export async function requestToBecomeTutorAction(payload: {
+  bio: string;
+  hourlyRate: number;
+  experienceYrs: number;
+  location?: string;
+  languages?: string;
+}) {
+  try {
+    const res = await studentService.requestToBecomeTutor(payload);
+    return {
+      success: true,
+      data: res.data ?? null,
+      message: res.message ?? "Request submitted",
+    };
+  } catch (err: any) {
+    // Parse backend error message if available
+    let msg = err?.message ?? "Failed to submit request";
+    try {
+      const parsed = JSON.parse(msg.split(/\d{3}\s/)[1] || "{}");
+      if (parsed.message) msg = parsed.message;
+    } catch {}
+    return { success: false, data: null, message: msg };
+  }
+}
+
+export async function getMyTutorRequestAction() {
+  try {
+    const res = await studentService.getMyTutorRequest();
+    return { success: true, data: res.data ?? null };
+  } catch {
+    return { success: false, data: null };
+  }
+}
+
+// ─── Reviews ──────────────────────────────────────────────────────────────
+export async function getMyReviewsAction() {
+  try {
+    const res = await studentService.getMyReviews();
+    return { success: true, data: res.data ?? [] };
+  } catch {
+    return { success: false, data: [] };
   }
 }

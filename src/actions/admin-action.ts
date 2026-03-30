@@ -150,12 +150,7 @@ export async function getAdminMeAction() {
   }
 }
 
-export async function updateAdminMeAction(payload: {
-  name?: string;
-  phone?: string | null;
-  image?: string | null;
-  email?: string;
-}) {
+export async function updateAdminMeAction(payload: any | FormData) {
   try {
     const res = await adminService.updateMe(payload);
     revalidatePath("/admin/profile");
@@ -169,5 +164,68 @@ export async function updateAdminMeAction(payload: {
       success: false,
       message: error.message || "Failed to update profile",
     };
+  }
+}
+
+// ─── Tutor Request Management ──────────────────────────────────────────
+export async function getTutorRequestsAction() {
+  try {
+    const res = await adminService.getTutorRequests();
+    return { success: true, data: res.data ?? [] };
+  } catch (error: any) {
+    return { success: false, data: [], message: error.message };
+  }
+}
+
+export async function getPendingTutorRequestsAction() {
+  try {
+    const res = await adminService.getPendingTutorRequests();
+    return { success: true, data: res.data ?? [] };
+  } catch (error: any) {
+    return { success: false, data: [], message: error.message };
+  }
+}
+
+export async function approveTutorRequestAction(requestId: string) {
+  try {
+    const res = await adminService.approveTutorRequest(requestId);
+    revalidatePath("/admin/tutor-requests");
+    return { success: true, data: res.data, message: res.message ?? "Approved" };
+  } catch (error: any) {
+    return { success: false, message: error.message || "Failed to approve" };
+  }
+}
+
+export async function rejectTutorRequestAction(
+  requestId: string,
+  rejectionReason: string
+) {
+  try {
+    const res = await adminService.rejectTutorRequest(requestId, rejectionReason);
+    revalidatePath("/admin/tutor-requests");
+    return { success: true, data: res.data, message: res.message ?? "Rejected" };
+  } catch (error: any) {
+    return { success: false, message: error.message || "Failed to reject" };
+  }
+}
+
+export async function createTutorAction(payload: {
+  email: string;
+  password: string;
+  name: string;
+  tutor: {
+    bio: string;
+    hourlyRate: number;
+    experienceYrs: number;
+    location?: string;
+    languages?: string;
+  };
+}) {
+  try {
+    const res = await adminService.createTutor(payload);
+    revalidatePath("/admin/tutor-requests");
+    return { success: true, data: res.data, message: res.message ?? "Tutor created" };
+  } catch (error: any) {
+    return { success: false, message: error.message || "Failed to create tutor" };
   }
 }

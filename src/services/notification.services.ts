@@ -19,7 +19,7 @@ async function handle(res: Response, label: string) {
 
 export const notificationService = {
   async getMyNotifications() {
-    const res = await fetch(`${API_URL}/api/notifications`, {
+    const res = await fetch(`${API_URL}/api/v1/notifications`, {
       cache: "no-store",
       headers: { ...((await withAuthHeaders()) ?? {}) },
     });
@@ -27,7 +27,7 @@ export const notificationService = {
   },
 
   async markAsRead(notificationId: string) {
-    const res = await fetch(`${API_URL}/api/notifications/${notificationId}/read`, {
+    const res = await fetch(`${API_URL}/api/v1/notifications/${notificationId}/read`, {
       method: "PATCH",
       cache: "no-store",
       headers: {
@@ -39,7 +39,7 @@ export const notificationService = {
   },
 
   async markAllAsRead() {
-    const res = await fetch(`${API_URL}/api/notifications/mark-all-read`, {
+    const res = await fetch(`${API_URL}/api/v1/notifications/mark-all-read`, {
       method: "PATCH",
       cache: "no-store",
       headers: {
