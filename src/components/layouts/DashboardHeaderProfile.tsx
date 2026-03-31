@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOut, User as UserIcon, Settings as SettingsIcon, HelpCircle } from "lucide-react";
+import { getIconComponent } from "@/lib/icon-mapper";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,12 @@ function getInitials(name: string = ""): string {
 export function DashboardHeaderProfile({ initialUser }: { initialUser: any }) {
   const router = useRouter();
   const [user, setUser] = React.useState(initialUser);
+
+  // Resolved Icons via Mapper
+  const LogOutIcon = getIconComponent("LogOut");
+  const UserIcon = getIconComponent("User");
+  const SettingsIcon = getIconComponent("Settings");
+  const HelpCircleIcon = getIconComponent("HelpCircle");
 
   React.useEffect(() => {
     // Synchronize external prop with internal state securely
@@ -101,14 +107,14 @@ export function DashboardHeaderProfile({ initialUser }: { initialUser: any }) {
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href="/help" className="cursor-pointer">
-              <HelpCircle className="mr-2 h-4 w-4 text-muted-foreground" />
+              <HelpCircleIcon className="mr-2 h-4 w-4 text-muted-foreground" />
               <span>Help Center</span>
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
-          <LogOut className="mr-2 h-4 w-4" />
+          <LogOutIcon className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

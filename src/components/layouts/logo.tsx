@@ -1,6 +1,6 @@
 "use client";
 
-import { Download } from "lucide-react";
+import { getIconComponent } from "@/lib/icon-mapper";
 
 import { cn } from "@/lib/utils";
 
@@ -43,6 +43,8 @@ const LogoBrandDownload = ({
   files,
   className,
 }: LogoBrandDownloadProps) => {
+  const DownloadIcon = getIconComponent("Download");
+
   const handleDownload = async (file: LogoBrandDownloadProps["files"][0]) => {
     try {
       const response = await fetch(file.path);
@@ -74,7 +76,7 @@ const LogoBrandDownload = ({
             onClick={() => handleDownload(file)}
             className="cursor-pointer"
           >
-            <Download className="mr-2 h-4 w-4" />
+            <DownloadIcon className="mr-2 h-4 w-4" />
             Download {file.format.toUpperCase()}
           </ContextMenuItem>
         ))}

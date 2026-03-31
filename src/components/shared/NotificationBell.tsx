@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { Bell, Check, Loader2, Info, CreditCard } from "lucide-react";
+import { getIconComponent } from "@/lib/icon-mapper";
 import { 
   getMyNotificationsAction, 
   markNotificationAsReadAction,
@@ -23,6 +23,13 @@ export function NotificationBell() {
   const [loading, setLoading] = useState(false);
   const [isMarking, setIsMarking] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Resolved Icons via Mapper
+  const BellIcon = getIconComponent("Bell");
+  const CheckIcon = getIconComponent("Check");
+  const Loader2Icon = getIconComponent("Loader2");
+  const InfoIcon = getIconComponent("Info");
+  const CreditCardIcon = getIconComponent("CreditCard");
 
   const fetchNotifications = async () => {
     try {
@@ -101,7 +108,7 @@ export function NotificationBell() {
           if (!isOpen) fetchNotifications();
         }}
       >
-        <Bell className="h-5 w-5" />
+        <BellIcon className="h-5 w-5" />
         {unreadCount > 0 && (
           <span className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-sm ring-2 ring-background">
             {unreadCount > 9 ? "9+" : unreadCount}
@@ -129,12 +136,12 @@ export function NotificationBell() {
           <div className="max-h-[350px] overflow-y-auto">
             {loading && notifications.length === 0 ? (
               <div className="p-8 flex justify-center items-center">
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                <Loader2Icon className="h-6 w-6 animate-spin text-muted-foreground" />
               </div>
             ) : notifications.length === 0 ? (
               <div className="p-8 flex flex-col items-center justify-center text-center">
                 <div className="size-12 rounded-full bg-muted flex items-center justify-center mb-3">
-                  <Bell className="h-5 w-5 text-muted-foreground opacity-50" />
+                  <BellIcon className="h-5 w-5 text-muted-foreground opacity-50" />
                 </div>
                 <p className="text-sm font-semibold">All caught up!</p>
                 <p className="text-xs text-muted-foreground mt-1">No new notifications right now.</p>
@@ -157,7 +164,7 @@ export function NotificationBell() {
                           ? "bg-linear-to-br from-[#3b82f6] to-[#06b6d4] text-white shadow-sm" 
                           : "bg-muted text-muted-foreground"
                       }`}>
-                        {notification.type === 'PAYMENT' ? <CreditCard className="h-4 w-4" /> : notification.type === 'BOOKING' ? <Check className="h-4 w-4" /> : <Info className="h-4 w-4" />}
+                        {notification.type === 'PAYMENT' ? <CreditCardIcon className="h-4 w-4" /> : notification.type === 'BOOKING' ? <CheckIcon className="h-4 w-4" /> : <InfoIcon className="h-4 w-4" />}
                       </div>
                     </div>
                     

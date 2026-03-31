@@ -1,6 +1,7 @@
-import { Loader2 } from "lucide-react";
+import { getIconComponent } from "@/lib/icon-mapper";
 
 export default function Loading() {
+  const Loader2Icon = getIconComponent("Loader2");
   return (
     <div className="flex min-h-[70vh] w-full flex-col items-center justify-center gap-6 p-4">
       <div className="relative flex items-center justify-center">
@@ -9,7 +10,7 @@ export default function Loading() {
         {/* Inner static backdrop for emphasis */}
         <div className="absolute size-12 rounded-full bg-primary/10"></div>
         {/* Spinning loader */}
-        <Loader2 className="relative z-10 size-10 animate-spin text-primary" />
+        <Loader2Icon className="relative z-10 size-10 animate-spin text-primary" />
       </div>
       <div className="flex flex-col items-center gap-2 text-center">
         <h3 className="text-xl font-semibold tracking-tight text-foreground">

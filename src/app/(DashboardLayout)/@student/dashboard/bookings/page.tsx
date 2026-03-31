@@ -210,7 +210,7 @@ export default function StudentMyBookingsPage() {
                 const isUnpaid =
                   b.paymentStatus !== "PAID" && b.status !== "CANCELLED";
                 const canCancel =
-                  b.status !== "CANCELLED" && b.status !== "COMPLETED";
+                  b.status !== "CANCELLED" && b.status !== "COMPLETED" && b.paymentStatus !== "PAID";
 
                 return (
                   <div

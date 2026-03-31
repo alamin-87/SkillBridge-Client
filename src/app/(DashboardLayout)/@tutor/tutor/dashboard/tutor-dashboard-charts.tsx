@@ -14,7 +14,7 @@ import {
   Legend,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, BarChart3, PieChartIcon } from "lucide-react";
+import { getIconComponent } from "@/lib/icon-mapper";
 
 interface TutorDashboardChartsProps {
   sessions: any[];
@@ -27,6 +27,11 @@ export function TutorDashboardCharts({
   assignments,
   earnings,
 }: TutorDashboardChartsProps) {
+  // Resolved Icons via Mapper
+  const PieChartIcon = getIconComponent("PieChart");
+  const TrendingUpIcon = getIconComponent("TrendingUp");
+  const BarChart3Icon = getIconComponent("BarChart3");
+
   // 1. Session Status Data (Donut Chart)
   const sessionStatusData = [
     { name: "Confirmed", value: sessions.filter((s) => s.status === "CONFIRMED").length },
@@ -109,7 +114,7 @@ export function TutorDashboardCharts({
       <Card className="shadow-xs border-primary/5 bg-card/40 backdrop-blur-sm">
         <CardHeader className="pb-2">
           <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-            <TrendingUp className="w-3 h-3 text-emerald-500" />
+            <TrendingUpIcon className="w-3 h-3 text-emerald-500" />
             Revenue Stream
           </CardTitle>
         </CardHeader>
@@ -142,7 +147,7 @@ export function TutorDashboardCharts({
       <Card className="lg:col-span-1 md:col-span-2 shadow-xs border-primary/5 bg-card/40 backdrop-blur-sm">
         <CardHeader className="pb-2">
           <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-            <BarChart3 className="w-3 h-3 text-violet-500" />
+            <BarChart3Icon className="w-3 h-3 text-violet-500" />
             Platform Activity
           </CardTitle>
         </CardHeader>

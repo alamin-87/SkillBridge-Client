@@ -11,9 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  ArrowRight,
-} from "lucide-react";
+
 import { getIconComponent } from "@/lib/icon-mapper";
 import { DashboardCharts } from "./dashboard-charts";
 import { Separator } from "@/components/ui/separator";
@@ -112,6 +110,7 @@ export default async function StudentDashboardHistoryPage() {
   const GraduationIcon = getIconComponent("GraduationCap");
   const StarIcon = getIconComponent("Star");
   const UserIcon = getIconComponent("Users");
+  const ArrowRightIcon = getIconComponent("ArrowRight");
 
   const recent = [...bookings]
     .sort((a, b) => {
@@ -195,7 +194,7 @@ export default async function StudentDashboardHistoryPage() {
             </div>
             <Button asChild size="sm" className="gap-1">
               <Link href="/dashboard/become-tutor">
-                Apply Now <ArrowRight className="h-3.5 w-3.5" />
+                Apply Now <ArrowRightIcon className="h-3.5 w-3.5" />
               </Link>
             </Button>
           </CardContent>

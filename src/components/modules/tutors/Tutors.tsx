@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { Search, ArrowUpDown, Loader2, Star, Sparkles, FilterX } from "lucide-react";
+import { getIconComponent } from "@/lib/icon-mapper";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,14 @@ export function TutorsPageClient({
   const [search, setSearch] = React.useState(initialSearch);
   const [sort, setSort] = React.useState(initialSort);
   const [isNavigating, setIsNavigating] = React.useState(false);
+
+  // Resolved Icons via Mapper
+  const SearchIcon = getIconComponent("Search");
+  const ArrowUpDownIcon = getIconComponent("ArrowUpDown");
+  const Loader2Icon = getIconComponent("Loader2");
+  const StarIcon = getIconComponent("Star");
+  const SparklesIcon = getIconComponent("Sparkles");
+  const FilterXIcon = getIconComponent("FilterX");
   
   // Suggestion States
   const [suggestions, setSuggestions] = React.useState<Tutor[]>([]);
@@ -108,20 +116,20 @@ export function TutorsPageClient({
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-background to-muted/20 pb-20">
+    <main className="min-h-screen bg-linear-to-b from-background to-muted/20 pb-20">
       
       {/* 🚀 Premium Hero Banner */}
       <section className="relative overflow-hidden pt-16 pb-20 mb-10 border-b border-border/40">
-        <div className="absolute inset-0 z-0 bg-gradient-to-br from-[#1a1035] via-[#2d1b54] to-[#1a1035] dark:from-[#0f0a1e] dark:via-[#1a1230] dark:to-[#0f0a1e]" />
-        <div className="absolute -top-32 -left-32 h-[500px] w-[500px] bg-gradient-to-br from-[#7c3aed] to-[#ec4899] opacity-20 blur-[120px] rounded-full animate-blob pointer-events-none z-0" />
-        <div className="absolute -bottom-32 -right-32 h-[500px] w-[500px] bg-gradient-to-br from-[#06b6d4] to-[#10b981] opacity-20 blur-[120px] rounded-full animate-blob [animation-delay:3s] pointer-events-none z-0" />
+        <div className="absolute inset-0 z-0 bg-linear-to-br from-[#1a1035] via-[#2d1b54] to-[#1a1035] dark:from-[#0f0a1e] dark:via-[#1a1230] dark:to-[#0f0a1e]" />
+        <div className="absolute -top-32 -left-32 h-[500px] w-[500px] bg-linear-to-br from-[#7c3aed] to-[#ec4899] opacity-20 blur-[120px] rounded-full animate-blob pointer-events-none z-0" />
+        <div className="absolute -bottom-32 -right-32 h-[500px] w-[500px] bg-linear-to-br from-[#06b6d4] to-[#10b981] opacity-20 blur-[120px] rounded-full animate-blob [animation-delay:3s] pointer-events-none z-0" />
         
         <div className="relative z-10 container mx-auto px-4 text-center">
           <Badge variant="outline" className="mb-6 border-white/20 bg-white/5 text-white backdrop-blur-md px-4 py-1.5 shadow-xl inline-flex items-center gap-2">
-            <Star className="h-4 w-4 text-[#f59e0b]" fill="currentColor" /> Top Rated Experts
+            <StarIcon className="h-4 w-4 text-[#f59e0b]" fill="currentColor" /> Top Rated Experts
           </Badge>
           <h1 className="text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tight text-white mb-6">
-            Find Your <span className="bg-gradient-to-r from-[#a855f7] via-[#f472b6] to-[#22d3ee] bg-clip-text text-transparent">Perfect</span> Tutor
+            Find Your <span className="bg-linear-to-r from-[#a855f7] via-[#f472b6] to-[#22d3ee] bg-clip-text text-transparent">Perfect</span> Tutor
           </h1>
           <p className="max-w-2xl mx-auto text-lg text-white/70 font-medium mb-10">
             Search and connect with elite educators across the globe. Compare ratings, read reviews, and book sessions seamlessly.
@@ -132,7 +140,7 @@ export function TutorsPageClient({
             {/* Live Search Input with Suggestions */}
             <div className="relative md:col-span-8 group z-50">
               <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none z-10">
-                <Search className="h-5 w-5 text-muted-foreground group-focus-within:text-[#7c3aed] transition-colors" />
+                <SearchIcon className="h-5 w-5 text-muted-foreground group-focus-within:text-[#7c3aed] transition-colors" />
               </div>
               <Input
                 value={search}
@@ -147,7 +155,7 @@ export function TutorsPageClient({
               />
               {isNavigating && (
                 <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none z-10">
-                  <Loader2 className="h-5 w-5 text-[#a855f7] animate-spin" />
+                  <Loader2Icon className="h-5 w-5 text-[#a855f7] animate-spin" />
                 </div>
               )}
 
@@ -170,8 +178,8 @@ export function TutorsPageClient({
                             router.push(`${pathname}?${params.toString()}`);
                           }}
                         >
-                          <div className="h-8 w-8 rounded-full bg-[#7c3aed]/10 flex items-center justify-center flex-shrink-0">
-                            <Sparkles className="h-4 w-4 text-[#7c3aed]" />
+                          <div className="h-8 w-8 rounded-full bg-[#7c3aed]/10 flex items-center justify-center shrink-0">
+                            <SparklesIcon className="h-4 w-4 text-[#7c3aed]" />
                           </div>
                           <div className="flex flex-col">
                             <span className="font-bold text-foreground group-hover/item:text-[#7c3aed] transition-colors">
@@ -202,7 +210,7 @@ export function TutorsPageClient({
                 <option value="price_desc">💎 Highest Price</option>
               </select>
               <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
-                <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
+                <ArrowUpDownIcon className="h-4 w-4 text-muted-foreground" />
               </div>
             </div>
 
@@ -214,7 +222,7 @@ export function TutorsPageClient({
       <section className="container mx-auto px-4">
         <div className="mb-8 flex items-center justify-between">
           <h2 className="text-2xl font-bold flex items-center gap-2">
-            <Sparkles className="h-6 w-6 text-[#ec4899]" /> Available Tutors
+            <SparklesIcon className="h-6 w-6 text-[#ec4899]" /> Available Tutors
           </h2>
           <div className="flex items-center gap-3">
             {searchParamsHook.toString() && (
@@ -224,7 +232,7 @@ export function TutorsPageClient({
                 onClick={clearFilters}
                 className="h-8 rounded-full border-destructive/30 text-destructive hover:bg-destructive dark:hover:text-white"
               >
-                <FilterX className="mr-1.5 h-3.5 w-3.5" /> Clear Filters
+                <FilterXIcon className="mr-1.5 h-3.5 w-3.5" /> Clear Filters
               </Button>
             )}
             <Badge variant="secondary" className="px-3 py-1 text-sm bg-muted/80">
@@ -236,7 +244,7 @@ export function TutorsPageClient({
         {initialTutors.length === 0 ? (
           <div className="rounded-3xl border border-border/50 bg-card/40 p-16 text-center flex flex-col items-center justify-center shadow-inner min-h-[400px]">
             <div className="flex size-20 items-center justify-center rounded-full bg-muted shadow-inner mb-6">
-                <Search className="h-10 w-10 text-muted-foreground opacity-50" />
+                <SearchIcon className="h-10 w-10 text-muted-foreground opacity-50" />
             </div>
             <p className="text-2xl font-bold mb-2">No tutors found</p>
             <p className="max-w-md text-muted-foreground font-medium mb-8">

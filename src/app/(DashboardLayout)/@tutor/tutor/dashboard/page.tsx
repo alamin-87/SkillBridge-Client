@@ -8,16 +8,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowRight,
-  CalendarCheck,
-  TrendingUp,
-  ClipboardList,
-  Wallet,
-  Users,
-  Clock,
-  Briefcase
-} from "lucide-react";
+import { getIconComponent } from "@/lib/icon-mapper";
 import { TutorDashboardCharts } from "./tutor-dashboard-charts";
 import { Separator } from "@/components/ui/separator";
 
@@ -45,6 +36,16 @@ export default async function TutorDashboardPage() {
     getTutorEarningsAction({ limit: 100 }),
     getMyTutorProfileAction(),
   ]);
+
+  // Resolved Icons via Mapper
+  const ArrowRightIcon = getIconComponent("ArrowRight");
+  const CalendarCheckIcon = getIconComponent("CalendarCheck");
+  const TrendingUpIcon = getIconComponent("TrendingUp");
+  const ClipboardListIcon = getIconComponent("ClipboardList");
+  const WalletIcon = getIconComponent("Wallet");
+  const UsersIcon = getIconComponent("Users");
+  const ClockIcon = getIconComponent("Clock");
+  const BriefcaseIcon = getIconComponent("Briefcase");
 
   const sessions = Array.isArray(sessionsRes.data) ? sessionsRes.data : [];
   const assignments = Array.isArray(assignmentsRes.data) ? assignmentsRes.data : [];
@@ -76,7 +77,7 @@ export default async function TutorDashboardPage() {
             Tutor Analytics
           </h2>
           <p className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-emerald-500" />
+            <TrendingUpIcon className="w-4 h-4 text-emerald-500" />
             Track your sessions, assignments & professional growth
           </p>
         </div>
@@ -86,7 +87,7 @@ export default async function TutorDashboardPage() {
            </Button>
            <Button asChild size="sm" className="rounded-full font-bold bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-600/20 transition-all">
              <Link href="/tutor/availability" className="flex items-center gap-2">
-                <Clock className="w-4 h-4" /> Manage Availability
+                <ClockIcon className="w-4 h-4" /> Manage Availability
              </Link>
            </Button>
         </div>
@@ -97,7 +98,7 @@ export default async function TutorDashboardPage() {
         <Card className="shadow-lg border-primary/5 bg-card/40 backdrop-blur-sm group hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-500/10 hover:border-indigo-500/20 transition-all duration-300">
           <CardContent className="p-4 space-y-2">
             <div className="flex items-center justify-between">
-               <CalendarCheck className="h-5 w-5 text-indigo-500" />
+               <CalendarCheckIcon className="h-5 w-5 text-indigo-500" />
                <Badge variant="secondary" className="text-[9px] font-black">{sessions.length}</Badge>
             </div>
             <div>
@@ -110,7 +111,7 @@ export default async function TutorDashboardPage() {
         <Card className="shadow-lg border-primary/5 bg-card/40 backdrop-blur-sm group hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-500/10 hover:border-emerald-500/20 transition-all duration-300">
           <CardContent className="p-4 space-y-2">
             <div className="flex items-center justify-between">
-               <TrendingUp className="h-5 w-5 text-emerald-500" />
+               <TrendingUpIcon className="h-5 w-5 text-emerald-500" />
                <Badge variant="secondary" className="text-[9px] font-black text-emerald-600">Done</Badge>
             </div>
             <div>
@@ -123,7 +124,7 @@ export default async function TutorDashboardPage() {
         <Card className="shadow-lg border-primary/5 bg-card/40 backdrop-blur-sm group hover:-translate-y-1 hover:shadow-2xl hover:shadow-violet-500/10 hover:border-violet-500/20 transition-all duration-300">
           <CardContent className="p-4 space-y-2">
             <div className="flex items-center justify-between">
-               <ClipboardList className="h-5 w-5 text-violet-500" />
+               <ClipboardListIcon className="h-5 w-5 text-violet-500" />
                <Badge variant="secondary" className="text-[9px] font-black text-violet-600">Active</Badge>
             </div>
             <div>
@@ -136,7 +137,7 @@ export default async function TutorDashboardPage() {
         <Card className="shadow-lg border-primary/5 bg-card/40 backdrop-blur-sm group hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 hover:border-blue-500/20 transition-all duration-300">
           <CardContent className="p-4 space-y-2">
             <div className="flex items-center justify-between">
-               <Users className="h-5 w-5 text-blue-500" />
+               <UsersIcon className="h-5 w-5 text-blue-500" />
                <Badge variant="secondary" className="text-[9px] font-black text-blue-600">{openSlots} Wait</Badge>
             </div>
             <div>
@@ -149,7 +150,7 @@ export default async function TutorDashboardPage() {
         <Card className="col-span-2 md:col-span-1 shadow-lg border-primary/5 bg-card/40 backdrop-blur-sm group hover:-translate-y-1 hover:shadow-2xl hover:shadow-amber-500/10 hover:border-amber-500/20 transition-all duration-300">
           <CardContent className="p-4 space-y-2">
             <div className="flex items-center justify-between">
-               <Wallet className="h-5 w-5 text-amber-500" />
+               <WalletIcon className="h-5 w-5 text-amber-500" />
                <span className="text-[10px] font-bold text-amber-600">{earnings.length} tx</span>
             </div>
             <div>
@@ -171,11 +172,11 @@ export default async function TutorDashboardPage() {
       <Card className="shadow-xl border-primary/5 bg-card/40 backdrop-blur-sm overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between border-b border-primary/5 bg-muted/5">
           <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-muted-foreground">
-            <Briefcase className="h-4 w-4 text-indigo-500" /> Upcoming Engagement
+            <BriefcaseIcon className="h-4 w-4 text-indigo-500" /> Upcoming Engagement
           </CardTitle>
           <Button asChild variant="ghost" size="sm" className="h-8 text-xs font-bold hover:bg-indigo-500/10 hover:text-indigo-600 rounded-full">
             <Link href="/tutor/dashboard/sessions" className="flex items-center gap-1">
-              View all <ArrowRight className="h-3.5 w-3.5" />
+              View all <ArrowRightIcon className="h-3.5 w-3.5" />
             </Link>
           </Button>
         </CardHeader>
@@ -184,7 +185,7 @@ export default async function TutorDashboardPage() {
           {upcoming.length === 0 ? (
             <div className="rounded-2xl border-2 border-dashed border-primary/5 p-12 text-center">
               <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-indigo-500/10 text-indigo-500 mb-4">
-                 <CalendarCheck className="h-6 w-6" />
+                 <CalendarCheckIcon className="h-6 w-6" />
               </div>
               <p className="text-sm font-bold text-foreground">No upcoming sessions</p>
               <p className="text-xs text-muted-foreground mt-1 max-w-[250px] mx-auto">
@@ -207,7 +208,7 @@ export default async function TutorDashboardPage() {
                         {s.student?.name ?? "Student"}
                       </p>
                       <p className="text-[10px] font-medium text-muted-foreground flex items-center gap-1.5 uppercase tracking-tighter">
-                         <Clock className="w-3 h-3" />
+                         <ClockIcon className="w-3 h-3" />
                         {fmt(s.scheduledStart)} – {fmt(s.scheduledEnd)}
                       </p>
                     </div>

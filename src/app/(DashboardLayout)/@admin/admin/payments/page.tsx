@@ -3,10 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CreditCard, TrendingUp, ArrowDownRight, ArrowUpRight } from "lucide-react";
+import { PaymentCharts } from "./payment-charts";
 
 const statusBadge: Record<string, string> = {
-  COMPLETED: "bg-emerald-500/10 text-emerald-600 border-emerald-200",
-  PENDING: "bg-amber-500/10 text-amber-600 border-amber-200",
+  SUCCESS: "bg-emerald-500/10 text-emerald-600 border-emerald-200",
+  INITIATED: "bg-amber-500/10 text-amber-600 border-amber-200",
   FAILED: "bg-red-500/10 text-red-600 border-red-200",
   REFUNDED: "bg-blue-500/10 text-blue-600 border-blue-200",
 };
@@ -16,11 +17,11 @@ export default async function AdminPaymentsPage() {
   const allPayments = Array.isArray(payments) ? payments : [];
 
   const totalRevenue = allPayments
-    .filter((p: any) => p.status === "COMPLETED")
+    .filter((p: any) => p.status === "SUCCESS")
     .reduce((sum: number, p: any) => sum + (p.amount ?? 0), 0);
 
-  const completedCount = allPayments.filter((p: any) => p.status === "COMPLETED").length;
-  const pendingCount = allPayments.filter((p: any) => p.status === "PENDING").length;
+  const completedCount = allPayments.filter((p: any) => p.status === "SUCCESS").length;
+  const pendingCount = allPayments.filter((p: any) => p.status === "INITIATED").length;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -29,7 +30,7 @@ export default async function AdminPaymentsPage() {
         <div className="flex items-center gap-2">
           <CreditCard className="h-5 w-5 text-violet-500" />
           <div>
-            <h2 className="text-xl font-bold tracking-tight">Payment History</h2>
+            <h2 className="text-xl font-bold tracking-tight">Payment Analytics & History</h2>
             <p className="text-sm text-muted-foreground">
               {allPayments.length} transactions across the platform
             </p>
@@ -84,6 +85,10 @@ export default async function AdminPaymentsPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Payment Charts Component */}
+      <PaymentCharts payments={allPayments} />
+
 
       {/* Payment List */}
       {allPayments.length === 0 ? (

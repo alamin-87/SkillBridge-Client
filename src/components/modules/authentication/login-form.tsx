@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Eye, EyeOff, Loader2, Mail, Lock } from "lucide-react";
+import { getIconComponent } from "@/lib/icon-mapper";
 import { toast } from "sonner";
 
 import { loginSchema } from "@/zod/auth.validation";
@@ -37,6 +37,13 @@ export function LoginForm({
   const [showPassword, setShowPassword] = React.useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = React.useState(false);
   const router = useRouter();
+
+  // Resolved Icons via Mapper
+  const EyeIcon = getIconComponent("Eye");
+  const EyeOffIcon = getIconComponent("EyeOff");
+  const Loader2Icon = getIconComponent("Loader2");
+  const MailIcon = getIconComponent("Mail");
+  const LockIcon = getIconComponent("Lock");
 
   const form = useForm({
     defaultValues: { email: "", password: "" },
@@ -88,8 +95,8 @@ export function LoginForm({
       {...props}
     >
       <CardHeader className="space-y-3 text-center pb-6 pt-10">
-        <div className="mx-auto mb-2 flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#7c3aed] via-[#a855f7] to-[#ec4899] shadow-xl shadow-[#7c3aed]/30 rotate-3 hover:rotate-0 transition-transform duration-300">
-          <Lock className="size-8 text-white" strokeWidth={1.5} />
+        <div className="mx-auto mb-2 flex size-16 items-center justify-center rounded-2xl bg-linear-to-br from-[#7c3aed] via-[#a855f7] to-[#ec4899] shadow-xl shadow-[#7c3aed]/30 rotate-3 hover:rotate-0 transition-transform duration-300">
+          <LockIcon className="size-8 text-white" strokeWidth={1.5} />
         </div>
         <CardTitle className="text-3xl font-extrabold tracking-tight">
           Welcome back
@@ -107,7 +114,7 @@ export function LoginForm({
           onClick={handleGoogleLogin}
           disabled={isGoogleLoading}
         >
-          {isGoogleLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <GoogleIcon className="mr-2 h-5 w-5" />}
+          {isGoogleLoading ? <Loader2Icon className="mr-2 h-5 w-5 animate-spin" /> : <GoogleIcon className="mr-2 h-5 w-5" />}
           Continue with Google
         </Button>
 
@@ -128,7 +135,7 @@ export function LoginForm({
                     <Input type="email" value={field.state.value} onChange={(e) => field.handleChange(e.target.value)} onBlur={field.handleBlur}
                       placeholder="you@example.com" autoComplete="email"
                       className="h-12 pl-11 bg-background/70 border-border/50 rounded-xl shadow-sm focus:shadow-lg focus:shadow-[#7c3aed]/10 focus:border-[#7c3aed]/40 transition-all" />
-                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-muted-foreground group-focus-within:text-[#7c3aed] transition-colors" />
+                    <MailIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-muted-foreground group-focus-within:text-[#7c3aed] transition-colors" />
                   </div>
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
                 </Field>
@@ -141,7 +148,7 @@ export function LoginForm({
                 <Field data-invalid={isInvalid}>
                   <div className="flex items-center justify-between">
                     <FieldLabel className="text-sm font-semibold">Password</FieldLabel>
-                    <Link href="/forgot-password" className="text-xs font-bold bg-gradient-to-r from-[#7c3aed] to-[#ec4899] bg-clip-text text-transparent hover:opacity-80 transition-opacity">
+                    <Link href="/forgot-password" className="text-xs font-bold bg-linear-to-r from-[#7c3aed] to-[#ec4899] bg-clip-text text-transparent hover:opacity-80 transition-opacity">
                       Forgot password?
                     </Link>
                   </div>
@@ -149,10 +156,10 @@ export function LoginForm({
                     <Input type={showPassword ? "text" : "password"} value={field.state.value} onChange={(e) => field.handleChange(e.target.value)} onBlur={field.handleBlur}
                       placeholder="Enter your password" autoComplete="current-password"
                       className="h-12 pl-11 pr-11 bg-background/70 border-border/50 rounded-xl shadow-sm focus:shadow-lg focus:shadow-[#7c3aed]/10 focus:border-[#7c3aed]/40 transition-all" />
-                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-muted-foreground group-focus-within:text-[#7c3aed] transition-colors" />
+                    <LockIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-muted-foreground group-focus-within:text-[#7c3aed] transition-colors" />
                     <button type="button" onClick={() => setShowPassword((s) => !s)}
                       className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
-                      {showPassword ? <EyeOff className="h-[18px] w-[18px]" /> : <Eye className="h-[18px] w-[18px]" />}
+                      {showPassword ? <EyeOffIcon className="h-[18px] w-[18px]" /> : <EyeIcon className="h-[18px] w-[18px]" />}
                     </button>
                   </div>
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
@@ -162,9 +169,9 @@ export function LoginForm({
           </div>
 
           <Button form="login-form" type="submit" size="lg"
-            className="btn-3d w-full mt-2 h-12 font-bold text-[15px] rounded-xl bg-gradient-to-r from-[#7c3aed] via-[#a855f7] to-[#ec4899] text-white hover:opacity-95 transition-all"
+            className="btn-3d w-full mt-2 h-12 font-bold text-[15px] rounded-xl bg-linear-to-r from-[#7c3aed] via-[#a855f7] to-[#ec4899] text-white hover:opacity-95 transition-all"
             disabled={form.state.isSubmitting || !form.state.canSubmit}>
-            {form.state.isSubmitting ? (<><Loader2 className="mr-2 h-5 w-5 animate-spin" />Signing in...</>) : "Sign In"}
+            {form.state.isSubmitting ? (<><Loader2Icon className="mr-2 h-5 w-5 animate-spin" />Signing in...</>) : "Sign In"}
           </Button>
         </form>
       </CardContent>
@@ -172,7 +179,7 @@ export function LoginForm({
       <CardFooter className="flex flex-col gap-2 pb-10 px-8">
         <p className="text-sm text-center text-muted-foreground">
           Don&apos;t have an account?{" "}
-          <Link href="/register" className="font-bold bg-gradient-to-r from-[#7c3aed] to-[#ec4899] bg-clip-text text-transparent hover:opacity-80 transition-opacity">
+          <Link href="/register" className="font-bold bg-linear-to-r from-[#7c3aed] to-[#ec4899] bg-clip-text text-transparent hover:opacity-80 transition-opacity">
             Create one now
           </Link>
         </p>

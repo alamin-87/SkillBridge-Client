@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import * as LucideIcons from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+
 
 import {
   Sidebar,
@@ -26,6 +26,7 @@ import { Route } from "@/types";
 import { Roles } from "@/constance/role";
 import { cn } from "@/lib/utils";
 import { getIconComponent } from "@/lib/icon-mapper";
+import { authClient } from "@/lib/auth-client";
 import { Logo, LogoText } from "./logo";
 import { Button } from "../ui/button";
 
@@ -35,6 +36,26 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
 
 export function AppSidebar({ user, ...props }: AppSidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  // Resolved Icons via Mapper
+  const SparklesIcon = getIconComponent("Sparkles");
+  const LogOutIcon = getIconComponent("LogOut");
+
+  const handleLogout = async () => {
+    try {
+      await authClient.signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            router.push("/login");
+            router.refresh(); 
+          },
+        },
+      });
+    } catch(err) {
+      console.error(err);
+    }
+  };
 
   let routes: Route[] = [];
 
@@ -55,7 +76,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
       <SidebarHeader className="border-b px-6 py-5">
         <Logo url="/" className="flex items-center gap-3 transition-transform hover:scale-105 active:scale-95">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-primary to-violet-600 p-2 shadow-lg shadow-primary/20">
-             <LucideIcons.Sparkles className="h-6 w-6 text-white" />
+             <SparklesIcon className="h-6 w-6 text-white" />
           </div>
           <LogoText className="text-xl font-bold tracking-tight text-foreground">
             Skill<span className="text-primary">Bridge</span>
@@ -117,11 +138,13 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
 
       <SidebarFooter className="border-t p-4">
         <div className="flex flex-col gap-2">
-            <Button variant="ghost" className="justify-start gap-3 h-10 w-full hover:bg-destructive/10 hover:text-destructive group transition-colors" asChild>
-                <Link href="/logout">
-                    <LucideIcons.LogOut className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    <span>Logout</span>
-                </Link>
+            <Button 
+                variant="ghost" 
+                className="justify-start gap-3 h-10 w-full hover:bg-destructive/10 hover:text-destructive group transition-colors px-4" 
+                onClick={handleLogout}
+            >
+                <LogOutIcon className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                <span className="font-medium">Logout</span>
             </Button>
         </div>
       </SidebarFooter>

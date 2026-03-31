@@ -35,14 +35,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-import {
-  CalendarClock,
-  Plus,
-  Pencil,
-  Trash2,
-  Loader2,
-  Sparkles,
-} from "lucide-react";
+import { getIconComponent } from "@/lib/icon-mapper";
 import { toast } from "sonner";
 
 type Slot = {
@@ -81,6 +74,14 @@ function toIsoFromLocalInput(localValue: string) {
 }
 
 export default function AvailabilityClient({ slots }: { slots: Slot[] }) {
+  // Resolved Icons via Mapper
+  const CalendarClockIcon = getIconComponent("CalendarClock");
+  const PlusIcon = getIconComponent("Plus");
+  const PencilIcon = getIconComponent("Pencil");
+  const Trash2Icon = getIconComponent("Trash2");
+  const Loader2Icon = getIconComponent("Loader2");
+  const SparklesIcon = getIconComponent("Sparkles");
+
   const sorted = React.useMemo(() => {
     const list = Array.isArray(slots) ? [...slots] : [];
     return list.sort(
@@ -296,7 +297,7 @@ export default function AvailabilityClient({ slots }: { slots: Slot[] }) {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="inline-flex items-center gap-2 text-xl font-black uppercase tracking-tight">
-            <CalendarClock className="h-6 w-6 text-indigo-500" />
+            <CalendarClockIcon className="h-6 w-6 text-indigo-500" />
             Scheduling Assistant
           </h2>
           <p className="text-sm font-medium text-muted-foreground mt-1">
@@ -309,7 +310,7 @@ export default function AvailabilityClient({ slots }: { slots: Slot[] }) {
           <Dialog open={openBulk} onOpenChange={setOpenBulk}>
             <DialogTrigger asChild>
               <Button variant="outline" className="gap-2 rounded-full border-2 border-indigo-500/20 hover:bg-indigo-500/5 hover:text-indigo-600 font-bold">
-                <Sparkles className="h-4 w-4" />
+                <SparklesIcon className="h-4 w-4" />
                 Smart Schedule (30D)
               </Button>
             </DialogTrigger>
@@ -335,7 +336,7 @@ export default function AvailabilityClient({ slots }: { slots: Slot[] }) {
                 </div>
                 <div className="rounded-xl bg-indigo-50 p-4 flex items-start gap-3 border border-indigo-100">
                   <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm text-indigo-600">
-                    <Sparkles className="h-4 w-4" />
+                    <SparklesIcon className="h-4 w-4" />
                   </div>
                   <p className="text-xs font-medium text-indigo-700 leading-relaxed">
                     Tutor AI will duplicate this time for the next 30 consecutive days, excluding any time periods where you already have active sessions.
@@ -346,7 +347,7 @@ export default function AvailabilityClient({ slots }: { slots: Slot[] }) {
               <DialogFooter className="gap-2">
                 <Button variant="ghost" className="rounded-xl font-bold" onClick={() => setOpenBulk(false)}>Discard</Button>
                 <Button onClick={onBulkCreate} disabled={!canSubmitBulk} className="rounded-xl font-black bg-indigo-600 shadow-lg shadow-indigo-600/20 text-white">
-                   {bulkLoading ? <Loader2 className="animate-spin" /> : "Deploy Schedule"}
+                   {bulkLoading ? <Loader2Icon className="animate-spin" /> : "Deploy Schedule"}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -356,7 +357,7 @@ export default function AvailabilityClient({ slots }: { slots: Slot[] }) {
           <Dialog open={openCreate} onOpenChange={setOpenCreate}>
             <DialogTrigger asChild>
               <Button className="gap-2 rounded-full font-bold bg-slate-900 shadow-lg shadow-slate-900/20 text-white">
-                <Plus className="h-4 w-4" />
+                <PlusIcon className="h-4 w-4" />
                 Add Single Slot
               </Button>
             </DialogTrigger>
@@ -394,7 +395,7 @@ export default function AvailabilityClient({ slots }: { slots: Slot[] }) {
               <DialogFooter className="pt-4">
                 <Button variant="ghost" onClick={() => setOpenCreate(false)} className="rounded-xl font-bold">Cancel</Button>
                 <Button onClick={onCreate} disabled={!canSubmitCreate} className="rounded-xl font-black bg-slate-900 text-white">
-                  {createLoading ? <Loader2 className="animate-spin h-4 w-4" /> : "Commit Slot"}
+                  {createLoading ? <Loader2Icon className="animate-spin h-4 w-4" /> : "Commit Slot"}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -451,7 +452,7 @@ export default function AvailabilityClient({ slots }: { slots: Slot[] }) {
         <CardContent>
           {sorted.length === 0 ? (
             <div className="rounded-3xl border-2 border-dashed border-primary/5 p-12 text-center bg-muted/5">
-              <CalendarClock className="h-10 w-10 mx-auto text-muted-foreground opacity-40 mb-4" />
+              <CalendarClockIcon className="h-10 w-10 mx-auto text-muted-foreground opacity-40 mb-4" />
               <p className="text-sm font-black text-foreground">Schedule Vacant</p>
               <p className="mt-1 text-xs text-muted-foreground font-medium max-w-[200px] mx-auto uppercase tracking-wider">
                 Use Smart Schedule to fill 30 days instantly.
@@ -503,7 +504,7 @@ export default function AvailabilityClient({ slots }: { slots: Slot[] }) {
                       disabled={!!s.isBooked}
                       onClick={() => openEditDialog(s)}
                     >
-                      <Pencil className="h-3.5 w-3.5 mr-2 opacity-50 group-hover:opacity-100 transition-opacity" />
+                      <PencilIcon className="h-3.5 w-3.5 mr-2 opacity-50 group-hover:opacity-100 transition-opacity" />
                       Configure
                     </Button>
 
@@ -515,7 +516,7 @@ export default function AvailabilityClient({ slots }: { slots: Slot[] }) {
                           className="flex-1 rounded-2xl font-black h-10 text-[10px] uppercase tracking-widest transition-all hover:bg-rose-500/10 hover:text-rose-600"
                           disabled={!!s.isBooked}
                         >
-                          <Trash2 className="h-3.5 w-3.5 mr-2 opacity-50 group-hover:opacity-100 transition-opacity" />
+                          <Trash2Icon className="h-3.5 w-3.5 mr-2 opacity-50 group-hover:opacity-100 transition-opacity" />
                           Purge
                         </Button>
                       </AlertDialogTrigger>
@@ -577,7 +578,7 @@ export default function AvailabilityClient({ slots }: { slots: Slot[] }) {
           <DialogFooter>
             <Button variant="ghost" onClick={() => setOpenEdit(false)} disabled={editLoading} className="rounded-xl font-bold">Discard</Button>
             <Button onClick={onUpdate} disabled={!canSubmitEdit} className="rounded-xl font-black bg-slate-900 border-2 border-slate-900 hover:bg-transparent hover:text-slate-900 transition-all text-white">
-              {editLoading ? <Loader2 className="animate-spin h-4 w-4" /> : "Commit Changes"}
+              {editLoading ? <Loader2Icon className="animate-spin h-4 w-4" /> : "Commit Changes"}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -3,14 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  Menu,
-  GraduationCap,
-  LayoutDashboard,
-  LogOut,
-  User as UserIcon,
-  HelpCircle,
-} from "lucide-react";
+import { getIconComponent } from "@/lib/icon-mapper";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -50,6 +43,14 @@ export function Navbar() {
   const pathname = usePathname();
   const [user, setUser] = React.useState<NavbarUser>(null);
   const [loading, setLoading] = React.useState(true);
+
+  // Resolved Icons via Mapper
+  const GraduationCapIcon = getIconComponent("GraduationCap");
+  const LayoutDashboardIcon = getIconComponent("LayoutDashboard");
+  const UserIcon = getIconComponent("User");
+  const HelpCircleIcon = getIconComponent("HelpCircle");
+  const LogOutIcon = getIconComponent("LogOut");
+  const MenuIcon = getIconComponent("Menu");
 
   const menu = [
     { title: "Home", href: "/" },
@@ -109,7 +110,7 @@ export function Navbar() {
         <div className="flex flex-1 justify-start">
           <Link href="/" className="flex items-center gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <GraduationCap className="h-5 w-5" />
+            <GraduationCapIcon className="h-5 w-5" />
           </div>
           <span className="text-lg font-semibold tracking-tight">
             SkillBridge
@@ -215,7 +216,7 @@ export function Navbar() {
                   </DropdownMenuLabel>
                   <DropdownMenuItem asChild className="cursor-pointer font-medium mb-1">
                     <Link href={dashboardHref} className="flex items-center w-full">
-                      <LayoutDashboard className="mr-2 h-4 w-4 text-muted-foreground" />
+                      <LayoutDashboardIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                       Dashboard
                     </Link>
                   </DropdownMenuItem>
@@ -227,7 +228,7 @@ export function Navbar() {
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="cursor-pointer font-medium mb-1">
                     <Link href="/help" className="flex items-center w-full">
-                      <HelpCircle className="mr-2 h-4 w-4 text-muted-foreground" />
+                      <HelpCircleIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                       Help Center
                     </Link>
                   </DropdownMenuItem>
@@ -236,7 +237,7 @@ export function Navbar() {
                     className="cursor-pointer font-semibold text-red-500 focus:bg-red-50 focus:text-red-600 dark:focus:bg-red-500/10 dark:focus:text-red-500" 
                     onClick={handleLogout}
                   >
-                    <LogOut className="mr-2 h-4 w-4" />
+                    <LogOutIcon className="mr-2 h-4 w-4" />
                     Secure Logout
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -250,7 +251,7 @@ export function Navbar() {
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" aria-label="Open menu">
-                <Menu className="h-4 w-4" />
+                <MenuIcon className="h-4 w-4" />
               </Button>
             </SheetTrigger>
 
@@ -259,7 +260,7 @@ export function Navbar() {
                 <SheetTitle className="flex justify-between items-center">
                   <Link href="/" className="flex items-center gap-2">
                     <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-                      <GraduationCap className="h-5 w-5" />
+                      <GraduationCapIcon className="h-5 w-5" />
                     </div>
                     <span className="text-lg font-semibold tracking-tight">
                       SkillBridge
@@ -301,7 +302,7 @@ export function Navbar() {
                     <>
                       <Button asChild variant="outline">
                         <Link href={dashboardHref}>
-                          <LayoutDashboard className="mr-2 h-4 w-4" />
+                          <LayoutDashboardIcon className="mr-2 h-4 w-4" />
                           Dashboard
                         </Link>
                       </Button>
@@ -314,7 +315,7 @@ export function Navbar() {
                       </Button>
 
                       <Button variant="destructive" onClick={handleLogout}>
-                        <LogOut className="mr-2 h-4 w-4" />
+                        <LogOutIcon className="mr-2 h-4 w-4" />
                         Logout
                       </Button>
                     </>

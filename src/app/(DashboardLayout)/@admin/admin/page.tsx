@@ -3,9 +3,7 @@ import { getAdminDashboardAction } from "@/actions/admin-action";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  ArrowUpRight,
-} from "lucide-react";
+
 import { getIconComponent } from "@/lib/icon-mapper";
 
 function fmtDate(dt?: string) {
@@ -46,6 +44,7 @@ export default async function AdminDashboardPage() {
   const AlertIcon = getIconComponent("AlertTriangle");
   const TrendingIcon = getIconComponent("TrendingUp");
   const ActivityIcon = getIconComponent("Activity");
+  const ArrowUpRightIcon = getIconComponent("ArrowUpRight");
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -400,7 +399,7 @@ export default async function AdminDashboardPage() {
               Recent Users
             </CardTitle>
             <Button asChild variant="ghost" size="sm" className="h-7 text-xs">
-              <Link href="/admin/users">View all <ArrowUpRight className="h-3 w-3 ml-1" /></Link>
+              <Link href="/admin/users">View all <ArrowUpRightIcon className="h-3 w-3 ml-1" /></Link>
             </Button>
           </CardHeader>
           <CardContent className="space-y-2">
@@ -440,7 +439,7 @@ export default async function AdminDashboardPage() {
               Recent Bookings
             </CardTitle>
             <Button asChild variant="ghost" size="sm" className="h-7 text-xs">
-              <Link href="/admin/bookings">View all <ArrowUpRight className="h-3 w-3 ml-1" /></Link>
+              <Link href="/admin/bookings">View all <ArrowUpRightIcon className="h-3 w-3 ml-1" /></Link>
             </Button>
           </CardHeader>
           <CardContent className="space-y-2">

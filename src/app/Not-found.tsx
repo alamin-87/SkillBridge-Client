@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Home, ArrowLeft } from "lucide-react";
+import { getIconComponent } from "@/lib/icon-mapper";
 
 export default function NotFound() {
+  const HomeIcon = getIconComponent("Home");
+  const ArrowLeftIcon = getIconComponent("ArrowLeft");
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 text-center">
       {/* 404 Text */}
@@ -20,14 +23,14 @@ export default function NotFound() {
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">
         <Button asChild>
           <Link href="/">
-            <Home className="mr-2 h-4 w-4" />
+            <HomeIcon className="mr-2 h-4 w-4" />
             Go Home
           </Link>
         </Button>
 
         <Button variant="outline" asChild>
           <Link href="javascript:history.back()">
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeftIcon className="mr-2 h-4 w-4" />
             Go Back
           </Link>
         </Button>

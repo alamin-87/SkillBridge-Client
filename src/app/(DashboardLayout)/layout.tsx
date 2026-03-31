@@ -17,9 +17,6 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Roles } from "@/constance/role";
 import { userService } from "@/services/user.services";
-import {
-  LogOut,
-} from "lucide-react";
 import { getIconComponent } from "@/lib/icon-mapper";
 import Link from "next/link";
 import { NotificationBell } from "@/components/shared/NotificationBell";
@@ -45,6 +42,8 @@ function getInitials(name: string = ""): string {
       .slice(0, 2);
 }
 
+import { redirect } from "next/navigation";
+
 export default async function DashboardLayout({
   admin,
   tutor,
@@ -56,6 +55,10 @@ export default async function DashboardLayout({
 }) {
   const { data } = await userService.getMe();
   const userInfo = data;
+
+  if (!userInfo) {
+    redirect("/login");
+  }
 
   const roleLabel = getRoleLabel(userInfo?.role);
 

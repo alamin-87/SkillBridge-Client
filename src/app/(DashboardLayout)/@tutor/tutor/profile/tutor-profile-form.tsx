@@ -12,27 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import {
-  Pencil,
-  Save,
-  X,
-  Mail,
-  Phone,
-  User,
-  Camera,
-  Globe,
-  Loader2,
-  Calendar,
-  ShieldCheck,
-  MapPin,
-  FileCode,
-  GraduationCap,
-  Banknote,
-  Briefcase,
-  Languages,
-  LayoutDashboard,
-  Bookmark,
-} from "lucide-react";
+import { getIconComponent } from "@/lib/icon-mapper";
 import { toast } from "sonner";
 
 function initials(name?: string) {
@@ -115,6 +95,27 @@ export default function TutorProfileForm({ profile }: { profile: any }) {
   const user = profile?.user;
   const [isEditing, setIsEditing] = React.useState(false);
   const router = useRouter();
+
+  // Resolved Icons via Mapper
+  const PencilIcon = getIconComponent("Pencil");
+  const SaveIcon = getIconComponent("Save");
+  const XIcon = getIconComponent("X");
+  const MailIcon = getIconComponent("Mail");
+  const PhoneIcon = getIconComponent("Phone");
+  const UserIcon = getIconComponent("User");
+  const CameraIcon = getIconComponent("Camera");
+  const GlobeIcon = getIconComponent("Globe");
+  const Loader2Icon = getIconComponent("Loader2");
+  const CalendarIcon = getIconComponent("Calendar");
+  const ShieldCheckIcon = getIconComponent("ShieldCheck");
+  const MapPinIcon = getIconComponent("MapPin");
+  const FileCodeIcon = getIconComponent("FileCode");
+  const GraduationCapIcon = getIconComponent("GraduationCap");
+  const BanknoteIcon = getIconComponent("Banknote");
+  const BriefcaseIcon = getIconComponent("Briefcase");
+  const LanguagesIcon = getIconComponent("Languages");
+  const LayoutDashboardIcon = getIconComponent("LayoutDashboard");
+  const BookmarkIcon = getIconComponent("Bookmark");
 
   const [bio, setBio] = React.useState(profile?.bio ?? "");
   const [hourlyRate, setHourlyRate] = React.useState(
@@ -254,7 +255,7 @@ export default function TutorProfileForm({ profile }: { profile: any }) {
                 htmlFor="avatar-upload"
                 className="absolute bottom-2 right-2 p-2 bg-indigo-600 text-white rounded-full cursor-pointer hover:bg-indigo-700 hover:scale-110 transition-all shadow-lg active:scale-95"
               >
-                <Camera className="w-5 h-5" />
+                <CameraIcon className="w-5 h-5" />
                 <input
                   id="avatar-upload"
                   type="file"
@@ -285,7 +286,7 @@ export default function TutorProfileForm({ profile }: { profile: any }) {
                 </Badge>
               </div>
               <p className="text-muted-foreground flex items-center gap-2 font-medium">
-                <Mail className="w-4 h-4 text-primary/60" />
+                <MailIcon className="w-4 h-4 text-primary/60" />
                 {user?.email}
               </p>
             </div>
@@ -295,7 +296,7 @@ export default function TutorProfileForm({ profile }: { profile: any }) {
                 variant="outline"
                 className="group border-primary/20 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 rounded-full h-11 px-6 shadow-sm"
               >
-                <Pencil className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform" />
+                <PencilIcon className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform" />
                 Update Profile
               </Button>
             )}
@@ -308,7 +309,7 @@ export default function TutorProfileForm({ profile }: { profile: any }) {
           <Card className="shadow-lg border-primary/5 bg-card/40 backdrop-blur-sm">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                <ShieldCheckIcon className="w-4 h-4 text-emerald-500" />
                 Engagement Stats
               </CardTitle>
             </CardHeader>
@@ -328,7 +329,7 @@ export default function TutorProfileForm({ profile }: { profile: any }) {
               <div className="space-y-4">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground flex items-center gap-2 font-medium">
-                    <GraduationCap className="w-4 h-4 text-indigo-500" />
+                    <GraduationCapIcon className="w-4 h-4 text-indigo-500" />
                     Institution
                   </span>
                   <span className="font-bold truncate max-w-[100px]">
@@ -337,14 +338,14 @@ export default function TutorProfileForm({ profile }: { profile: any }) {
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground flex items-center gap-2 font-medium">
-                    <Briefcase className="w-4 h-4 text-pink-500" />
+                    <BriefcaseIcon className="w-4 h-4 text-pink-500" />
                     Experience
                   </span>
                   <span className="font-bold">{experienceYrs} yrs</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground flex items-center gap-2 font-medium">
-                    <Banknote className="w-4 h-4 text-emerald-500" />
+                    <BanknoteIcon className="w-4 h-4 text-emerald-500" />
                     Rate
                   </span>
                   <span className="font-bold text-indigo-600">
@@ -359,7 +360,7 @@ export default function TutorProfileForm({ profile }: { profile: any }) {
                   className="w-full justify-start text-xs text-muted-foreground hover:text-indigo-600 hover:bg-indigo-50/50 rounded-lg h-9 cursor-pointer"
                 >
                   <a href="/tutor/dashboard">
-                    <LayoutDashboard className="w-3.5 h-3.5 mr-2" />
+                    <LayoutDashboardIcon className="w-3.5 h-3.5 mr-2" />
                     View Tutor Dashboard
                   </a>
                 </Button>
@@ -370,7 +371,7 @@ export default function TutorProfileForm({ profile }: { profile: any }) {
           <Card className="shadow-lg border-primary/5 bg-card/40 backdrop-blur-sm">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                <Bookmark className="w-4 h-4 text-orange-500" />
+                <BookmarkIcon className="w-4 h-4 text-orange-500" />
                 Teaching Focus
               </CardTitle>
             </CardHeader>
@@ -413,7 +414,7 @@ export default function TutorProfileForm({ profile }: { profile: any }) {
         <Card className="md:col-span-2 shadow-lg border-primary/5 bg-card/40 backdrop-blur-sm overflow-hidden">
           <CardHeader className="pb-3 border-b border-primary/5 bg-muted/5">
             <CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-              <GraduationCap className="w-4 h-4 text-indigo-500" />
+              <GraduationCapIcon className="w-4 h-4 text-indigo-500" />
               Professional Profile
             </CardTitle>
           </CardHeader>
@@ -425,7 +426,7 @@ export default function TutorProfileForm({ profile }: { profile: any }) {
               >
                 <div className="space-y-2.5">
                   <Label className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-2">
-                    <GraduationCap className="w-3 h-3" /> Professional Bio
+                    <GraduationCapIcon className="w-3 h-3" /> Professional Bio
                   </Label>
                   <Textarea
                     value={bio}
@@ -518,7 +519,7 @@ export default function TutorProfileForm({ profile }: { profile: any }) {
                     disabled={saving}
                     className="h-11 px-6 rounded-full font-bold"
                   >
-                    <X className="w-4 h-4 mr-2" /> Cancel
+                    <XIcon className="w-4 h-4 mr-2" /> Cancel
                   </Button>
                   <Button
                     type="submit"
@@ -526,9 +527,9 @@ export default function TutorProfileForm({ profile }: { profile: any }) {
                     className="h-11 px-8 rounded-full font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg"
                   >
                     {saving ? (
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      <Loader2Icon className="w-4 h-4 mr-2 animate-spin" />
                     ) : (
-                      <Save className="w-4 h-4 mr-2" />
+                      <SaveIcon className="w-4 h-4 mr-2" />
                     )}
                     Save Profile
                   </Button>
@@ -554,7 +555,7 @@ export default function TutorProfileForm({ profile }: { profile: any }) {
                     </p>
                     <div className="flex items-center gap-3">
                       <div className="p-2 rounded-xl bg-violet-500/5">
-                        <GraduationCap className="w-5 h-5 text-violet-500" />
+                        <GraduationCapIcon className="w-5 h-5 text-violet-500" />
                       </div>
                       <p className="font-bold">
                         {institution || "Education Expert"}
@@ -567,7 +568,7 @@ export default function TutorProfileForm({ profile }: { profile: any }) {
                     </p>
                     <div className="flex items-center gap-3">
                       <div className="p-2 rounded-xl bg-orange-500/5">
-                        <MapPin className="w-5 h-5 text-orange-500" />
+                        <MapPinIcon className="w-5 h-5 text-orange-500" />
                       </div>
                       <p className="font-bold">
                         {location || "Online / Bangladesh"}
@@ -580,7 +581,7 @@ export default function TutorProfileForm({ profile }: { profile: any }) {
 
                 <div className="space-y-4">
                   <p className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] flex items-center gap-2">
-                    <FileCode className="w-3 h-3" /> Tutor ID
+                    <FileCodeIcon className="w-3 h-3" /> Tutor ID
                   </p>
                   <code className="text-[11px] bg-muted/30 p-4 rounded-xl block border border-primary/5 font-mono text-muted-foreground">
                     {profile?.id}

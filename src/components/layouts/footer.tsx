@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { GraduationCap } from "lucide-react";
+import { getIconComponent } from "@/lib/icon-mapper";
 
 interface MenuItem {
   title: string;
@@ -71,6 +71,8 @@ const Footer = ({
     { text: "Privacy", url: "/privacy" },
   ],
 }: FooterProps) => {
+  const GraduationCapIcon = getIconComponent("GraduationCap");
+
   return (
     <footer className={cn("border-t bg-background", className)}>
       <div className="container mx-auto px-4 py-12 md:py-16">
@@ -82,7 +84,7 @@ const Footer = ({
               {/* Logo */}
               <Link href="/" className="flex items-center gap-2">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-                  <GraduationCap className="h-5 w-5" />
+                  <GraduationCapIcon className="h-5 w-5" />
                 </div>
                 <span className="text-lg font-semibold tracking-tight">
                   SkillBridge

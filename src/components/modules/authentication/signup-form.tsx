@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Eye, EyeOff, Loader2, Mail, Lock, User } from "lucide-react";
+import { getIconComponent } from "@/lib/icon-mapper";
 import { toast } from "sonner";
 
 import { signupSchema } from "@/zod/auth.validation";
@@ -24,6 +24,14 @@ export function SignupForm({ className, ...props }: React.ComponentProps<typeof 
   const router = useRouter();
   const [showPassword, setShowPassword] = React.useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = React.useState(false);
+
+  // Resolved Icons via Mapper
+  const UserIcon = getIconComponent("User");
+  const MailIcon = getIconComponent("Mail");
+  const LockIcon = getIconComponent("Lock");
+  const EyeIcon = getIconComponent("Eye");
+  const EyeOffIcon = getIconComponent("EyeOff");
+  const Loader2Icon = getIconComponent("Loader2");
 
   const form = useForm({
     defaultValues: { name: "", email: "", password: "" },
@@ -56,8 +64,8 @@ export function SignupForm({ className, ...props }: React.ComponentProps<typeof 
       className,
     )} {...props}>
       <CardHeader className="space-y-3 text-center pb-6 pt-10">
-        <div className="mx-auto mb-2 flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#ec4899] via-[#a855f7] to-[#7c3aed] shadow-xl shadow-[#a855f7]/30 -rotate-3 hover:rotate-0 transition-transform duration-300">
-          <User className="size-8 text-white" strokeWidth={1.5} />
+        <div className="mx-auto mb-2 flex size-16 items-center justify-center rounded-2xl bg-linear-to-br from-[#ec4899] via-[#a855f7] to-[#7c3aed] shadow-xl shadow-[#a855f7]/30 -rotate-3 hover:rotate-0 transition-transform duration-300">
+          <UserIcon className="size-8 text-white" strokeWidth={1.5} />
         </div>
         <CardTitle className="text-3xl font-extrabold tracking-tight">Create an account</CardTitle>
         <CardDescription className="text-[15px] leading-relaxed">Join SkillBridge as a student and unlock a world of knowledge.</CardDescription>
@@ -65,7 +73,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<typeof 
 
       <CardContent className="space-y-5 px-8">
         <Button type="button" variant="outline" className="w-full h-12 bg-background/70 hover:bg-muted/80 font-medium transition-all border-border/50 shadow-sm hover:shadow-md" onClick={handleGoogleSignup} disabled={isGoogleLoading}>
-          {isGoogleLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <GoogleIcon className="mr-2 h-5 w-5" />}
+          {isGoogleLoading ? <Loader2Icon className="mr-2 h-5 w-5 animate-spin" /> : <GoogleIcon className="mr-2 h-5 w-5" />}
           Continue with Google
         </Button>
 
@@ -85,7 +93,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<typeof 
                   <div className="relative group">
                     <Input value={field.state.value} onChange={(e) => field.handleChange(e.target.value)} onBlur={field.handleBlur} placeholder="e.g. John Doe" autoComplete="name"
                       className="h-12 pl-11 bg-background/70 border-border/50 rounded-xl shadow-sm focus:shadow-lg focus:shadow-[#7c3aed]/10 focus:border-[#7c3aed]/40 transition-all" />
-                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-muted-foreground group-focus-within:text-[#7c3aed] transition-colors" />
+                    <UserIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-muted-foreground group-focus-within:text-[#7c3aed] transition-colors" />
                   </div>
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
                 </Field>
@@ -100,7 +108,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<typeof 
                   <div className="relative group">
                     <Input type="email" value={field.state.value} onChange={(e) => field.handleChange(e.target.value)} onBlur={field.handleBlur} placeholder="you@example.com" autoComplete="email"
                       className="h-12 pl-11 bg-background/70 border-border/50 rounded-xl shadow-sm focus:shadow-lg focus:shadow-[#7c3aed]/10 focus:border-[#7c3aed]/40 transition-all" />
-                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-muted-foreground group-focus-within:text-[#7c3aed] transition-colors" />
+                    <MailIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-muted-foreground group-focus-within:text-[#7c3aed] transition-colors" />
                   </div>
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
                 </Field>
@@ -115,9 +123,9 @@ export function SignupForm({ className, ...props }: React.ComponentProps<typeof 
                   <div className="relative group">
                     <Input type={showPassword ? "text" : "password"} value={field.state.value} onChange={(e) => field.handleChange(e.target.value)} onBlur={field.handleBlur} placeholder="Create a strong password" autoComplete="new-password"
                       className="h-12 pl-11 pr-11 bg-background/70 border-border/50 rounded-xl shadow-sm focus:shadow-lg focus:shadow-[#7c3aed]/10 focus:border-[#7c3aed]/40 transition-all" />
-                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-muted-foreground group-focus-within:text-[#7c3aed] transition-colors" />
+                    <LockIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-muted-foreground group-focus-within:text-[#7c3aed] transition-colors" />
                     <button type="button" onClick={() => setShowPassword((s) => !s)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
-                      {showPassword ? <EyeOff className="h-[18px] w-[18px]" /> : <Eye className="h-[18px] w-[18px]" />}
+                      {showPassword ? <EyeOffIcon className="h-[18px] w-[18px]" /> : <EyeIcon className="h-[18px] w-[18px]" />}
                     </button>
                   </div>
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
@@ -127,9 +135,9 @@ export function SignupForm({ className, ...props }: React.ComponentProps<typeof 
           </div>
 
           <Button form="signup-form" type="submit" size="lg"
-            className="btn-3d w-full mt-2 h-12 font-bold text-[15px] rounded-xl bg-gradient-to-r from-[#ec4899] via-[#a855f7] to-[#7c3aed] text-white hover:opacity-95 transition-all"
+            className="btn-3d w-full mt-2 h-12 font-bold text-[15px] rounded-xl bg-linear-to-r from-[#ec4899] via-[#a855f7] to-[#7c3aed] text-white hover:opacity-95 transition-all"
             disabled={form.state.isSubmitting || !form.state.canSubmit}>
-            {form.state.isSubmitting ? (<><Loader2 className="mr-2 h-5 w-5 animate-spin" />Creating your account...</>) : "Create Account"}
+            {form.state.isSubmitting ? (<><Loader2Icon className="mr-2 h-5 w-5 animate-spin" />Creating your account...</>) : "Create Account"}
           </Button>
         </form>
       </CardContent>
@@ -137,7 +145,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<typeof 
       <CardFooter className="flex flex-col gap-2 pb-10 px-8">
         <p className="text-sm text-center text-muted-foreground">
           Already have an account?{" "}
-          <Link href="/login" className="font-bold bg-gradient-to-r from-[#7c3aed] to-[#ec4899] bg-clip-text text-transparent hover:opacity-80 transition-opacity">Sign in here</Link>
+          <Link href="/login" className="font-bold bg-linear-to-r from-[#7c3aed] to-[#ec4899] bg-clip-text text-transparent hover:opacity-80 transition-opacity">Sign in here</Link>
         </p>
       </CardFooter>
     </Card>

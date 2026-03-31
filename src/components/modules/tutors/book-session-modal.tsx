@@ -22,6 +22,7 @@ type Slot = {
   startTime: string;
   endTime: string;
   isBooked?: boolean;
+  type?: string;
 };
 
 function fmt(iso?: string) {
@@ -54,7 +55,17 @@ export function BookSessionModal({
   const [loading, setLoading] = React.useState(false);
   const router = useRouter();
 
-  const price = Number(hourlyRate ?? 0);
+  const packagePrice = React.useMemo(() => {
+    if (!selected || !hourlyRate) return 0;
+    const isPack = selected.type === "PACKAGE_30D";
+    const start = new Date(selected.startTime);
+    const end = new Date(selected.endTime);
+    const durationHours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+
+    return hourlyRate * durationHours * (isPack ? 30 : 1);
+  }, [selected, hourlyRate]);
+
+  const isPackage = selected?.type === "PACKAGE_30D";
 
   const onConfirm = async () => {
     if (!selected) return;
@@ -68,7 +79,7 @@ export function BookSessionModal({
       availabilityId: selected.id,
       scheduledStart: selected.startTime,
       scheduledEnd: selected.endTime,
-      price,
+      price: packagePrice,
     });
 
     if (!res.success) {
@@ -113,18 +124,21 @@ export function BookSessionModal({
 
       <DialogContent className="sm:max-w-[520px]">
         <DialogHeader>
-          <DialogTitle>Book a session</DialogTitle>
+          <DialogTitle>{isPackage ? "Book 30-Day Package" : "Book Single Session"}</DialogTitle>
           <DialogDescription>
-            Select an available slot. You&apos;ll be redirected to complete
-            payment after confirming.
+            {isPackage 
+              ? "Select a specific slot below. This timeblock will act as your daily recurring schedule for the next 30 consecutive days."
+              : "Select a single session slot below for a one-time meeting."}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-3">
           <div className="flex items-center justify-between rounded-lg border p-3">
             <div>
-              <p className="text-sm text-muted-foreground">Price</p>
-              <p className="text-lg font-semibold">৳{price}</p>
+              <p className="text-sm font-bold tracking-tight text-muted-foreground uppercase">
+                {isPackage ? "30-Day Contract" : "Single Session Total"}
+              </p>
+              <p className="text-xl font-extrabold text-[#10b981]">৳{packagePrice.toLocaleString()}</p>
             </div>
             <Badge variant="secondary">{openSlots.length} slots</Badge>
           </div>
@@ -135,7 +149,7 @@ export function BookSessionModal({
             </div>
           ) : (
             <div className="space-y-2">
-              <p className="text-sm font-medium">Choose a slot</p>
+              <p className="text-sm font-medium border-b border-border/50 pb-2 mb-2">Choose your daily schedule starting time</p>
 
               <div className="max-h-56 space-y-2 overflow-auto pr-1">
                 {openSlots.map((s) => {
@@ -154,8 +168,12 @@ export function BookSessionModal({
                     >
                       <div className="flex items-center justify-between gap-2">
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold">
+                          <p className="truncate text-sm font-semibold flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground tracking-widest uppercase font-normal">Starts:</span>
                             {fmt(s.startTime)}
+                            <Badge variant={s.type === 'PACKAGE_30D' ? "default" : "secondary"} className="text-[10px] ml-1 h-5 px-1.5">
+                              {s.type === 'PACKAGE_30D' ? '30 Days' : '1 Session'}
+                            </Badge>
                           </p>
                           <p className="text-xs text-muted-foreground">
                             {new Date(s.startTime).toLocaleTimeString(

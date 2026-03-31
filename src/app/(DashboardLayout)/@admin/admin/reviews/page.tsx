@@ -1,13 +1,15 @@
 import { getAdminReviewsAction } from "@/actions/admin-action";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Star, MessageSquare, ArrowLeft } from "lucide-react";
+import { Star, MessageSquare, ArrowLeft, TrendingUp, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import ReviewDeleteButton from "./review-delete-button";
+import { ReviewCharts } from "./review-charts";
 
 export default async function AdminReviewsPage() {
-  const { data: reviews } = await getAdminReviewsAction();
+  const response = await getAdminReviewsAction();
+  const reviews = response?.data;
   const allReviews = Array.isArray(reviews) ? reviews : [];
 
   const avgRating =
@@ -25,7 +27,7 @@ export default async function AdminReviewsPage() {
           <MessageSquare className="h-5 w-5 text-yellow-500" />
           <div>
             <h2 className="text-xl font-bold tracking-tight">
-              Review Moderation
+              Review Analytics & Moderation
             </h2>
             <p className="text-sm text-muted-foreground">
               {allReviews.length} platform reviews · Avg Rating: {avgRating}/5
@@ -68,6 +70,10 @@ export default async function AdminReviewsPage() {
         </Card>
       </div>
 
+      {/* Analytics Charts */}
+      <ReviewCharts reviews={allReviews} />
+
+
       {/* Review List */}
       {allReviews.length === 0 ? (
         <Card>
@@ -108,16 +114,19 @@ export default async function AdminReviewsPage() {
                     )}
 
                     <div className="flex gap-4 text-xs text-muted-foreground flex-wrap">
-                      <span>
+                      <span className="flex items-center gap-1.5">
+                        <Users className="h-3 w-3" />
                         <strong>Student:</strong>{" "}
                         {review.student?.name ?? "Unknown"}
                       </span>
-                      <span>
+                      <span className="flex items-center gap-1.5">
+                        <Users className="h-3 w-3" />
                         <strong>Tutor:</strong>{" "}
                         {review.tutor?.name ?? "Unknown"}
                       </span>
                       {review.booking?.scheduledStart && (
-                        <span>
+                        <span className="flex items-center gap-1.5">
+                          <TrendingUp className="h-3 w-3" />
                           <strong>Session:</strong>{" "}
                           {new Date(
                             review.booking.scheduledStart,

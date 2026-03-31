@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { AlertCircle, RefreshCcw, Home } from "lucide-react";
+import { getIconComponent } from "@/lib/icon-mapper";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -12,6 +12,10 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const AlertCircleIcon = getIconComponent("AlertCircle");
+  const RefreshCcwIcon = getIconComponent("RefreshCcw");
+  const HomeIcon = getIconComponent("Home");
+
   useEffect(() => {
     // Log the error to an error reporting service
     console.error("Runtime Custom Error:", error);
@@ -22,7 +26,7 @@ export default function Error({
       <div className="mx-auto flex w-full max-w-[450px] flex-col items-center text-center">
         {/* Graphic Area */}
         <div className="relative mb-6 flex size-24 items-center justify-center rounded-full bg-destructive/10 ring-8 ring-destructive/5">
-          <AlertCircle className="size-12 animate-pulse text-destructive" strokeWidth={1.5} />
+          <AlertCircleIcon className="size-12 animate-pulse text-destructive" strokeWidth={1.5} />
         </div>
         
         {/* Content */}
@@ -41,7 +45,7 @@ export default function Error({
             className="group w-full sm:w-auto"
             size="lg"
           >
-            <RefreshCcw className="mr-2 size-4 transition-transform duration-500 ease-in-out group-hover:-rotate-180" />
+            <RefreshCcwIcon className="mr-2 size-4 transition-transform duration-500 ease-in-out group-hover:-rotate-180" />
             Try Again
           </Button>
           <Button 
@@ -51,7 +55,7 @@ export default function Error({
             className="w-full sm:w-auto"
           >
             <Link href="/">
-              <Home className="mr-2 size-4" />
+              <HomeIcon className="mr-2 size-4" />
               Back to Home
             </Link>
           </Button>

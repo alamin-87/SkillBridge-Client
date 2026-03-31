@@ -8,22 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
-import {
-  Pencil,
-  Save,
-  X,
-  Mail,
-  Phone,
-  User,
-  Camera,
-  Globe,
-  Loader2,
-  Calendar,
-  ShieldCheck,
-  MapPin,
-  FileCode,
-  LayoutDashboard
-} from "lucide-react";
+import { getIconComponent } from "@/lib/icon-mapper";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -46,6 +31,22 @@ export default function ProfileForm({ user }: { user: any }) {
   const [file, setFile] = React.useState<File | null>(null);
   const [saving, setSaving] = React.useState(false);
   const router = useRouter();
+
+  // Resolved Icons via Mapper
+  const PencilIcon = getIconComponent("Pencil");
+  const SaveIcon = getIconComponent("Save");
+  const XIcon = getIconComponent("X");
+  const MailIcon = getIconComponent("Mail");
+  const PhoneIcon = getIconComponent("Phone");
+  const UserIcon = getIconComponent("User");
+  const CameraIcon = getIconComponent("Camera");
+  const GlobeIcon = getIconComponent("Globe");
+  const Loader2Icon = getIconComponent("Loader2");
+  const CalendarIcon = getIconComponent("Calendar");
+  const ShieldCheckIcon = getIconComponent("ShieldCheck");
+  const MapPinIcon = getIconComponent("MapPin");
+  const FileCodeIcon = getIconComponent("FileCode");
+  const LayoutDashboardIcon = getIconComponent("LayoutDashboard");
 
   const onSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,7 +107,7 @@ export default function ProfileForm({ user }: { user: any }) {
                 htmlFor="avatar-upload" 
                 className="absolute bottom-2 right-2 p-2 bg-indigo-600 text-white rounded-full cursor-pointer hover:bg-indigo-700 hover:scale-110 transition-all shadow-lg active:scale-95"
               >
-                <Camera className="w-5 h-5" />
+                <CameraIcon className="w-5 h-5" />
                 <input 
                   id="avatar-upload"
                   type="file" 
@@ -134,7 +135,7 @@ export default function ProfileForm({ user }: { user: any }) {
                 </Badge>
               </div>
               <p className="text-muted-foreground flex items-center gap-2 font-medium">
-                <Mail className="w-4 h-4 text-primary/60" />
+                <MailIcon className="w-4 h-4 text-primary/60" />
                 {user?.email}
               </p>
             </div>
@@ -145,7 +146,7 @@ export default function ProfileForm({ user }: { user: any }) {
                 variant="outline" 
                 className="group border-primary/20 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 rounded-full h-11 px-6 shadow-sm"
               >
-                <Pencil className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform" />
+                <PencilIcon className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform" />
                 Edit Profile
               </Button>
             )}
@@ -159,7 +160,7 @@ export default function ProfileForm({ user }: { user: any }) {
           <Card className="shadow-lg border-primary/5 bg-card/40 backdrop-blur-sm overflow-hidden">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                <ShieldCheckIcon className="w-4 h-4 text-emerald-500" />
                 Account Insight
               </CardTitle>
             </CardHeader>
@@ -177,7 +178,7 @@ export default function ProfileForm({ user }: { user: any }) {
               <div className="space-y-4">
                 <div className="flex items-center justify-between text-sm group">
                   <span className="text-muted-foreground flex items-center gap-2 group-hover:text-foreground transition-colors font-medium">
-                     <Calendar className="w-4 h-4 text-indigo-500" />
+                     <CalendarIcon className="w-4 h-4 text-indigo-500" />
                      Member Since
                   </span>
                   <span className="font-bold">
@@ -186,7 +187,7 @@ export default function ProfileForm({ user }: { user: any }) {
                 </div>
                 <div className="flex items-center justify-between text-sm group">
                   <span className="text-muted-foreground flex items-center gap-2 group-hover:text-foreground transition-colors font-medium">
-                     <Globe className="w-4 h-4 text-pink-500" />
+                     <GlobeIcon className="w-4 h-4 text-pink-500" />
                      Timezone
                   </span>
                   <span className="font-bold">UTC +06:00</span>
@@ -195,7 +196,7 @@ export default function ProfileForm({ user }: { user: any }) {
 
               <div className="pt-4">
                 <Button variant="ghost" className="w-full justify-start text-xs text-muted-foreground hover:text-indigo-600 hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 rounded-lg h-9">
-                   <LayoutDashboard className="w-3.5 h-3.5 mr-2" />
+                   <LayoutDashboardIcon className="w-3.5 h-3.5 mr-2" />
                    View Learning Stats
                 </Button>
               </div>
@@ -207,7 +208,7 @@ export default function ProfileForm({ user }: { user: any }) {
         <Card className="md:col-span-2 shadow-lg border-primary/5 bg-card/40 backdrop-blur-sm overflow-hidden">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-              <User className="w-4 h-4 text-indigo-500" />
+              <UserIcon className="w-4 h-4 text-indigo-500" />
               Primary Information
             </CardTitle>
           </CardHeader>
@@ -217,7 +218,7 @@ export default function ProfileForm({ user }: { user: any }) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2.5">
                     <Label className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-2">
-                      <User className="w-3 h-3" />
+                      <UserIcon className="w-3 h-3" />
                       Full Name
                     </Label>
                     <Input 
@@ -230,7 +231,7 @@ export default function ProfileForm({ user }: { user: any }) {
 
                   <div className="space-y-2.5">
                     <Label className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-2">
-                      <Phone className="w-3 h-3" />
+                      <PhoneIcon className="w-3 h-3" />
                       Contact Number
                     </Label>
                     <Input 
@@ -245,7 +246,7 @@ export default function ProfileForm({ user }: { user: any }) {
                 <div className="space-y-4 p-5 rounded-2xl bg-muted/30 border border-primary/5">
                   <div className="flex items-center justify-between">
                     <Label className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-2">
-                      <Camera className="w-3 h-3" />
+                      <CameraIcon className="w-3 h-3" />
                       Profile Picture
                     </Label>
                     <Button
@@ -267,7 +268,7 @@ export default function ProfileForm({ user }: { user: any }) {
                       />
                       <div className="flex flex-col items-center justify-center h-28 pointer-events-none gap-2">
                          <div className="p-3 rounded-full bg-indigo-500/10 group-hover:bg-indigo-500/20 transition-colors">
-                           <Camera className="w-6 h-6 text-indigo-600" />
+                           <CameraIcon className="w-6 h-6 text-indigo-600" />
                          </div>
                          <p className="text-xs font-bold text-muted-foreground">
                             {file ? file.name : "Click to upload your photo"}
@@ -292,7 +293,7 @@ export default function ProfileForm({ user }: { user: any }) {
                     disabled={saving}
                     className="h-11 px-6 rounded-full font-bold hover:bg-destructive/5 hover:text-destructive transition-colors"
                   >
-                    <X className="w-4 h-4 mr-2" />
+                    <XIcon className="w-4 h-4 mr-2" />
                     Cancel
                   </Button>
                   <Button 
@@ -302,12 +303,12 @@ export default function ProfileForm({ user }: { user: any }) {
                   >
                     {saving ? (
                       <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        <Loader2Icon className="w-4 h-4 mr-2 animate-spin" />
                         Saving changes...
                       </>
                     ) : (
                       <>
-                        <Save className="w-4 h-4 mr-2" />
+                        <SaveIcon className="w-4 h-4 mr-2" />
                         Save Changes
                       </>
                     )}
@@ -321,7 +322,7 @@ export default function ProfileForm({ user }: { user: any }) {
                     <p className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em]">Full Name</p>
                     <div className="flex items-center gap-4 group">
                       <div className="p-2.5 rounded-xl bg-indigo-500/5 group-hover:bg-indigo-500/10 transition-colors">
-                        <User className="w-5 h-5 text-indigo-500" />
+                        <UserIcon className="w-5 h-5 text-indigo-500" />
                       </div>
                       <p className="text-lg font-bold truncate leading-none">{user?.name || "N/A"}</p>
                     </div>
@@ -331,7 +332,7 @@ export default function ProfileForm({ user }: { user: any }) {
                     <p className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em]">Contact Phone</p>
                     <div className="flex items-center gap-4 group">
                       <div className="p-2.5 rounded-xl bg-pink-500/5 group-hover:bg-pink-500/10 transition-colors">
-                        <Phone className="w-5 h-5 text-pink-500" />
+                        <PhoneIcon className="w-5 h-5 text-pink-500" />
                       </div>
                       <p className="text-lg font-bold truncate leading-none">{user?.phone || "Not set"}</p>
                     </div>
@@ -341,7 +342,7 @@ export default function ProfileForm({ user }: { user: any }) {
                     <p className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em]">Email Address</p>
                     <div className="flex items-center gap-4 group">
                       <div className="p-2.5 rounded-xl bg-orange-500/5 group-hover:bg-orange-500/10 transition-colors">
-                        <Mail className="w-5 h-5 text-orange-500" />
+                        <MailIcon className="w-5 h-5 text-orange-500" />
                       </div>
                       <p className="text-lg font-bold truncate leading-none">{user?.email || "N/A"}</p>
                     </div>
@@ -351,7 +352,7 @@ export default function ProfileForm({ user }: { user: any }) {
                     <p className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em]">Default Location</p>
                     <div className="flex items-center gap-4 group">
                       <div className="p-2.5 rounded-xl bg-blue-500/5 group-hover:bg-blue-500/10 transition-colors">
-                        <MapPin className="w-5 h-5 text-blue-500" />
+                        <MapPinIcon className="w-5 h-5 text-blue-500" />
                       </div>
                       <p className="text-lg font-bold truncate leading-none">Bangladesh</p>
                     </div>
@@ -360,7 +361,7 @@ export default function ProfileForm({ user }: { user: any }) {
 
                 <div className="space-y-4 pt-10">
                   <p className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] flex items-center gap-2">
-                    <FileCode className="w-3 h-3" />
+                    <FileCodeIcon className="w-3 h-3" />
                     Technical ID
                   </p>
                   <div className="relative group">

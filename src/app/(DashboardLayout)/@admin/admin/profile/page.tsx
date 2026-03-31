@@ -8,62 +8,11 @@ import { getAdminMeAction } from "@/actions/admin-action";
 
 export default async function AdminProfilePage() {
   const { success, data, message } = await getAdminMeAction();
-  if (!success) return <div>Failed to load profile: {message}</div>;
-
-  const me = data;
+  if (!success) return <div className="p-8 text-center text-red-500 font-bold bg-red-50 rounded-xl border border-red-100">Failed to load system profile: {message}</div>;
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <User className="h-5 w-5 text-blue-500" />
-          <div>
-            <h2 className="text-xl font-bold tracking-tight">Admin Profile</h2>
-            <p className="text-sm text-muted-foreground">
-              Update your account information
-            </p>
-          </div>
-        </div>
-
-        <Button asChild size="sm" variant="outline">
-          <Link href="/admin">
-            <ArrowLeft className="h-3.5 w-3.5 mr-1" />
-            Dashboard
-          </Link>
-        </Button>
-      </div>
-
-      {/* Profile Info */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Account</CardTitle>
-          <div className="flex items-center gap-2">
-            <Badge variant="secondary">{me?.role ?? "ADMIN"}</Badge>
-            <Badge variant="secondary">{me?.status ?? "ACTIVE"}</Badge>
-          </div>
-        </CardHeader>
-
-        <CardContent className="space-y-4">
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div>
-              <p className="text-sm text-muted-foreground">Name</p>
-              <p className="font-medium">{me?.name ?? "—"}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Email</p>
-              <p className="font-medium">{me?.email ?? "—"}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Phone</p>
-              <p className="font-medium">{me?.phone ?? "—"}</p>
-            </div>
-          </div>
-
-          {/* Edit Form */}
-          <AdminProfileForm defaultValues={me} />
-        </CardContent>
-      </Card>
+    <div className="space-y-6 animate-in fade-in duration-500">
+      <AdminProfileForm defaultValues={data} />
     </div>
   );
 }
