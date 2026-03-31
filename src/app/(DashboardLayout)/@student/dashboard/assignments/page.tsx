@@ -86,20 +86,73 @@ export default async function StudentAssignmentsPage({
                         {assignment.description}
                       </p>
                     )}
+
+                    {/* 🔥 Tutor Resources (PDFs/Docs) */}
+                    {assignment.files && Array.isArray(assignment.files) && assignment.files.length > 0 && (
+                      <div className="flex flex-wrap gap-2 py-2">
+                        {assignment.files.map((file: any, idx: number) => (
+                          <a 
+                            key={idx} 
+                            href={file.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-[10px] bg-blue-500/10 text-blue-600 px-2 py-1 rounded-md hover:bg-blue-500/20 transition-all font-black flex items-center border border-blue-500/20"
+                          >
+                            📖 Resource {idx + 1}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+
                     <div className="text-xs text-muted-foreground/80 font-medium">
                       Date: {fmt(assignment.createdAt)}
                     </div>
                     
+                    {/* 🔥 Student's own Submission Files */}
+                    {isSubmitted && submission.files && Array.isArray(submission.files) && submission.files.length > 0 && (
+                      <div className="bg-muted/50 rounded-lg p-3 mt-4 space-y-2">
+                        <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                          Your Submitted Answer(s)
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {submission.files.map((file: any, idx: number) => (
+                            <a 
+                              key={idx} 
+                              href={file.url} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-[10px] bg-primary/10 text-primary px-2 py-1 rounded-md hover:bg-primary/20 transition-all font-bold flex items-center border border-primary/20"
+                            >
+                              📁 File {idx + 1}
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     {isSubmitted && submission.grade !== null && (
-                      <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 mt-4">
-                        <div className="text-xs font-semibold text-emerald-600 uppercase tracking-widest mb-1">
-                          Grade Received
+                      <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 mt-4 animate-in slide-in-from-bottom-2 duration-700">
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="text-xs font-semibold text-emerald-600 uppercase tracking-widest">
+                            Grade Received
+                          </div>
+                          {/* 🔥 Evaluation Report (PDF) */}
+                          {submission.evaluationReport && (
+                             <a 
+                              href={submission.evaluationReport.url} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-[9px] font-black bg-emerald-600 text-white px-2 py-0.5 rounded shadow-sm hover:scale-105 transition-transform"
+                             >
+                               DOWNLOAD REPORT
+                             </a>
+                          )}
                         </div>
                         <div className="text-2xl font-bold text-emerald-700">
                           {submission.grade} <span className="text-sm font-medium text-emerald-600/70">/ 100</span>
                         </div>
                         {submission.feedback && (
-                          <div className="text-sm text-emerald-700/80 mt-2 italic">
+                          <div className="text-sm text-emerald-700/80 mt-2 italic border-l-2 border-emerald-500/30 pl-2">
                             "{submission.feedback}"
                           </div>
                         )}

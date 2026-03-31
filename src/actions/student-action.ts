@@ -90,6 +90,8 @@ export async function requestToBecomeTutorAction(payload: {
   experienceYrs: number;
   location?: string;
   languages?: string;
+  institution?: string;
+  categories?: string[];
 }) {
   try {
     const res = await studentService.requestToBecomeTutor(payload);
@@ -125,5 +127,20 @@ export async function getMyReviewsAction() {
     return { success: true, data: res.data ?? [] };
   } catch {
     return { success: false, data: [] };
+  }
+}
+
+export async function cancelBookingAction(bookingId: string, reason?: string) {
+  try {
+    const res = await studentService.cancelBooking(bookingId, reason);
+    return {
+      success: true,
+      message: res.message ?? "Booking cancelled successfully",
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err.message || "Failed to cancel booking",
+    };
   }
 }

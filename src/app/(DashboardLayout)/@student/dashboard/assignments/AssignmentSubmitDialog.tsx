@@ -13,25 +13,28 @@ import { useRouter } from "next/navigation";
 export function AssignmentSubmitDialog({ assignmentId, assignmentTitle }: { assignmentId: string; assignmentTitle: string }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<FileList | null>(null);
   const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!file) {
-      toast.error("Please select a file to upload.");
+    if (!files || files.length === 0) {
+      toast.error("Please select at least one file to upload.");
       return;
     }
 
     setLoading(true);
     const formData = new FormData();
-    formData.append("files", file);
+    Array.from(files).forEach((file) => {
+      formData.append("files", file);
+    });
 
     try {
       const res = await submitAssignmentAction(assignmentId, formData);
       if (res?.success) {
         toast.success("Assignment submitted successfully!");
         setOpen(false);
+        setFiles(null);
         router.refresh();
       } else {
         toast.error(res?.message || "Failed to submit assignment.");
@@ -56,31 +59,33 @@ export function AssignmentSubmitDialog({ assignmentId, assignmentTitle }: { assi
           <DialogTitle>Submit Assignment</DialogTitle>
           <DialogDescription>
             Upload your work for <strong>{assignmentTitle}</strong>. 
-            Only 1 file can be uploaded at a time.
+            You can upload up to 5 files.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6 pt-4">
           <div className="grid gap-2">
-            <Label htmlFor="file">Upload Document (PDF, Image, or Doc)</Label>
+            <Label htmlFor="file">Upload Documents (Any)</Label>
             <div className={`
               border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center transition-colors
-              ${file ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50"}
+              ${files && files.length > 0 ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50"}
             `}>
               <Input
                 id="file"
                 type="file"
+                multiple
                 className="hidden"
-                onChange={(e) => setFile(e.target.files?.[0] || null)}
-                accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+                onChange={(e) => setFiles(e.target.files)}
               />
               <Label htmlFor="file" className="cursor-pointer flex flex-col items-center gap-2">
-                {file ? (
+                {files && files.length > 0 ? (
                   <>
                     <div className="h-12 w-12 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mb-2">
                       <CheckCircle2 className="h-6 w-6" />
                     </div>
-                    <span className="font-semibold text-sm truncate max-w-[200px]">{file.name}</span>
-                    <span className="text-xs text-muted-foreground">Click to change file</span>
+                    <span className="font-semibold text-sm truncate max-w-[200px]">
+                      {files.length} file(s) selected
+                    </span>
+                    <span className="text-xs text-muted-foreground">Click to change files</span>
                   </>
                 ) : (
                   <>
@@ -88,7 +93,7 @@ export function AssignmentSubmitDialog({ assignmentId, assignmentTitle }: { assi
                       <UploadCloud className="h-5 w-5" />
                     </div>
                     <span className="font-semibold text-sm">Browse files</span>
-                    <span className="text-xs text-muted-foreground">PDF or Images up to 5MB</span>
+                    <span className="text-xs text-muted-foreground">Any file up to 5MB</span>
                   </>
                 )}
               </Label>
@@ -98,7 +103,7 @@ export function AssignmentSubmitDialog({ assignmentId, assignmentTitle }: { assi
             <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading}>
               Cancel
             </Button>
-            <Button type="submit" disabled={!file || loading}>
+            <Button type="submit" disabled={!files || files.length === 0 || loading}>
               {loading ? "Uploading..." : "Submit Answer"}
             </Button>
           </DialogFooter>

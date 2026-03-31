@@ -46,6 +46,7 @@ export async function getTutorAvailabilityAction() {
 export async function createTutorSlotAction(payload: {
   startTime: string;
   endTime: string;
+  type?: "SINGLE" | "PACKAGE_30D";
 }) {
   try {
     // Get tutor profile to include ID in request
@@ -69,6 +70,7 @@ export async function createTutorSlotAction(payload: {
         {
           startTime: payload.startTime,
           endTime: payload.endTime,
+          type: payload.type || "SINGLE",
         },
       ],
     };
@@ -143,6 +145,47 @@ export async function deleteTutorSlotAction(availabilityId: string) {
       success: false,
       data: null,
       message: "Delete failed",
+      error: { message: err?.message ?? "error", err },
+    };
+  }
+}
+
+export async function bulkCreateTutorSlotsAction(payload: {
+  slots: { startTime: string; endTime: string; type?: "SINGLE" | "PACKAGE_30D" }[];
+}) {
+  try {
+    const profileRes = await tutorService.getMyProfile();
+    if (!profileRes?.success || !profileRes?.data) {
+      return {
+        success: false,
+        message: "Tutor profile not found",
+      };
+    }
+
+    const tutorProfileId = profileRes.data.id;
+    const slotPayload = {
+      tutorProfileId,
+      slots: payload.slots,
+    };
+
+    const res = await availabilityService.createSlot(slotPayload);
+    if (!res?.success) {
+      return {
+        success: false,
+        message: res?.message ?? "Bulk creation failed",
+        error: { message: res?.error ?? "Unknown error" },
+      };
+    }
+
+    revalidatePath("/tutor/availability");
+    return {
+      success: true,
+      message: `${payload.slots.length} slots created successfully`,
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      message: "Bulk creation failed",
       error: { message: err?.message ?? "error", err },
     };
   }

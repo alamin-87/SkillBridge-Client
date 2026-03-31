@@ -3,6 +3,7 @@ import {
   getStudentMeAction,
   getStudentBookingsAction,
   getMyTutorRequestAction,
+  getMyReviewsAction,
 } from "@/actions/student-action";
 import { getAssignmentsAction } from "@/actions/assignment-action";
 import { getMyPaymentsAction } from "@/actions/payment-action";
@@ -14,6 +15,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { getIconComponent } from "@/lib/icon-mapper";
+import { DashboardCharts } from "./dashboard-charts";
+import { Separator } from "@/components/ui/separator";
 
 function fmt(dt?: string) {
   if (!dt) return "—";
@@ -75,13 +78,14 @@ function getInitials(name: string) {
 }
 
 export default async function StudentDashboardHistoryPage() {
-  const [meRes, bookingsRes, assignmentsRes, paymentsRes, tutorReqRes] =
+  const [meRes, bookingsRes, assignmentsRes, paymentsRes, tutorReqRes, reviewsRes] =
     await Promise.all([
       getStudentMeAction(),
-      getStudentBookingsAction({ page: 1, limit: 10 }),
-      getAssignmentsAction({ page: 1, limit: 10 }),
-      getMyPaymentsAction({ page: 1, limit: 10 }),
+      getStudentBookingsAction({ page: 1, limit: 100 }), // increased limit for charts
+      getAssignmentsAction({ page: 1, limit: 100 }),
+      getMyPaymentsAction({ page: 1, limit: 100 }),
       getMyTutorRequestAction(),
+      getMyReviewsAction(),
     ]);
 
   if (!meRes.success) return <div>Failed to load student info</div>;
@@ -91,9 +95,14 @@ export default async function StudentDashboardHistoryPage() {
   const bookings = Array.isArray(bookingsRes.data) ? bookingsRes.data : [];
   const assignments = Array.isArray(assignmentsRes?.data) ? assignmentsRes.data : [];
   const payments = Array.isArray(paymentsRes?.data) ? paymentsRes.data : [];
+  const reviews = Array.isArray(reviewsRes?.data) ? reviewsRes.data : [];
 
   const tutorRequest = tutorReqRes?.data;
   const stats = countByStatus(bookings);
+  const totalSpent = payments.reduce((acc: number, p: any): number => acc + (p.amount || 0), 0);
+
+  // Get unique tutors
+  const uniqueTutors = new Set(bookings.map((b: any) => getTutorCardInfo(b).tutorId).filter(Boolean)).size;
 
   // Unified Icons via Mapper
   const CalendarIcon = getIconComponent("CalendarCheck");
@@ -101,6 +110,8 @@ export default async function StudentDashboardHistoryPage() {
   const ClipboardIcon = getIconComponent("ClipboardList");
   const PaymentIcon = getIconComponent("CreditCard");
   const GraduationIcon = getIconComponent("GraduationCap");
+  const StarIcon = getIconComponent("Star");
+  const UserIcon = getIconComponent("Users");
 
   const recent = [...bookings]
     .sort((a, b) => {
@@ -113,66 +124,61 @@ export default async function StudentDashboardHistoryPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Header */}
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center justify-between gap-3 bg-muted/20 p-6 rounded-3xl border border-primary/5">
         <div>
-          <h2 className="text-xl font-bold tracking-tight">
+          <h2 className="text-2xl font-bold tracking-tight bg-linear-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
             Welcome{me?.name ? `, ${me.name}` : ""} 👋
           </h2>
-          <p className="text-sm text-muted-foreground">
-            Here&apos;s your latest activity overview.
+          <p className="text-xs text-muted-foreground mt-1">
+            Monitoring your learning metrics and session history.
           </p>
         </div>
-        <Button asChild variant="outline" size="sm">
-          <Link href="/dashboard/bookings">View all bookings</Link>
+        <Button asChild variant="outline" size="sm" className="rounded-full px-6 bg-background hover:bg-muted font-bold border-primary/10">
+          <Link href="/dashboard/bookings">Browse History</Link>
         </Button>
       </div>
 
-      {/* Stats */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="border-l-4 border-l-blue-500">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Bookings</CardTitle>
-            <CalendarIcon className="h-4 w-4 text-blue-500" />
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{bookings.length}</p>
-            <p className="text-xs text-muted-foreground">{stats.CONFIRMED} upcoming</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-l-4 border-l-emerald-500">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Completed</CardTitle>
-            <BookIcon className="h-4 w-4 text-emerald-500" />
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{stats.COMPLETED}</p>
-            <p className="text-xs text-muted-foreground">sessions done</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-l-4 border-l-violet-500">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Assignments</CardTitle>
-            <ClipboardIcon className="h-4 w-4 text-violet-500" />
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{assignments.length}</p>
-            <p className="text-xs text-muted-foreground">total received</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-l-4 border-l-amber-500">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Payments</CardTitle>
-            <PaymentIcon className="h-4 w-4 text-amber-500" />
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{payments.length}</p>
-            <p className="text-xs text-muted-foreground">transactions</p>
-          </CardContent>
-        </Card>
+      {/* Stats Summary Rows - 5 Column Grid for Compactness */}
+      <div className="grid gap-3 grid-cols-2 md:grid-cols-5">
+        {[
+           { title: "Bookings", value: bookings.length, icon: CalendarIcon, color: "text-blue-500", bg: "bg-blue-500/5" },
+           { title: "Tasks", value: assignments.length, icon: ClipboardIcon, color: "text-violet-500", bg: "bg-violet-500/5" },
+           { title: "Reviews", value: reviews.length, icon: StarIcon, color: "text-pink-500", bg: "bg-pink-500/5" },
+           { title: "Tutors", value: uniqueTutors, icon: UserIcon, color: "text-emerald-500", bg: "bg-emerald-500/5" },
+           { title: "Spent", value: `৳${totalSpent}`, icon: PaymentIcon, color: "text-amber-500", bg: "bg-amber-500/5" },
+        ].map((item, i) => (
+           <Card key={i} className={`border-none shadow-sm ${item.bg} hover:shadow-md transition-all group`}>
+              <CardContent className="p-4 flex flex-col items-center text-center">
+                 <div className={`p-2 rounded-xl bg-background shadow-xs group-hover:scale-110 transition-transform mb-3`}>
+                    <item.icon className={`h-4 w-4 ${item.color}`} />
+                 </div>
+                 <p className="text-xl font-black tracking-tight">{item.value}</p>
+                 <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mt-1">{item.title}</p>
+              </CardContent>
+           </Card>
+        ))}
       </div>
+
+      <Separator className="bg-primary/5 h-px" />
+
+      {/* Main Stats Charts Area */}
+      <div>
+         <div className="mb-6">
+            <h3 className="text-lg font-bold flex items-center gap-2">
+                <div className="w-1.5 h-6 bg-indigo-600 rounded-full" />
+                Performance & Analytics
+            </h3>
+            <p className="text-sm text-muted-foreground ml-3.5 mt-1 sm:max-w-md">Visual data covering your learning progress, upcoming sessions and transaction history.</p>
+         </div>
+         <DashboardCharts 
+            bookings={bookings} 
+            assignments={assignments} 
+            payments={payments} 
+            reviews={reviews} 
+         />
+      </div>
+
+      <Separator className="bg-primary/5 h-px" />
 
       {/* Become a Tutor CTA */}
       {!tutorRequest && (

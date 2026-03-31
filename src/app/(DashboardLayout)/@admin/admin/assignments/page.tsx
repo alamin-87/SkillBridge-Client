@@ -56,6 +56,23 @@ export default async function AdminAssignmentsPage() {
                     <p className="text-sm text-muted-foreground line-clamp-1">
                       {assignment.description || "No description provided"}
                     </p>
+                    
+                    {/* 🔥 Admin Audit: Tutor Resources */}
+                    {assignment.files && Array.isArray(assignment.files) && assignment.files.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {assignment.files.map((file: any, idx: number) => (
+                          <a 
+                            key={idx} 
+                            href={file.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-[10px] bg-blue-500/10 text-blue-600 px-2 py-0.5 rounded-full hover:bg-blue-500/20 transition-colors"
+                          >
+                            PDF Resource {idx + 1}
+                          </a>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   <AssignmentDeleteButton assignmentId={assignment.id} />
                 </div>
@@ -110,6 +127,40 @@ export default async function AdminAssignmentsPage() {
                     <p className="text-sm text-muted-foreground">Public Assignment</p>
                   )}
                 </div>
+
+                {/* 🔥 Admin Audit: Student Submissions */}
+                {assignment.submissions && assignment.submissions.length > 0 && (
+                  <div className="col-span-full mt-4 border-t pt-4">
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Student Submissions Audit</p>
+                    <div className="space-y-3">
+                      {assignment.submissions.map((sub: any) => (
+                        <div key={sub.id} className="flex items-center justify-between text-xs bg-muted/30 p-2 rounded-md">
+                          <div className="flex items-center gap-3">
+                            <span className="font-semibold">{sub.student?.name}</span>
+                            <div className="flex gap-2">
+                              {sub.files && sub.files.length > 0 && sub.files.map((f: any, i: number) => (
+                                <a 
+                                  key={i} 
+                                  href={f.url} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="text-[9px] bg-blue-500/10 text-blue-600 px-1.5 py-0.5 rounded hover:bg-blue-500/20"
+                                >
+                                  📄 Ans {i + 1}
+                                </a>
+                              ))}
+                            </div>
+                          </div>
+                          {sub.grade !== null && (
+                            <Badge variant="outline" className="text-[9px] py-0 h-4 bg-emerald-500/5 text-emerald-600">
+                              Grade: {sub.grade}
+                            </Badge>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}

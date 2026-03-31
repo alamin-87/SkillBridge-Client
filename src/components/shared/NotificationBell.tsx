@@ -44,8 +44,8 @@ export function NotificationBell() {
 
   useEffect(() => {
     fetchNotifications();
-    // Set up an interval to poll every 10 seconds for real-time feel
-    const interval = setInterval(fetchNotifications, 10000);
+    // Set up an interval to poll every 3 seconds for real-time feel
+    const interval = setInterval(fetchNotifications, 3000);
     return () => clearInterval(interval);
   }, []);
 

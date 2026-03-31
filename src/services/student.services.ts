@@ -138,4 +138,20 @@ export const studentService = {
     if (!res.ok) return { success: false, data: [] };
     return res.json();
   },
+
+  async cancelBooking(bookingId: string, reason?: string) {
+    const res = await fetch(`${API_URL}/api/v1/bookings/${bookingId}/cancel`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        ...((await withAuthHeaders()) ?? {}),
+      },
+      body: JSON.stringify({ reason }),
+    });
+    if (!res.ok) {
+      const txt = await res.text().catch(() => "");
+      throw new Error(`cancelBooking failed: ${res.status} ${txt}`);
+    }
+    return res.json();
+  },
 };

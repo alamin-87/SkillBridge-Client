@@ -36,6 +36,7 @@ export default function CreateAssignmentDialog({ bookingOptions }: Props) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [bookingId, setBookingId] = useState("");
+  const [files, setFiles] = useState<FileList | null>(null);
   const [error, setError] = useState("");
 
   function handleSubmit() {
@@ -45,16 +46,24 @@ export default function CreateAssignmentDialog({ bookingOptions }: Props) {
     }
     setError("");
     startTransition(async () => {
-      const res = await createAssignmentAction({
-        title: title.trim(),
-        description: description.trim() || undefined,
-        bookingId: bookingId || undefined,
-      });
+      const formData = new FormData();
+      formData.append("title", title.trim());
+      formData.append("description", description.trim());
+      if (bookingId) formData.append("bookingId", bookingId);
+      
+      if (files) {
+        Array.from(files).forEach((file) => {
+          formData.append("files", file);
+        });
+      }
+
+      const res = await createAssignmentAction(formData);
       if (res.success) {
         setOpen(false);
         setTitle("");
         setDescription("");
         setBookingId("");
+        setFiles(null);
         router.refresh();
       } else {
         setError(res.message ?? "Failed to create assignment");
@@ -95,6 +104,22 @@ export default function CreateAssignmentDialog({ bookingOptions }: Props) {
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="files">Resource Files (PDF/Image/Etc)</Label>
+            <Input
+              id="files"
+              type="file"
+              multiple
+              onChange={(e) => setFiles(e.target.files)}
+              className="cursor-pointer"
+            />
+            {files && files.length > 0 && (
+              <p className="text-[10px] text-muted-foreground font-medium">
+                {files.length} file(s) selected
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">

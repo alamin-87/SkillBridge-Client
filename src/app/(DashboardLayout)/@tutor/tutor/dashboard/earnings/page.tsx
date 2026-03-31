@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { EarningsCharts } from "./earnings-charts";
 
 const statusStyle: Record<string, string> = {
   COMPLETED: "bg-emerald-500/10 text-emerald-600 border-emerald-200",
@@ -21,6 +22,7 @@ const statusStyle: Record<string, string> = {
   INITIATED: "bg-amber-500/10 text-amber-600 border-amber-200",
   FAILED: "bg-red-500/10 text-red-600 border-red-200",
   REFUNDED: "bg-slate-500/10 text-slate-600 border-slate-200",
+  CANCELLED: "bg-rose-500/10 text-rose-600 border-rose-200",
 };
 
 export default async function TutorEarningsPage() {
@@ -39,12 +41,16 @@ export default async function TutorEarningsPage() {
   const calculatedTotal = transactions
     .filter(
       (t: any) =>
-        t.status === "COMPLETED" || t.status === "SUCCEEDED" || t.status === "SUCCESS"
+        (t.status === "COMPLETED" || t.status === "SUCCEEDED" || t.status === "SUCCESS") &&
+        t.booking?.status !== "CANCELLED"
     )
     .reduce((sum: number, t: any) => sum + (t.amount ?? 0), 0);
 
   const pendingAmount = transactions
-    .filter((t: any) => t.status === "PENDING" || t.status === "INITIATED")
+    .filter((t: any) => 
+      (t.status === "PENDING" || t.status === "INITIATED") && 
+      t.booking?.status !== "CANCELLED"
+    )
     .reduce((sum: number, t: any) => sum + (t.amount ?? 0), 0);
 
   return (
@@ -71,46 +77,49 @@ export default async function TutorEarningsPage() {
 
       {/* Summary Cards */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <Card className="border-l-4 border-l-emerald-500">
+        <Card className="shadow-lg border-primary/5 bg-card/40 backdrop-blur-sm group hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-500/10 hover:border-emerald-500/20 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
               Total Revenue
             </CardTitle>
             <ArrowUpRight className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold tabular-nums text-emerald-600">
+            <p className="text-2xl font-black tabular-nums text-emerald-600">
               ৳{calculatedTotal.toLocaleString()}
             </p>
           </CardContent>
         </Card>
 
-        <Card className="border-l-4 border-l-amber-500">
+        <Card className="shadow-lg border-primary/5 bg-card/40 backdrop-blur-sm group hover:-translate-y-1 hover:shadow-2xl hover:shadow-amber-500/10 hover:border-amber-500/20 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
               Pending
             </CardTitle>
             <TrendingUp className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold tabular-nums">
+            <p className="text-2xl font-black tabular-nums text-foreground/80">
               ৳{pendingAmount.toLocaleString()}
             </p>
           </CardContent>
         </Card>
 
-        <Card className="border-l-4 border-l-blue-500">
+        <Card className="shadow-lg border-primary/5 bg-card/40 backdrop-blur-sm group hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 hover:border-blue-500/20 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
               Transactions
             </CardTitle>
             <ArrowDownRight className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">{transactions.length}</p>
+            <p className="text-2xl font-black tabular-nums">{transactions.length}</p>
           </CardContent>
         </Card>
       </div>
+
+      {/* 📊 Earning Analytics */}
+      <EarningsCharts transactions={transactions} />
 
       {/* Table */}
       {transactions.length === 0 ? (
@@ -175,10 +184,18 @@ export default async function TutorEarningsPage() {
                           variant="outline"
                           className={cn(
                             "px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider",
-                            statusStyle[t.status] ?? "bg-slate-100 text-slate-800"
+                            t.booking?.status === "CANCELLED" 
+                              ? statusStyle.CANCELLED 
+                              : (statusStyle[t.status] ?? "bg-slate-100 text-slate-800")
                           )}
                         >
-                          {t.status === "SUCCESS" ? "Completed" : t.status === "INITIATED" ? "Pending" : t.status}
+                          {t.booking?.status === "CANCELLED" 
+                            ? "Cancelled" 
+                            : t.status === "SUCCESS" || t.status === "SUCCEEDED" || t.status === "COMPLETED"
+                              ? "Completed" 
+                              : t.status === "INITIATED" || t.status === "PENDING"
+                                ? "Pending" 
+                                : t.status}
                         </Badge>
                       </td>
                       <td className="p-3 font-mono text-xs text-muted-foreground truncate max-w-[120px]">

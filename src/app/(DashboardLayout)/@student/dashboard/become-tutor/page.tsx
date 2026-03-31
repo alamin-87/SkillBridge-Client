@@ -115,6 +115,28 @@ export default async function BecomeTutorPage() {
                   <p className="text-sm mt-1">{request.languages}</p>
                 </div>
               )}
+              {request.institution && (
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Institution
+                  </p>
+                  <p className="text-sm mt-1">{request.institution}</p>
+                </div>
+              )}
+              {request.categories && request.categories.length > 0 && (
+                <div className="sm:col-span-2">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Categories
+                  </p>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {request.categories.map((cat: string) => (
+                      <Badge key={cat} variant="secondary" className="px-3 py-0.5 bg-violet-500/10 text-violet-600 border-violet-200">
+                        {cat}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div>
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Submitted

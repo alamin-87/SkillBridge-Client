@@ -152,19 +152,20 @@ export const tutorService = {
   },
 
   // ─── Assignment Management ──────────────────────────────────────────────
-  async createAssignment(payload: {
-    title: string;
-    description?: string;
-    bookingId?: string;
-  }) {
+  async createAssignment(payload: any | FormData) {
+    const isFormData = payload instanceof FormData;
+    const headers: Record<string, string> = {
+      ...((await withAuthHeaders()) ?? {}),
+    };
+    if (!isFormData) {
+      headers["Content-Type"] = "application/json";
+    }
+
     const res = await fetch(`${API_URL}/api/v1/assignments`, {
       method: "POST",
       cache: "no-store",
-      headers: {
-        "Content-Type": "application/json",
-        ...((await withAuthHeaders()) ?? {}),
-      },
-      body: JSON.stringify(payload),
+      headers,
+      body: isFormData ? payload : JSON.stringify(payload),
     });
     if (!res.ok) {
       const txt = await res.text().catch(() => "");
@@ -198,18 +199,23 @@ export const tutorService = {
   async evaluateSubmission(
     assignmentId: string,
     submissionId: string,
-    payload: { grade: number; feedback?: string }
+    payload: any | FormData
   ) {
+    const isFormData = payload instanceof FormData;
+    const headers: Record<string, string> = {
+      ...((await withAuthHeaders()) ?? {}),
+    };
+    if (!isFormData) {
+      headers["Content-Type"] = "application/json";
+    }
+
     const res = await fetch(
       `${API_URL}/api/v1/assignments/${assignmentId}/submissions/${submissionId}/evaluate`,
       {
         method: "PATCH",
         cache: "no-store",
-        headers: {
-          "Content-Type": "application/json",
-          ...((await withAuthHeaders()) ?? {}),
-        },
-        body: JSON.stringify(payload),
+        headers,
+        body: isFormData ? payload : JSON.stringify(payload),
       }
     );
     if (!res.ok) {

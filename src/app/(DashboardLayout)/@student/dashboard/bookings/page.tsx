@@ -15,7 +15,10 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getStudentBookingsAction } from "@/actions/student-action";
+import {
+  getStudentBookingsAction,
+  cancelBookingAction,
+} from "@/actions/student-action";
 
 function fmt(dt?: string) {
   if (!dt) return "—";
@@ -39,16 +42,10 @@ function getInitials(name: string) {
 
 function getTutorCardInfo(b: any) {
   const tutorName =
-    b?.tutor?.user?.name ||
-    b?.tutor?.name ||
-    b?.tutorName ||
-    "Tutor";
+    b?.tutor?.user?.name || b?.tutor?.name || b?.tutorName || "Tutor";
 
   const tutorImage =
-    b?.tutor?.user?.image ||
-    b?.tutor?.image ||
-    b?.tutorImage ||
-    null;
+    b?.tutor?.user?.image || b?.tutor?.image || b?.tutorImage || null;
 
   const tutorId =
     b?.tutorProfileId ||
@@ -58,14 +55,14 @@ function getTutorCardInfo(b: any) {
     null;
 
   const hourlyRate =
-    b?.tutorProfile?.hourlyRate ??
-    b?.tutor?.tutorProfile?.hourlyRate ??
-    null;
+    b?.tutorProfile?.hourlyRate ?? b?.tutor?.tutorProfile?.hourlyRate ?? null;
 
   return { tutorId, tutorName, tutorImage, hourlyRate };
 }
 
-function statusVariant(status?: string): "secondary" | "destructive" | "outline" | "default" {
+function statusVariant(
+  status?: string,
+): "secondary" | "destructive" | "outline" | "default" {
   switch (status) {
     case "CANCELLED":
       return "destructive";
@@ -116,22 +113,53 @@ function getPaymentBadge(paymentStatus?: string) {
 export default function StudentMyBookingsPage() {
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isCancelling, setIsCancelling] = useState<string | null>(null);
+
+  const fetchBookings = async () => {
+    try {
+      const { success, data } = await getStudentBookingsAction({
+        page: 1,
+        limit: 50,
+      });
+      if (success && Array.isArray(data)) {
+        setBookings(data);
+      }
+    } catch {
+      toast.error("Failed to load bookings");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    async function fetchBookings() {
-      try {
-        const { success, data } = await getStudentBookingsAction({ page: 1, limit: 50 });
-        if (success && Array.isArray(data)) {
-          setBookings(data);
-        }
-      } catch {
-        toast.error("Failed to load bookings");
-      } finally {
-        setLoading(false);
-      }
-    }
     fetchBookings();
   }, []);
+
+  const handleCancelBooking = async (id: string) => {
+    if (
+      !window.confirm(
+        "Are you sure you want to cancel this session? The tutor will be notified and the slot will be released.",
+      )
+    )
+      return;
+
+    setIsCancelling(id);
+    try {
+      const res = await cancelBookingAction(id);
+      if (res.success) {
+        toast.success(
+          "Session cancelled. The slot has been refunded to the tutor's availability.",
+        );
+        fetchBookings();
+      } else {
+        toast.error(res.message);
+      }
+    } catch {
+      toast.error("An unexpected error occurred");
+    } finally {
+      setIsCancelling(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -179,7 +207,10 @@ export default function StudentMyBookingsPage() {
             <div className="space-y-3">
               {bookings.map((b: any) => {
                 const t = getTutorCardInfo(b);
-                const isUnpaid = b.paymentStatus !== "PAID" && b.status !== "CANCELLED";
+                const isUnpaid =
+                  b.paymentStatus !== "PAID" && b.status !== "CANCELLED";
+                const canCancel =
+                  b.status !== "CANCELLED" && b.status !== "COMPLETED";
 
                 return (
                   <div
@@ -193,8 +224,13 @@ export default function StudentMyBookingsPage() {
                     {/* Left: Tutor + schedule */}
                     <div className="flex items-center gap-3 min-w-0">
                       <Avatar className="h-10 w-10 border">
-                        <AvatarImage src={t.tutorImage ?? undefined} alt={t.tutorName} />
-                        <AvatarFallback>{getInitials(t.tutorName)}</AvatarFallback>
+                        <AvatarImage
+                          src={t.tutorImage ?? undefined}
+                          alt={t.tutorName}
+                        />
+                        <AvatarFallback>
+                          {getInitials(t.tutorName)}
+                        </AvatarFallback>
                       </Avatar>
 
                       <div className="min-w-0">
@@ -203,7 +239,9 @@ export default function StudentMyBookingsPage() {
                           {fmt(b.scheduledStart)}{" "}
                           {b.scheduledEnd ? `– ${fmt(b.scheduledEnd)}` : ""}
                           <span className="px-1">•</span>
-                          {t.hourlyRate ? `৳${t.hourlyRate}/hr` : "Flexible pricing"}
+                          {t.hourlyRate
+                            ? `৳${t.hourlyRate}/hr`
+                            : "Flexible pricing"}
                         </p>
 
                         {b?.cancelReason ? (
@@ -216,7 +254,10 @@ export default function StudentMyBookingsPage() {
 
                     {/* Right: status + payment status + price + actions */}
                     <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-                      <Badge variant={statusVariant(b.status)} className="gap-1">
+                      <Badge
+                        variant={statusVariant(b.status)}
+                        className="gap-1"
+                      >
                         {getStatusIcon(b.status)}
                         {b.status ?? "CONFIRMED"}
                       </Badge>
@@ -224,8 +265,28 @@ export default function StudentMyBookingsPage() {
                       {getPaymentBadge(b.paymentStatus)}
 
                       {typeof b.price === "number" ? (
-                        <span className="text-sm font-semibold">৳{b.price.toLocaleString()}</span>
+                        <span className="text-sm font-semibold">
+                          ৳{b.price.toLocaleString()}
+                        </span>
                       ) : null}
+
+                      {/* Cancel Button */}
+                      {canCancel && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          disabled={isCancelling === b.id}
+                          onClick={() => handleCancelBooking(b.id)}
+                          className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 h-8 font-bold"
+                        >
+                          {isCancelling === b.id ? (
+                            <Clock className="w-3.5 h-3.5 animate-spin mr-1.5" />
+                          ) : (
+                            <XCircle className="w-3.5 h-3.5 mr-1.5" />
+                          )}
+                          Cancel Session
+                        </Button>
+                      )}
 
                       {/* Pay Now button for unpaid bookings */}
                       {isUnpaid && b.id ? (

@@ -16,24 +16,27 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { evaluateSubmissionAction } from "@/actions/tutor-action";
-import { Star, Loader2 } from "lucide-react";
+import { Star, Loader2, FileText, ExternalLink } from "lucide-react";
 
 type Props = {
   assignmentId: string;
   submissionId: string;
   studentName: string;
+  submissionFiles?: { url: string; name?: string }[];
 };
 
 export default function EvaluateDialog({
   assignmentId,
   submissionId,
   studentName,
+  submissionFiles = [],
 }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
   const [grade, setGrade] = useState("");
   const [feedback, setFeedback] = useState("");
+  const [reportFile, setReportFile] = useState<File | null>(null);
   const [error, setError] = useState("");
 
   function handleSubmit() {
@@ -44,18 +47,23 @@ export default function EvaluateDialog({
     }
     setError("");
     startTransition(async () => {
+      const formData = new FormData();
+      formData.append("grade", num.toString());
+      formData.append("feedback", feedback.trim());
+      if (reportFile) {
+        formData.append("files", reportFile);
+      }
+
       const res = await evaluateSubmissionAction(
         assignmentId,
         submissionId,
-        {
-          grade: num,
-          feedback: feedback.trim() || undefined,
-        }
+        formData
       );
       if (res.success) {
         setOpen(false);
         setGrade("");
         setFeedback("");
+        setReportFile(null);
         router.refresh();
       } else {
         setError(res.message ?? "Failed to evaluate");
@@ -83,6 +91,29 @@ export default function EvaluateDialog({
         </DialogHeader>
 
         <div className="space-y-4 py-2">
+          {/* 🔥 Display Student Submissions */}
+          {submissionFiles.length > 0 && (
+            <div className="p-3 rounded-lg border bg-blue-50/50 border-blue-100 space-y-2">
+              <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest flex items-center gap-1">
+                <FileText className="h-3 w-3" /> Student Answer Sheet(s)
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {submissionFiles.map((f, i) => (
+                  <a
+                    key={i}
+                    href={f.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 px-2 py-1 bg-white border border-blue-200 rounded text-xs font-semibold text-blue-700 hover:bg-blue-50 transition-colors shadow-sm"
+                  >
+                    View Answer {submissionFiles.length > 1 ? i + 1 : ""}
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="space-y-2">
             <Label htmlFor="grade">Grade (0–100) *</Label>
             <Input
@@ -104,6 +135,16 @@ export default function EvaluateDialog({
               value={feedback}
               onChange={(e) => setFeedback(e.target.value)}
               rows={3}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="report">Evaluation Report (Any)</Label>
+            <Input
+              id="report"
+              type="file"
+              onChange={(e) => setReportFile(e.target.files?.[0] || null)}
+              className="cursor-pointer"
             />
           </div>
 

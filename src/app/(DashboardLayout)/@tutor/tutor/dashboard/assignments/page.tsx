@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { ClipboardList } from "lucide-react";
 import CreateAssignmentDialog from "./create-assignment-dialog";
 import EvaluateDialog from "./evaluate-dialog";
+import { AssignmentsCharts } from "./assignments-charts";
 
 export default async function TutorAssignmentsPage() {
   const [assignmentsRes, sessionsRes] = await Promise.all([
@@ -31,16 +32,19 @@ export default async function TutorAssignmentsPage() {
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold tracking-tight flex items-center gap-2">
-            <ClipboardList className="h-5 w-5 text-violet-500" />
-            Assignments
+          <h2 className="text-xl font-bold tracking-tight bg-clip-text text-transparent bg-linear-to-r from-foreground to-foreground/70 flex items-center gap-2">
+            Professional Assignments
           </h2>
-          <p className="text-sm text-muted-foreground">
-            Create assignments and evaluate student submissions
+          <p className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+            <ClipboardList className="h-4 w-4 text-violet-500" />
+            Manage your student curriculum and evaluate performance
           </p>
         </div>
         <CreateAssignmentDialog bookingOptions={bookingOptions} />
       </div>
+
+      {/* 📊 Assignment Analytics */}
+      <AssignmentsCharts assignments={assignments} />
 
       {assignments.length === 0 ? (
         <Card>
@@ -71,7 +75,25 @@ export default async function TutorAssignmentsPage() {
                           {a.description}
                         </p>
                       )}
-                      <p className="text-xs text-muted-foreground mt-1">
+                      
+                      {/* 🔥 Assignment Resources (PDFs) */}
+                      {a.files && Array.isArray(a.files) && a.files.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2 font-black italic">
+                          {a.files.map((file: any, idx: number) => (
+                            <a 
+                              key={idx} 
+                              href={file.url} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-[10px] bg-blue-500/10 text-blue-600 px-2 py-0.5 rounded-full hover:bg-blue-500/20 transition-colors flex items-center gap-1"
+                            >
+                              Resource {idx + 1}
+                            </a>
+                          ))}
+                        </div>
+                      )}
+
+                      <p className="text-xs text-muted-foreground mt-2">
                         Created{" "}
                         {new Date(a.createdAt).toLocaleDateString()}
                       </p>
@@ -109,12 +131,30 @@ export default async function TutorAssignmentsPage() {
                                 sub.createdAt
                               ).toLocaleDateString()}
                             </p>
-                            {sub.files && sub.files.length > 0 && (
-                              <p className="text-xs text-blue-600 mt-0.5">
-                                {sub.files.length} file
-                                {sub.files.length !== 1 && "s"} attached
-                              </p>
-                            )}
+                            
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {sub.files && sub.files.length > 0 && sub.files.map((file: any, idx: number) => (
+                                <a 
+                                  key={idx}
+                                  href={file.url} 
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded hover:bg-blue-100 transition-colors"
+                                >
+                                  📄 Answersheet {idx + 1}
+                                </a>
+                              ))}
+                              {sub.evaluationReport && (
+                                <a 
+                                  href={sub.evaluationReport.url} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded hover:bg-emerald-100 transition-colors flex items-center gap-1"
+                                >
+                                  ★ Evaluation Report
+                                </a>
+                              )}
+                            </div>
                           </div>
 
                           <div className="flex items-center gap-2">
@@ -130,6 +170,7 @@ export default async function TutorAssignmentsPage() {
                                 studentName={
                                   sub.student?.name ?? "Student"
                                 }
+                                submissionFiles={sub.files}
                               />
                             )}
                           </div>

@@ -180,11 +180,7 @@ export async function updateMyTutorProfileAction(payload: any | FormData) {
 }
 
 // ─── Assignment Actions ───────────────────────────────────────────────────
-export async function createAssignmentAction(payload: {
-  title: string;
-  description?: string;
-  bookingId?: string;
-}) {
+export async function createAssignmentAction(payload: any | FormData) {
   try {
     const res = await tutorService.createAssignment(payload);
     return { success: true, data: res.data ?? null, message: res.message };
@@ -217,7 +213,7 @@ export async function getTutorAssignmentDetailsAction(id: string) {
 export async function evaluateSubmissionAction(
   assignmentId: string,
   submissionId: string,
-  payload: { grade: number; feedback?: string }
+  payload: any | FormData
 ) {
   try {
     const res = await tutorService.evaluateSubmission(
