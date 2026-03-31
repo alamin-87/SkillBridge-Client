@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { updateAdminMeAction } from "@/actions/admin-action";
+import { useRouter } from "next/navigation";
 
 export default function AdminProfileForm({
   defaultValues,
@@ -18,6 +19,7 @@ export default function AdminProfileForm({
   const [msg, setMsg] = useState<string | null>(null);
   const [useUpload, setUseUpload] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const router = useRouter();
 
   const onSave = () => {
     setMsg(null);
@@ -37,9 +39,13 @@ export default function AdminProfileForm({
 
       const res = await updateAdminMeAction(useUpload && file ? formData : payload);
 
-      setMsg(
-        res.success ? "Profile updated ✅" : res.message || "Update failed",
-      );
+      if (res.success) {
+        setMsg("Profile updated ✅");
+        window.dispatchEvent(new Event("profile-updated"));
+        router.refresh();
+      } else {
+        setMsg(res.message || "Update failed ❌");
+      }
     });
   };
 

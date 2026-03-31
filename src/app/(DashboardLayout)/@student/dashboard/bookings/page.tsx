@@ -1,9 +1,21 @@
+"use client";
+
 import Link from "next/link";
-import { getStudentBookingsAction } from "@/actions/student-action";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { toast } from "sonner";
+import {
+  CreditCard,
+  CheckCircle2,
+  Clock,
+  XCircle,
+  AlertTriangle,
+  RefreshCw,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { getStudentBookingsAction } from "@/actions/student-action";
 
 function fmt(dt?: string) {
   if (!dt) return "—";
@@ -53,23 +65,89 @@ function getTutorCardInfo(b: any) {
   return { tutorId, tutorName, tutorImage, hourlyRate };
 }
 
-function statusVariant(status?: string) {
-  // keep simple; using "secondary" always is fine too
-  return "secondary" as const;
+function statusVariant(status?: string): "secondary" | "destructive" | "outline" | "default" {
+  switch (status) {
+    case "CANCELLED":
+      return "destructive";
+    case "COMPLETED":
+      return "default";
+    default:
+      return "secondary";
+  }
 }
 
-export default async function StudentMyBookingsPage({
-  searchParams,
-}: {
-  searchParams?: { page?: string; limit?: string };
-}) {
-  const page = Number(searchParams?.page ?? 1);
-  const limit = Number(searchParams?.limit ?? 10);
+function getStatusIcon(status?: string) {
+  switch (status) {
+    case "COMPLETED":
+      return <CheckCircle2 className="h-3.5 w-3.5" />;
+    case "CANCELLED":
+      return <XCircle className="h-3.5 w-3.5" />;
+    default:
+      return <Clock className="h-3.5 w-3.5" />;
+  }
+}
 
-  const { success, data, meta } = await getStudentBookingsAction({ page, limit });
-  if (!success) return <div>Failed to load bookings</div>;
+function getPaymentBadge(paymentStatus?: string) {
+  switch (paymentStatus) {
+    case "PAID":
+      return (
+        <Badge className="bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 border-emerald-500/20 gap-1">
+          <CheckCircle2 className="h-3 w-3" />
+          Paid
+        </Badge>
+      );
+    case "REFUNDED":
+      return (
+        <Badge className="bg-purple-500/10 text-purple-600 hover:bg-purple-500/20 border-purple-500/20 gap-1">
+          <RefreshCw className="h-3 w-3" />
+          Refunded
+        </Badge>
+      );
+    default:
+      return (
+        <Badge className="bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 border-amber-500/20 gap-1">
+          <AlertTriangle className="h-3 w-3" />
+          Unpaid
+        </Badge>
+      );
+  }
+}
 
-  const bookings = Array.isArray(data) ? data : [];
+export default function StudentMyBookingsPage() {
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchBookings() {
+      try {
+        const { success, data } = await getStudentBookingsAction({ page: 1, limit: 50 });
+        if (success && Array.isArray(data)) {
+          setBookings(data);
+        }
+      } catch {
+        toast.error("Failed to load bookings");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchBookings();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <div className="h-8 w-48 bg-muted animate-pulse rounded" />
+        <Card>
+          <CardContent className="p-8 flex justify-center">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Clock className="h-5 w-5 animate-spin" />
+              <span>Loading bookings…</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -77,11 +155,11 @@ export default async function StudentMyBookingsPage({
         <div>
           <h2 className="text-lg font-semibold">My bookings</h2>
           <p className="text-sm text-muted-foreground">
-            {meta?.total ? `${meta.total} total` : "All your booked sessions."}
+            {bookings.length > 0
+              ? `${bookings.length} total bookings`
+              : "All your booked sessions."}
           </p>
         </div>
-
-        {/* Optional: add filters later */}
       </div>
 
       <Card>
@@ -101,11 +179,16 @@ export default async function StudentMyBookingsPage({
             <div className="space-y-3">
               {bookings.map((b: any) => {
                 const t = getTutorCardInfo(b);
+                const isUnpaid = b.paymentStatus !== "PAID" && b.status !== "CANCELLED";
 
                 return (
                   <div
                     key={b.id}
-                    className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between"
+                    className={`flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between transition-colors ${
+                      isUnpaid
+                        ? "border-amber-500/30 bg-amber-50/30 dark:bg-amber-950/10"
+                        : ""
+                    }`}
                   >
                     {/* Left: Tutor + schedule */}
                     <div className="flex items-center gap-3 min-w-0">
@@ -131,14 +214,31 @@ export default async function StudentMyBookingsPage({
                       </div>
                     </div>
 
-                    {/* Right: status + price + actions */}
+                    {/* Right: status + payment status + price + actions */}
                     <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-                      <Badge variant={statusVariant(b.status)}>
+                      <Badge variant={statusVariant(b.status)} className="gap-1">
+                        {getStatusIcon(b.status)}
                         {b.status ?? "CONFIRMED"}
                       </Badge>
 
+                      {getPaymentBadge(b.paymentStatus)}
+
                       {typeof b.price === "number" ? (
-                        <span className="text-sm font-semibold">৳{b.price}</span>
+                        <span className="text-sm font-semibold">৳{b.price.toLocaleString()}</span>
+                      ) : null}
+
+                      {/* Pay Now button for unpaid bookings */}
+                      {isUnpaid && b.id ? (
+                        <Button
+                          asChild
+                          size="sm"
+                          className="bg-linear-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-sm gap-1.5"
+                        >
+                          <Link href={`/dashboard/checkout/${b.id}`}>
+                            <CreditCard className="h-3.5 w-3.5" />
+                            Pay Now
+                          </Link>
+                        </Button>
                       ) : null}
 
                       {t.tutorId ? (
@@ -146,13 +246,6 @@ export default async function StudentMyBookingsPage({
                           <Link href={`/tutors/${t.tutorId}`}>View Tutor</Link>
                         </Button>
                       ) : null}
-
-                      {/* Optional: booking details route */}
-                      {/* {b.id ? (
-                        <Button asChild size="sm" variant="ghost">
-                          <Link href={`/dashboard/bookings/${b.id}`}>Details</Link>
-                        </Button>
-                      ) : null} */}
                     </div>
                   </div>
                 );

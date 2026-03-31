@@ -39,7 +39,7 @@ export const notificationService = {
   },
 
   async markAllAsRead() {
-    const res = await fetch(`${API_URL}/api/v1/notifications/mark-all-read`, {
+    const res = await fetch(`${API_URL}/api/v1/notifications/read-all`, {
       method: "PATCH",
       cache: "no-store",
       headers: {

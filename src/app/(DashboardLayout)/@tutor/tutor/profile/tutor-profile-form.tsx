@@ -3,6 +3,7 @@
 import * as React from "react";
 import { updateMyTutorProfileAction } from "@/actions/tutor-action";
 import { getCategoriesAction } from "@/actions/category-action";
+import { useRouter } from "next/navigation";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -152,6 +153,7 @@ export default function TutorProfileForm({ profile }: { profile: any }) {
 
   const [saving, setSaving] = React.useState(false);
   const [msg, setMsg] = React.useState<string | null>(null);
+  const router = useRouter();
 
   // ✅ load categories on mount + dedupe
   React.useEffect(() => {
@@ -210,8 +212,8 @@ export default function TutorProfileForm({ profile }: { profile: any }) {
     setSaving(true);
     setMsg(null);
 
-    // ✅ Convert UI string -> array for backend
-    const languagesArray = languagesTextToArray(languagesText);
+    // ✅ Convert UI string and send directly since backend expects string
+    const languagesStr = languagesTextToArray(languagesText).join(", ");
 
     const formData = new FormData();
     const payloadData = {
@@ -219,7 +221,7 @@ export default function TutorProfileForm({ profile }: { profile: any }) {
       hourlyRate: hourlyRate ? Number(hourlyRate) : undefined,
       experienceYrs: experienceYrs ? Number(experienceYrs) : undefined,
       location: location.trim() || undefined,
-      languages: languagesArray,
+      languages: languagesStr || undefined,
       profileImage: useUpload ? undefined : (profileImage.trim() || undefined),
       categories: selectedCategories,
     };
@@ -241,6 +243,9 @@ export default function TutorProfileForm({ profile }: { profile: any }) {
       // because that can be an ARRAY and will show ["English","Bangla"] in UI
       const arr = parseLanguages(res.data?.languages);
       setLanguagesText(arr.join(", ")); // ✅ "English, Bangla"
+
+      window.dispatchEvent(new Event("profile-updated"));
+      router.refresh();
     } else {
       setMsg("Update failed ❌");
     }

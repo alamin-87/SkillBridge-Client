@@ -10,6 +10,7 @@ export const env = createEnv({
   client: {
     // NEXT_PUBLIC_TEST: z.string(),
     NEXT_PUBLIC_BACKEND_URL: z.string(),
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string(),
   },
   runtimeEnv: {
     BACKEND_URL: process.env.BACKEND_URL,
@@ -18,5 +19,6 @@ export const env = createEnv({
     AUTH_URL: process.env.AUTH_URL,
     // NEXT_PUBLIC_TEST: process.env.NEXT_PUBLIC_TEST,
     NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
   },
 });

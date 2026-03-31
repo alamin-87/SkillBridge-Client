@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { Bell, Check, Loader2, Info } from "lucide-react";
+import { Bell, Check, Loader2, Info, CreditCard } from "lucide-react";
 import { 
   getMyNotificationsAction, 
   markNotificationAsReadAction,
@@ -44,8 +44,8 @@ export function NotificationBell() {
 
   useEffect(() => {
     fetchNotifications();
-    // Optional: set up an interval to poll every 60 seconds
-    const interval = setInterval(fetchNotifications, 60000);
+    // Set up an interval to poll every 10 seconds for real-time feel
+    const interval = setInterval(fetchNotifications, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -98,7 +98,7 @@ export function NotificationBell() {
         className="relative hover:bg-muted/80 rounded-full"
         onClick={() => {
           setIsOpen(!isOpen);
-          if (!isOpen && notifications.length === 0) fetchNotifications();
+          if (!isOpen) fetchNotifications();
         }}
       >
         <Bell className="h-5 w-5" />
@@ -154,10 +154,10 @@ export function NotificationBell() {
                     <div className="shrink-0 mt-0.5">
                       <div className={`size-8 rounded-full flex items-center justify-center ${
                         !notification.isRead 
-                          ? "bg-gradient-to-br from-[#3b82f6] to-[#06b6d4] text-white shadow-sm" 
+                          ? "bg-linear-to-br from-[#3b82f6] to-[#06b6d4] text-white shadow-sm" 
                           : "bg-muted text-muted-foreground"
                       }`}>
-                        {notification.type === 'BOOKING' ? <Check className="h-4 w-4" /> : <Info className="h-4 w-4" />}
+                        {notification.type === 'PAYMENT' ? <CreditCard className="h-4 w-4" /> : notification.type === 'BOOKING' ? <Check className="h-4 w-4" /> : <Info className="h-4 w-4" />}
                       </div>
                     </div>
                     

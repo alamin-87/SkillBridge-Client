@@ -1,7 +1,9 @@
 import { getTutorRequestsAction } from "@/actions/admin-action";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { Users, Clock, CheckCircle2, XCircle, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import TutorRequestActions from "./tutor-request-actions";
 
 const statusBadge: Record<string, string> = {
@@ -26,14 +28,23 @@ export default async function AdminTutorRequestsPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div>
-        <h2 className="text-xl font-bold tracking-tight flex items-center gap-2">
-          <Users className="h-5 w-5 text-violet-500" />
-          Tutor Requests
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Review and manage tutor applications
-        </p>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Users className="h-5 w-5 text-teal-500" />
+          <div>
+            <h2 className="text-xl font-bold tracking-tight">Tutor Requests</h2>
+            <p className="text-sm text-muted-foreground">
+              {allRequests.length} total applications · {pending.length} pending
+            </p>
+          </div>
+        </div>
+
+        <Button asChild size="sm" variant="outline">
+          <Link href="/admin">
+            <ArrowLeft className="h-3.5 w-3.5 mr-1" />
+            Dashboard
+          </Link>
+        </Button>
       </div>
 
       {/* Summary Stats */}

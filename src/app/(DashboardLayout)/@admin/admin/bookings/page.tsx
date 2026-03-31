@@ -3,6 +3,9 @@ import { getAdminBookingsAction } from "@/actions/admin-action";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { CalendarDays, ArrowLeft } from "lucide-react";
+import BookingDeleteButton from "./booking-delete-button";
+import BookingStatusActions from "./booking-status-actions";
 
 function fmt(dt?: string) {
   if (!dt) return "—";
@@ -15,11 +18,6 @@ function fmt(dt?: string) {
   });
 }
 
-function badgeVariant(status?: string) {
-  if (status === "CANCELLED") return "destructive";
-  return "secondary";
-}
-
 export default async function AdminBookingsPage() {
   const { success, data, message } = await getAdminBookingsAction();
   if (!success) return <div>Failed to load bookings: {message}</div>;
@@ -27,18 +25,24 @@ export default async function AdminBookingsPage() {
   const bookings = Array.isArray(data) ? data : [];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-500">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-semibold">Bookings</h2>
-          <p className="text-sm text-muted-foreground">
-            All bookings across the platform
-          </p>
+        <div className="flex items-center gap-2">
+          <CalendarDays className="h-5 w-5 text-violet-500" />
+          <div>
+            <h2 className="text-xl font-bold tracking-tight">Booking Management</h2>
+            <p className="text-sm text-muted-foreground">
+              {bookings.length} total bookings across the platform
+            </p>
+          </div>
         </div>
 
         <Button asChild size="sm" variant="outline">
-          <Link href="/admin">Back to dashboard</Link>
+          <Link href="/admin">
+            <ArrowLeft className="h-3.5 w-3.5 mr-1" />
+            Dashboard
+          </Link>
         </Button>
       </div>
 
@@ -57,36 +61,45 @@ export default async function AdminBookingsPage() {
               {bookings.map((b: any) => (
                 <div
                   key={b.id}
-                  className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between transition-colors hover:bg-muted/10 border-l-4 border-l-primary/30"
                 >
-                  <div>
-                    <p className="font-medium">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold truncate">
                       {b.student?.name ?? "Student"} →{" "}
                       {b.tutor?.name ?? "Tutor"}
                     </p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-muted-foreground py-0.5">
                       {fmt(b.scheduledStart)} – {fmt(b.scheduledEnd)}
                     </p>
-                    <p className="text-xs text-muted-foreground">
-                      Booking ID: {b.id}
-                    </p>
+                    <div className="flex items-center gap-2">
+                        <span className="text-[10px] uppercase font-mono tracking-tighter text-muted-foreground">
+                        ID: {b.id.slice(0, 12)}...
+                        </span>
+                        <Badge variant="outline" className="text-[10px] h-4">
+                           {b.paymentStatus}
+                        </Badge>
+                    </div>
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant={badgeVariant(b.status)}>{b.status}</Badge>
-                    <span className="text-sm font-semibold">৳{b.price}</span>
+                    <BookingStatusActions bookingId={b.id} currentStatus={b.status} />
+                    <span className="text-sm font-bold w-16 text-right">৳{b.price}</span>
 
-                    {/* Quick links */}
-                    {b.student?.id && (
-                      <Button asChild size="sm" variant="outline">
-                        <Link href={`/users/${b.student.id}`}>Student</Link>
-                      </Button>
-                    )}
-                    {b.tutor?.id && (
-                      <Button asChild size="sm" variant="outline">
-                        <Link href={`/tutors/${b.tutorProfileId}`}>Tutor</Link>
-                      </Button>
-                    )}
+                    <div className="flex items-center gap-1.5 ml-2 border-l pl-2 border-muted/50">
+                      {b.student?.id && (
+                        <Button asChild size="sm" variant="ghost" className="h-8 px-2">
+                          <Link href={`/users/${b.student.id}`}>User</Link>
+                        </Button>
+                      )}
+                      {b.tutor?.id && (
+                        <Button asChild size="sm" variant="ghost" className="h-8 px-2">
+                          <Link href={`/tutors/${b.tutorProfileId}`}>Tutor</Link>
+                        </Button>
+                      )}
+                      
+                      {/* delete action */}
+                      <BookingDeleteButton bookingId={b.id} />
+                    </div>
                   </div>
                 </div>
               ))}

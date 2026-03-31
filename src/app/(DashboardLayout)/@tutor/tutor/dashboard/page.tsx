@@ -8,13 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  CalendarCheck,
-  ClipboardList,
-  Wallet,
-  TrendingUp,
   ArrowRight,
-  Users,
 } from "lucide-react";
+import { getIconComponent } from "@/lib/icon-mapper";
 
 function fmt(dt?: string) {
   if (!dt) return "—";
@@ -66,6 +62,13 @@ export default async function TutorDashboardPage() {
     )
     .slice(0, 5);
 
+  // Unified Icons via Mapper
+  const CalendarIcon = getIconComponent("CalendarCheck");
+  const TrendingIcon = getIconComponent("TrendingUp");
+  const ClipboardIcon = getIconComponent("ClipboardList");
+  const WalletIcon = getIconComponent("Wallet");
+  const UsersIcon = getIconComponent("Users");
+
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Header */}
@@ -92,7 +95,7 @@ export default async function TutorDashboardPage() {
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Total Sessions
             </CardTitle>
-            <CalendarCheck className="h-4 w-4 text-blue-500" />
+            <CalendarIcon className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{sessions.length}</p>
@@ -107,7 +110,7 @@ export default async function TutorDashboardPage() {
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Completed
             </CardTitle>
-            <TrendingUp className="h-4 w-4 text-emerald-500" />
+            <TrendingIcon className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{completed}</p>
@@ -120,7 +123,7 @@ export default async function TutorDashboardPage() {
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Assignments
             </CardTitle>
-            <ClipboardList className="h-4 w-4 text-violet-500" />
+            <ClipboardIcon className="h-4 w-4 text-violet-500" />
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{assignments.length}</p>
@@ -133,7 +136,7 @@ export default async function TutorDashboardPage() {
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Total Earnings
             </CardTitle>
-            <Wallet className="h-4 w-4 text-amber-500" />
+            <WalletIcon className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">
@@ -150,7 +153,7 @@ export default async function TutorDashboardPage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-base">
-            <Users className="h-4 w-4" /> Upcoming Sessions
+            <UsersIcon className="h-4 w-4" /> Upcoming Sessions
           </CardTitle>
           <Button asChild variant="ghost" size="sm">
             <Link

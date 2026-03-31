@@ -44,11 +44,36 @@ export const paymentService = {
         body: JSON.stringify({ bookingId }),
       });
       if (!res.ok) {
+        const resBody = await res.json().catch(() => ({}));
+        if (resBody && resBody.message) {
+          throw new Error(resBody.message);
+        }
         throw new Error("Failed to create payment intent");
       }
       return res.json();
     } catch (error: any) {
       console.error(error);
+      return { success: false, message: error.message };
+    }
+  },
+
+  async syncPayment(bookingId: string) {
+    try {
+      const res = await fetch(`${API_URL}/api/v1/payments/sync`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...((await withAuthHeaders()) ?? {}),
+        },
+        body: JSON.stringify({ bookingId }),
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`Failed to sync payment: ${text}`);
+      }
+      return res.json();
+    } catch (error: any) {
+      console.error("syncPayment error:", error);
       return { success: false, message: error.message };
     }
   }

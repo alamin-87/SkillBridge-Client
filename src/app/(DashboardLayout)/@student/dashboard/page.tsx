@@ -11,13 +11,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  CalendarCheck,
-  ClipboardList,
-  CreditCard,
-  BookOpen,
-  GraduationCap,
   ArrowRight,
 } from "lucide-react";
+import { getIconComponent } from "@/lib/icon-mapper";
 
 function fmt(dt?: string) {
   if (!dt) return "—";
@@ -99,6 +95,13 @@ export default async function StudentDashboardHistoryPage() {
   const tutorRequest = tutorReqRes?.data;
   const stats = countByStatus(bookings);
 
+  // Unified Icons via Mapper
+  const CalendarIcon = getIconComponent("CalendarCheck");
+  const BookIcon = getIconComponent("BookOpen");
+  const ClipboardIcon = getIconComponent("ClipboardList");
+  const PaymentIcon = getIconComponent("CreditCard");
+  const GraduationIcon = getIconComponent("GraduationCap");
+
   const recent = [...bookings]
     .sort((a, b) => {
       const da = new Date(a.scheduledStart ?? a.createdAt ?? 0).getTime();
@@ -129,7 +132,7 @@ export default async function StudentDashboardHistoryPage() {
         <Card className="border-l-4 border-l-blue-500">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Bookings</CardTitle>
-            <CalendarCheck className="h-4 w-4 text-blue-500" />
+            <CalendarIcon className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{bookings.length}</p>
@@ -140,7 +143,7 @@ export default async function StudentDashboardHistoryPage() {
         <Card className="border-l-4 border-l-emerald-500">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Completed</CardTitle>
-            <BookOpen className="h-4 w-4 text-emerald-500" />
+            <BookIcon className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{stats.COMPLETED}</p>
@@ -151,7 +154,7 @@ export default async function StudentDashboardHistoryPage() {
         <Card className="border-l-4 border-l-violet-500">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Assignments</CardTitle>
-            <ClipboardList className="h-4 w-4 text-violet-500" />
+            <ClipboardIcon className="h-4 w-4 text-violet-500" />
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{assignments.length}</p>
@@ -162,7 +165,7 @@ export default async function StudentDashboardHistoryPage() {
         <Card className="border-l-4 border-l-amber-500">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Payments</CardTitle>
-            <CreditCard className="h-4 w-4 text-amber-500" />
+            <PaymentIcon className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{payments.length}</p>
@@ -176,7 +179,7 @@ export default async function StudentDashboardHistoryPage() {
         <Card className="bg-linear-to-r from-violet-50 to-indigo-50 dark:from-violet-950/20 dark:to-indigo-950/20 border-violet-200">
           <CardContent className="flex items-center justify-between p-4">
             <div className="flex items-center gap-3">
-              <GraduationCap className="h-8 w-8 text-violet-500" />
+              <GraduationIcon className="h-8 w-8 text-violet-500" />
               <div>
                 <p className="font-semibold">Want to become a Tutor?</p>
                 <p className="text-sm text-muted-foreground">
@@ -201,7 +204,7 @@ export default async function StudentDashboardHistoryPage() {
         }`}>
           <CardContent className="flex items-center justify-between p-4">
             <div className="flex items-center gap-3">
-              <GraduationCap className={`h-6 w-6 ${
+              <GraduationIcon className={`h-6 w-6 ${
                 tutorRequest.status === "PENDING" ? "text-amber-500" :
                 tutorRequest.status === "APPROVED" ? "text-emerald-500" :
                 "text-red-500"

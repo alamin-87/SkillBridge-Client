@@ -2,6 +2,7 @@ import { getTutorSessionsAction } from "@/actions/tutor-action";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CalendarCheck } from "lucide-react";
+import { cn } from "@/lib/utils";
 import SessionActions from "./session-actions";
 
 function fmt(dt?: string) {
@@ -22,7 +23,12 @@ const statusColor: Record<string, string> = {
   PENDING: "bg-amber-500/10 text-amber-600 border-amber-200",
 };
 
-export default async function TutorSessionsPage() {
+export default async function TutorSessionsPage({
+  searchParams,
+}: {
+  searchParams?: { id?: string };
+}) {
+  const targetId = searchParams?.id;
   const { success, data } = await getTutorSessionsAction({
     page: 1,
     limit: 100,
@@ -60,7 +66,13 @@ export default async function TutorSessionsPage() {
           {sessions.map((s: any) => (
             <Card
               key={s.id}
-              className="transition-colors hover:bg-muted/30"
+              id={`session-${s.id}`}
+              className={cn(
+                "transition-all duration-500",
+                targetId === s.id 
+                  ? "ring-2 ring-primary bg-primary/5 shadow-md scale-[1.01]" 
+                  : "hover:bg-muted/30"
+              )}
             >
               <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0 flex-1">

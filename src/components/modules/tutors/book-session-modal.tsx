@@ -13,6 +13,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { Loader2, CreditCard } from "lucide-react";
 
 type Slot = {
   id: string;
@@ -49,7 +52,7 @@ export function BookSessionModal({
     openSlots?.[0] ?? null,
   );
   const [loading, setLoading] = React.useState(false);
-  const [msg, setMsg] = React.useState<string | null>(null);
+  const router = useRouter();
 
   const price = Number(hourlyRate ?? 0);
 
@@ -57,7 +60,7 @@ export function BookSessionModal({
     if (!selected) return;
 
     setLoading(true);
-    setMsg(null);
+    toast.loading("Creating your booking…", { id: "booking" });
 
     const res = await createBookingAction({
       tutorProfileId,
@@ -68,15 +71,36 @@ export function BookSessionModal({
       price,
     });
 
-    setLoading(false);
-
     if (!res.success) {
-      setMsg("Booking failed. Try again.");
+      toast.error(res.message || "Booking failed. Please try again.", {
+        id: "booking",
+      });
+      setLoading(false);
       return;
     }
 
-    setMsg("Booked successfully ✅");
-    setTimeout(() => setOpen(false), 600);
+    // Booking created successfully — redirect to payment checkout
+    const bookingId = res.data?.id;
+
+    toast.success("Booking created! Redirecting to payment…", {
+      id: "booking",
+      duration: 3000,
+    });
+
+    setOpen(false);
+
+    // Redirect to the checkout page to complete payment
+    if (bookingId) {
+      router.push(`/dashboard/checkout/${bookingId}`);
+    } else {
+      // Fallback: go to bookings page if no ID returned
+      toast.info("Please complete payment from your bookings page.", {
+        id: "booking-fallback",
+      });
+      router.push("/dashboard/bookings");
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -91,7 +115,8 @@ export function BookSessionModal({
         <DialogHeader>
           <DialogTitle>Book a session</DialogTitle>
           <DialogDescription>
-            Select an available slot and confirm your booking.
+            Select an available slot. You&apos;ll be redirected to complete
+            payment after confirming.
           </DialogDescription>
         </DialogHeader>
 
@@ -156,8 +181,6 @@ export function BookSessionModal({
               </div>
             </div>
           )}
-
-          {msg ? <p className="text-sm text-muted-foreground">{msg}</p> : null}
         </div>
 
         <DialogFooter className="gap-2 sm:gap-0">
@@ -171,8 +194,19 @@ export function BookSessionModal({
           <Button
             onClick={onConfirm}
             disabled={loading || !selected || openSlots.length === 0}
+            className="bg-linear-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white"
           >
-            {loading ? "Booking..." : "Confirm booking"}
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Processing…
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                <CreditCard className="h-4 w-4" />
+                Proceed to Payment
+              </span>
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

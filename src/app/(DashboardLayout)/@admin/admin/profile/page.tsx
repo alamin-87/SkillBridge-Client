@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { User, ArrowLeft } from "lucide-react";
 import AdminProfileForm from "./profile-form";
 import { getAdminMeAction } from "@/actions/admin-action";
 
@@ -15,15 +16,21 @@ export default async function AdminProfilePage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-semibold">Admin Profile</h2>
-          <p className="text-sm text-muted-foreground">
-            Update your account information
-          </p>
+        <div className="flex items-center gap-2">
+          <User className="h-5 w-5 text-blue-500" />
+          <div>
+            <h2 className="text-xl font-bold tracking-tight">Admin Profile</h2>
+            <p className="text-sm text-muted-foreground">
+              Update your account information
+            </p>
+          </div>
         </div>
 
         <Button asChild size="sm" variant="outline">
-          <Link href="/admin">Back to dashboard</Link>
+          <Link href="/admin">
+            <ArrowLeft className="h-3.5 w-3.5 mr-1" />
+            Dashboard
+          </Link>
         </Button>
       </div>
 

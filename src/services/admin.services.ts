@@ -28,8 +28,21 @@ export const adminService = {
   },
 
   // Users
-  async getUsers() {
-    const res = await fetch(`${API_URL}/api/v1/admin/users`, {
+  async getUsers(query?: {
+    search?: string;
+    role?: string;
+    status?: string;
+    page?: number;
+    limit?: number;
+  }) {
+    const params = new URLSearchParams();
+    if (query?.search) params.set("search", query.search);
+    if (query?.role) params.set("role", query.role);
+    if (query?.status) params.set("status", query.status);
+    if (query?.page) params.set("page", String(query.page));
+    if (query?.limit) params.set("limit", String(query.limit));
+    const qs = params.toString();
+    const res = await fetch(`${API_URL}/api/v1/admin/users${qs ? `?${qs}` : ""}`, {
       cache: "no-store",
       headers: { ...((await withAuthHeaders()) ?? {}) },
     });
@@ -55,13 +68,41 @@ export const adminService = {
     return handle(res, "updateUser");
   },
 
-  //  Bookings
+  // ─── Booking Management ──────────────────────────────────────────
   async getBookings() {
     const res = await fetch(`${API_URL}/api/v1/admin/bookings`, {
       cache: "no-store",
       headers: { ...((await withAuthHeaders()) ?? {}) },
     });
     return handle(res, "getBookings");
+  },
+
+  async updateBookingStatus(
+    bookingId: string,
+    status: "PENDING" | "CONFIRMED" | "COMPLETED" | "CANCELLED"
+  ) {
+    const res = await fetch(
+      `${API_URL}/api/v1/admin/bookings/${bookingId}/status`,
+      {
+        method: "PATCH",
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json",
+          ...((await withAuthHeaders()) ?? {}),
+        },
+        body: JSON.stringify({ status }),
+      }
+    );
+    return handle(res, "updateBookingStatus");
+  },
+
+  async deleteBooking(bookingId: string) {
+    const res = await fetch(`${API_URL}/api/v1/admin/bookings/${bookingId}`, {
+      method: "DELETE",
+      cache: "no-store",
+      headers: { ...((await withAuthHeaders()) ?? {}) },
+    });
+    return handle(res, "deleteBooking");
   },
 
   //  Categories
@@ -208,5 +249,114 @@ export const adminService = {
       body: JSON.stringify(payload),
     });
     return handle(res, "createTutor");
+  },
+
+  // ─── Payment Management ───────────────────────────────────────────
+  async getPayments() {
+    const res = await fetch(`${API_URL}/api/v1/admin/payments`, {
+      cache: "no-store",
+      headers: { ...((await withAuthHeaders()) ?? {}) },
+    });
+    return handle(res, "getPayments");
+  },
+
+  // ─── Review Moderation ────────────────────────────────────────────
+  async getReviews() {
+    const res = await fetch(`${API_URL}/api/v1/admin/reviews`, {
+      cache: "no-store",
+      headers: { ...((await withAuthHeaders()) ?? {}) },
+    });
+    return handle(res, "getReviews");
+  },
+
+  async deleteReview(reviewId: string) {
+    const res = await fetch(`${API_URL}/api/v1/admin/reviews/${reviewId}`, {
+      method: "DELETE",
+      cache: "no-store",
+      headers: { ...((await withAuthHeaders()) ?? {}) },
+    });
+    return handle(res, "deleteReview");
+  },
+
+  // ─── Assignment Management ────────────────────────────────────────
+  async getAssignments() {
+    const res = await fetch(`${API_URL}/api/v1/admin/assignments`, {
+      cache: "no-store",
+      headers: { ...((await withAuthHeaders()) ?? {}) },
+    });
+    return handle(res, "getAssignments");
+  },
+
+  async deleteAssignment(assignmentId: string) {
+    const res = await fetch(`${API_URL}/api/v1/admin/assignments/${assignmentId}`, {
+      method: "DELETE",
+      cache: "no-store",
+      headers: { ...((await withAuthHeaders()) ?? {}) },
+    });
+    return handle(res, "deleteAssignment");
+  },
+
+  // ─── User Deletion ────────────────────────────────────────────────
+  async deleteUser(userId: string) {
+    const res = await fetch(`${API_URL}/api/v1/admin/users/${userId}`, {
+      method: "DELETE",
+      cache: "no-store",
+      headers: { ...((await withAuthHeaders()) ?? {}) },
+    });
+    return handle(res, "deleteUser");
+  },
+
+  // ─── Notification Management ───────────────────────────────────────
+  async getAllNotifications() {
+    const res = await fetch(`${API_URL}/api/v1/admin/notifications`, {
+      cache: "no-store",
+      headers: { ...((await withAuthHeaders()) ?? {}) },
+    });
+    return handle(res, "getAllNotifications");
+  },
+
+  async deleteNotification(notificationId: string) {
+    const res = await fetch(
+      `${API_URL}/api/v1/admin/notifications/${notificationId}`,
+      {
+        method: "DELETE",
+        cache: "no-store",
+        headers: { ...((await withAuthHeaders()) ?? {}) },
+      }
+    );
+    return handle(res, "deleteNotification");
+  },
+
+  async broadcastNotification(payload: { title: string; message: string }) {
+    const res = await fetch(`${API_URL}/api/v1/admin/notifications/broadcast`, {
+      method: "POST",
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+        ...((await withAuthHeaders()) ?? {}),
+      },
+      body: JSON.stringify(payload),
+    });
+    return handle(res, "broadcastNotification");
+  },
+
+  async sendToUser(payload: {
+    userId: string;
+    title: string;
+    message: string;
+  }) {
+    const res = await fetch(
+      `${API_URL}/api/v1/admin/notifications/send-to-user`,
+      {
+        method: "POST",
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json",
+          ...((await withAuthHeaders()) ?? {}),
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+    return handle(res, "sendToUser");
   },
 };

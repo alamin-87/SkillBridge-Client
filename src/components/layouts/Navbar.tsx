@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   LogOut,
   User as UserIcon,
+  HelpCircle,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -40,6 +41,7 @@ type NavbarUser = {
   id: string;
   name?: string;
   email?: string;
+  image?: string;
   role: Role;
 } | null;
 
@@ -56,6 +58,7 @@ export function Navbar() {
     { title: "How It Works", href: "/how-it-works" },
     { title: "About Us", href: "/about" },
     { title: "Contact", href: "/contact" },
+    { title: "Help", href: "/help" },
   ];
 
   const dashboardHref =
@@ -70,7 +73,6 @@ export function Navbar() {
       setLoading(true);
       try {
         const res = await getSessionAction();
-        console.log(res);
         setUser(res.user ?? null);
       } finally {
         setLoading(false);
@@ -78,13 +80,18 @@ export function Navbar() {
     };
 
     load();
+
+    const handleProfileUpdate = () => load();
+    window.addEventListener("profile-updated", handleProfileUpdate);
+    return () => window.removeEventListener("profile-updated", handleProfileUpdate);
   }, []);
   const handleLogout = async () => {
     await authClient.signOut({
       fetchOptions: {
         onSuccess: () => {
-          router.refresh();
+          setUser(null);
           router.push("/login");
+          router.refresh();
         },
       },
     });
@@ -176,9 +183,9 @@ export function Navbar() {
               <Button asChild variant="outline" size="sm">
                 <Link href="/login">Login</Link>
               </Button>
-              <Button asChild size="sm">
+              {/* <Button asChild size="sm">
                 <Link href="/register">Sign up</Link>
-              </Button>
+              </Button> */}
             </>
           ) : (
             <>
@@ -187,7 +194,7 @@ export function Navbar() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-9 w-9 rounded-full ml-1">
                     <Avatar className="h-9 w-9 shadow-sm border border-border/50">
-                      <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.email || "user"}`} alt="User Avatar" />
+                      <AvatarImage src={user?.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.email || "user"}`} alt="User Avatar" />
                       <AvatarFallback className="bg-primary/10 text-primary font-bold">
                         {user?.name?.[0]?.toUpperCase() || <UserIcon className="h-4 w-4" />}
                       </AvatarFallback>
@@ -216,6 +223,12 @@ export function Navbar() {
                     <Link href={getProfilePath(user?.role)} className="flex items-center w-full">
                       <UserIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                       Profile Settings
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="cursor-pointer font-medium mb-1">
+                    <Link href="/help" className="flex items-center w-full">
+                      <HelpCircle className="mr-2 h-4 w-4 text-muted-foreground" />
+                      Help Center
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className="my-2 border-border/40" />
@@ -260,12 +273,12 @@ export function Navbar() {
               </SheetHeader>
 
               <div className="mt-6 flex flex-col gap-4">
-                <div className="flex flex-col justify-center items-center gap-4 border-1 rounded-lg border-muted bg-popover p-4">
+                <div className="flex flex-col justify-center items-center gap-4 border rounded-lg border-muted bg-popover p-4">
                   {menu.map((m) => (
                     <Link
                       key={m.title}
                       href={m.href}
-                      className="text-sm text-black font-semibold bg-amber-100 border-1 border-amber-300 rounded-lg px-3 py-2 w-full text-center"
+                      className="text-sm text-black font-semibold bg-amber-100 border border-amber-300 rounded-lg px-3 py-2 w-full text-center"
                     >
                       {m.title}
                     </Link>

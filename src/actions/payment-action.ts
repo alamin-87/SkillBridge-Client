@@ -19,3 +19,12 @@ export async function createPaymentIntentAction(bookingId: string) {
     return { success: false, message: error.message };
   }
 }
+
+export async function syncPaymentAction(bookingId: string) {
+  try {
+    const res = await paymentService.syncPayment(bookingId);
+    return res;
+  } catch (error: any) {
+    return { success: false, message: error.message };
+  }
+}

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getAdminCategoriesAction } from "@/actions/admin-action";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { FolderOpen, ArrowLeft } from "lucide-react";
 import AdminCategoryCreate from "./category-create";
 import AdminCategoryRow from "./category-row";
 
@@ -12,18 +13,24 @@ export default async function AdminCategoriesPage() {
   const categories = Array.isArray(data) ? data : [];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-500">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-semibold">Categories</h2>
-          <p className="text-sm text-muted-foreground">
-            Create, update, and delete categories
-          </p>
+        <div className="flex items-center gap-2">
+          <FolderOpen className="h-5 w-5 text-amber-500" />
+          <div>
+            <h2 className="text-xl font-bold tracking-tight">Category Management</h2>
+            <p className="text-sm text-muted-foreground">
+              {categories.length} categories · Create, update, and delete
+            </p>
+          </div>
         </div>
 
         <Button asChild size="sm" variant="outline">
-          <Link href="/admin">Back to dashboard</Link>
+          <Link href="/admin">
+            <ArrowLeft className="h-3.5 w-3.5 mr-1" />
+            Dashboard
+          </Link>
         </Button>
       </div>
 
