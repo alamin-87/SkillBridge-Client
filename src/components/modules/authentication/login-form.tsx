@@ -28,15 +28,29 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 
 import { useForm } from "@tanstack/react-form";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 export function LoginForm({
+  className,
+  ...props
+}: React.ComponentProps<typeof Card> & { className?: string }) {
+  return (
+    <Suspense fallback={<div className="h-64 flex items-center justify-center"><div className="animate-spin h-6 w-6 border-b-2 border-primary rounded-full" /></div>}>
+      <LoginFormInner className={className} {...props} />
+    </Suspense>
+  );
+}
+
+function LoginFormInner({
   className,
   ...props
 }: React.ComponentProps<typeof Card> & { className?: string }) {
   const [showPassword, setShowPassword] = React.useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = React.useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams?.get("callbackUrl");
 
   // Resolved Icons via Mapper
   const EyeIcon = getIconComponent("Eye");
@@ -64,8 +78,9 @@ export function LoginForm({
           return;
         }
         toast.success("Signed in successfully.", { id: toastId });
+        window.dispatchEvent(new Event("profile-updated"));
         router.refresh();
-        router.push("/dashboard");
+        router.push(callbackUrl || "/dashboard");
       } catch {
         toast.error("Something went wrong. Try again.", { id: toastId });
       }
@@ -76,7 +91,7 @@ export function LoginForm({
     const toastId = toast.loading("Redirecting to Google...");
     setIsGoogleLoading(true);
     try {
-      const { error } = await authClient.signIn.social({ provider: "google", callbackURL: `${window.location.origin}` });
+      const { error } = await authClient.signIn.social({ provider: "google", callbackURL: callbackUrl || `${window.location.origin}/dashboard` });
       if (error) toast.error(error.message || "Google sign-in failed", { id: toastId });
     } catch {
       toast.error("Google sign-in failed. Try again.", { id: toastId });

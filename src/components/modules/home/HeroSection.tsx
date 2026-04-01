@@ -52,7 +52,7 @@ export function HeroSection() {
               </Button>
 
               <Button asChild size="lg" variant="outline" className="h-12 lg:h-14 px-6 lg:px-8 text-sm lg:text-base font-bold rounded-xl border-[#7c3aed]/30 hover:bg-[#7c3aed]/5 text-foreground hover:border-[#7c3aed]/60 transition-all w-full sm:w-auto shadow-sm">
-                <Link href="/register">Become a Tutor</Link>
+                <Link href="/dashboard/become-tutor">Become a Tutor</Link>
               </Button>
             </div>
 

@@ -14,7 +14,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { ModeToggle } from "./ModeToggle";
-import { getSessionAction } from "@/actions/user-action";
 import { authClient } from "@/lib/auth-client";
 import { Roles } from "@/constance/role";
 import { NotificationBell } from "@/components/shared/NotificationBell";
@@ -41,8 +40,30 @@ type NavbarUser = {
 export function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
-  const [user, setUser] = React.useState<NavbarUser>(null);
-  const [loading, setLoading] = React.useState(true);
+
+  // ─── Use Better Auth's client-side session hook ───
+  // This fetches the session directly from the browser (via the
+  // Next.js rewrite proxy), so the session cookie is natively
+  // included — no fragile server-to-server cookie forwarding.
+  const {
+    data: sessionData,
+    isPending,
+  } = authClient.useSession();
+
+  // Derive the NavbarUser from the session data
+  const user: NavbarUser = React.useMemo(() => {
+    if (!sessionData?.user) return null;
+    const u = sessionData.user as Record<string, unknown>;
+    return {
+      id: u.id as string,
+      name: (u.name as string) || undefined,
+      email: (u.email as string) || undefined,
+      image: (u.image as string) || undefined,
+      role: ((u.role as Role) || "STUDENT"),
+    };
+  }, [sessionData]);
+
+  const loading = isPending;
 
   // Resolved Icons via Mapper
   const GraduationCapIcon = getIconComponent("GraduationCap");
@@ -69,28 +90,10 @@ export function Navbar() {
         ? "/tutor/dashboard"
         : "/dashboard";
 
-  React.useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      try {
-        const res = await getSessionAction();
-        setUser(res.user ?? null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    load();
-
-    const handleProfileUpdate = () => load();
-    window.addEventListener("profile-updated", handleProfileUpdate);
-    return () => window.removeEventListener("profile-updated", handleProfileUpdate);
-  }, []);
   const handleLogout = async () => {
     await authClient.signOut({
       fetchOptions: {
         onSuccess: () => {
-          setUser(null);
           router.push("/login");
           router.refresh();
         },

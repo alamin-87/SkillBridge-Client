@@ -154,4 +154,32 @@ export const studentService = {
     }
     return res.json();
   },
+  async cancelTutorRequest() {
+    const res = await fetch(`${API_URL}/api/v1/tutors/my-request`, {
+      method: "DELETE",
+      headers: {
+        ...((await withAuthHeaders()) ?? {}),
+      },
+    });
+    if (!res.ok) {
+      const txt = await res.text().catch(() => "");
+      throw new Error(`cancelTutorRequest failed: ${res.status} ${txt}`);
+    }
+    return res.json();
+  },
+  async updateMyTutorRequest(payload: any) {
+    const res = await fetch(`${API_URL}/api/v1/tutors/my-request`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        ...((await withAuthHeaders()) ?? {}),
+      },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const txt = await res.text().catch(() => "");
+      throw new Error(`updateMyTutorRequest failed: ${res.status} ${txt}`);
+    }
+    return res.json();
+  },
 };

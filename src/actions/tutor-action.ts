@@ -21,7 +21,11 @@ export async function getTutorsAction() {
 export async function getTutorsListAction(params?: GetTutorsListParams) {
   const page = params?.page ?? 1;
   const limit = params?.limit ?? 12;
-  const sort = params?.sort ?? "rating_desc";
+  let sort = params?.sort ?? "-avgRating";
+  if (sort === "rating_desc") sort = "-avgRating";
+  if (sort === "rating_asc") sort = "avgRating";
+  if (sort === "price_desc") sort = "-hourlyRate";
+  if (sort === "price_asc") sort = "hourlyRate";
   const search = params?.search?.trim() || undefined;
 
   const { data, meta, error } = await tutorService.getTutors({
@@ -56,7 +60,7 @@ export async function getTutorByIdAction(id: string) {
 }
 export async function getTopRatedTutorsAction() {
   const { data, error } = await tutorService.getTutors({
-    sort: "rating_desc",
+    sort: "-avgRating",
     limit: 3,
   });
 
@@ -67,7 +71,7 @@ export async function getTopRatedTutorsAction() {
 export async function searchTutorsAction(query: string) {
   const { data, error } = await tutorService.getTutors({
     searchTerm: query,
-    sort: "rating_desc",
+    sort: "-avgRating",
     limit: 3,
   });
 
@@ -207,6 +211,19 @@ export async function getTutorAssignmentDetailsAction(id: string) {
     return { success: true, data: res.data ?? null };
   } catch {
     return { success: false, data: null };
+  }
+}
+
+import { revalidatePath } from "next/cache";
+
+export async function deleteAssignmentAction(id: string) {
+  try {
+    const res = await tutorService.deleteAssignment(id);
+    revalidatePath("/tutor/dashboard/assignments");
+    revalidatePath("/tutor/dashboard");
+    return { success: true, data: res.data ?? null, message: res.message };
+  } catch (err: any) {
+    return { success: false, data: null, message: err?.message ?? "Failed" };
   }
 }
 

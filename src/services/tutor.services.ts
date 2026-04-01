@@ -35,11 +35,11 @@ export const tutorService = {
         url.searchParams.set("categoryId", params.categoryId);
       if (params?.limit) url.searchParams.set("limit", String(params.limit));
       if (params?.page) url.searchParams.set("page", String(params.page));
-      if (params?.sort) url.searchParams.set("sort", params.sort);
+      if (params?.sort) url.searchParams.set("sortBy", params.sort);
 
       const res = await fetch(url.toString(), { cache: "no-store" });
 
-      if (!res.ok) throw new Error("Failed to fetch tutors");
+      if (!res.ok) throw new Error(`Failed to fetch tutors: ${await res.text()}`);
 
       const json = await res.json();
 
@@ -193,6 +193,19 @@ export const tutorService = {
       headers: { ...((await withAuthHeaders()) ?? {}) },
     });
     if (!res.ok) return { success: false, data: null };
+    return res.json();
+  },
+
+  async deleteAssignment(id: string) {
+    const res = await fetch(`${API_URL}/api/v1/assignments/${id}`, {
+      method: "DELETE",
+      cache: "no-store",
+      headers: { ...((await withAuthHeaders()) ?? {}) },
+    });
+    if (!res.ok) {
+      const txt = await res.text().catch(() => "");
+      throw new Error(`deleteAssignment failed: ${res.status} ${txt}`);
+    }
     return res.json();
   },
 

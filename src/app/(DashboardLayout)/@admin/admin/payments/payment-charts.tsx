@@ -20,6 +20,37 @@ interface PaymentChartsProps {
   payments: any[];
 }
 
+const CustomTooltip = ({ active, payload, label, formatter }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-background/90 backdrop-blur-md border border-border/50 p-3 rounded-2xl shadow-xl shadow-black/10 transition-all">
+        {label && <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1 whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]">{label}</p>}
+        {payload.map((entry: any, index: number) => {
+          let value = entry.value;
+          let name = entry.name;
+          if (formatter) {
+             const formatted = formatter(value, name);
+             if (Array.isArray(formatted)) {
+                value = formatted[0];
+                name = formatted[1] || name;
+             } else {
+                value = formatted;
+             }
+          }
+          return (
+            <div key={index} className="flex items-center gap-2 text-sm font-bold mt-1">
+              <div className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ backgroundColor: entry.color || entry.payload.fill || "#8b5cf6" }} />
+              <span className="capitalize">{name}:</span>
+              <span className="text-foreground">{value}</span>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+  return null;
+};
+
 export function PaymentCharts({ payments }: PaymentChartsProps) {
   // Aggregate data by Tutor
   const tutorDataMap: Record<string, number> = {};
@@ -45,12 +76,12 @@ export function PaymentCharts({ payments }: PaymentChartsProps) {
   });
 
   const tutorData = Object.entries(tutorDataMap)
-    .map(([name, amount]) => ({ name, amount }))
+    .map(([name, amount]) => ({ name, amount, fill: "url(#colorTutor)" }))
     .sort((a, b) => b.amount - a.amount)
     .slice(0, 8);
 
   const studentData = Object.entries(studentDataMap)
-    .map(([name, amount]) => ({ name, amount }))
+    .map(([name, amount]) => ({ name, amount, fill: "url(#colorStudent)" }))
     .sort((a, b) => b.amount - a.amount)
     .slice(0, 8);
 
@@ -59,24 +90,28 @@ export function PaymentCharts({ payments }: PaymentChartsProps) {
     value,
   }));
 
-  const COLORS = ["#10b981", "#f59e0b", "#ef4444", "#3b82f6", "#8b5cf6"];
-
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Tutor Revenue Bar Chart */}
-      <Card className="shadow-xs border-primary/5 bg-card/40 backdrop-blur-sm lg:col-span-1">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-            <Users className="w-3 h-3 text-violet-500" />
+      <Card className="shadow-lg border-primary/5 bg-card/60 backdrop-blur-xl rounded-3xl overflow-hidden group hover:shadow-xl hover:shadow-primary/5 transition-all duration-500 lg:col-span-1">
+        <CardHeader className="pb-0 pt-6 px-6">
+          <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2 group-hover:text-primary transition-colors">
+            <Users className="w-4 h-4 text-violet-500" />
             Top Tutors Revenue
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
           <div className="h-[250px] w-full">
             {tutorData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={tutorData} layout="vertical" margin={{ left: 30, right: 30 }}>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.05} />
+                <BarChart data={tutorData} layout="vertical" margin={{ left: -15, right: 15, top: 10, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorTutor" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.8}/>
+                      <stop offset="100%" stopColor="#a78bfa" stopOpacity={1}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="var(--border)" opacity={0.4} />
                   <XAxis type="number" hide />
                   <YAxis
                     dataKey="name"
@@ -85,17 +120,23 @@ export function PaymentCharts({ payments }: PaymentChartsProps) {
                     width={80}
                     tickLine={false}
                     axisLine={false}
+                    fontWeight="bold"
+                    tickFormatter={(v) => v.length > 8 ? v.slice(0, 8) + '...' : v}
                   />
                   <Tooltip
-                    cursor={{ fill: 'rgba(255,255,255,0.05)' }}
-                    contentStyle={{ borderRadius: '12px', border: 'none', fontSize: '11px', fontWeight: 'bold' }}
-                    formatter={(v) => [`৳${v}`, 'Revenue']}
+                    cursor={{ fill: 'var(--muted)', opacity: 0.4 }}
+                    content={<CustomTooltip />}
+                    formatter={(v: any) => [`৳${v}`, 'Revenue']}
                   />
-                  <Bar dataKey="amount" fill="#8b5cf6" radius={[0, 4, 4, 0]} barSize={20} />
+                  <Bar dataKey="amount" fill="#8b5cf6" radius={[0, 6, 6, 0]} barSize={20}>
+                    {tutorData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="flex h-full items-center justify-center text-xs text-muted-foreground italic font-medium">
+              <div className="flex h-full items-center justify-center text-xs text-muted-foreground uppercase tracking-widest font-bold">
                 No revenue data
               </div>
             )}
@@ -104,19 +145,25 @@ export function PaymentCharts({ payments }: PaymentChartsProps) {
       </Card>
 
       {/* Student Spending Bar Chart */}
-      <Card className="shadow-xs border-primary/5 bg-card/40 backdrop-blur-sm lg:col-span-1">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-            <GraduationCap className="w-3 h-3 text-blue-500" />
+      <Card className="shadow-lg border-primary/5 bg-card/60 backdrop-blur-xl rounded-3xl overflow-hidden group hover:shadow-xl hover:shadow-primary/5 transition-all duration-500 lg:col-span-1">
+        <CardHeader className="pb-0 pt-6 px-6">
+          <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2 group-hover:text-primary transition-colors">
+            <GraduationCap className="w-4 h-4 text-blue-500" />
             Top Students Spending
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
           <div className="h-[250px] w-full">
             {studentData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={studentData} layout="vertical" margin={{ left: 30, right: 30 }}>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.05} />
+                <BarChart data={studentData} layout="vertical" margin={{ left: -15, right: 15, top: 10, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorStudent" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.8}/>
+                      <stop offset="100%" stopColor="#60a5fa" stopOpacity={1}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="var(--border)" opacity={0.4} />
                   <XAxis type="number" hide />
                   <YAxis
                     dataKey="name"
@@ -125,17 +172,23 @@ export function PaymentCharts({ payments }: PaymentChartsProps) {
                     width={80}
                     tickLine={false}
                     axisLine={false}
+                    fontWeight="bold"
+                    tickFormatter={(v) => v.length > 8 ? v.slice(0, 8) + '...' : v}
                   />
                   <Tooltip
-                    cursor={{ fill: 'rgba(255,255,255,0.05)' }}
-                    contentStyle={{ borderRadius: '12px', border: 'none', fontSize: '11px', fontWeight: 'bold' }}
-                    formatter={(v) => [`৳${v}`, 'Spent']}
+                    cursor={{ fill: 'var(--muted)', opacity: 0.4 }}
+                    content={<CustomTooltip />}
+                    formatter={(v: any) => [`৳${v}`, 'Spent']}
                   />
-                  <Bar dataKey="amount" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={20} />
+                  <Bar dataKey="amount" fill="#3b82f6" radius={[0, 6, 6, 0]} barSize={20}>
+                    {studentData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="flex h-full items-center justify-center text-xs text-muted-foreground italic font-medium">
+              <div className="flex h-full items-center justify-center text-xs text-muted-foreground uppercase tracking-widest font-bold">
                 No spending data
               </div>
             )}
@@ -144,43 +197,63 @@ export function PaymentCharts({ payments }: PaymentChartsProps) {
       </Card>
 
       {/* Payment Status Pie Chart */}
-      <Card className="shadow-xs border-primary/5 bg-card/40 backdrop-blur-sm lg:col-span-1">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-            <CreditCard className="w-3 h-3 text-emerald-500" />
+      <Card className="shadow-lg border-primary/5 bg-card/60 backdrop-blur-xl rounded-3xl overflow-hidden group hover:shadow-xl hover:shadow-primary/5 transition-all duration-500 lg:col-span-1">
+        <CardHeader className="pb-0 pt-6 px-6">
+          <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2 group-hover:text-primary transition-colors">
+            <CreditCard className="w-4 h-4 text-emerald-500" />
             Transaction Distribution
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="relative p-6">
           <div className="h-[250px] w-full">
             {statusData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
+                  <defs>
+                    <linearGradient id="pt0" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#34d399" stopOpacity={1}/>
+                      <stop offset="100%" stopColor="#10b981" stopOpacity={1}/>
+                    </linearGradient>
+                    <linearGradient id="pt1" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#fbbf24" stopOpacity={1}/>
+                      <stop offset="100%" stopColor="#f59e0b" stopOpacity={1}/>
+                    </linearGradient>
+                    <linearGradient id="pt2" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#f87171" stopOpacity={1}/>
+                      <stop offset="100%" stopColor="#ef4444" stopOpacity={1}/>
+                    </linearGradient>
+                  </defs>
                   <Pie
                     data={statusData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={5}
+                    innerRadius={65}
+                    outerRadius={85}
+                    paddingAngle={6}
                     dataKey="value"
+                    stroke="none"
                   >
                     {statusData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell key={`cell-${index}`} fill={`url(#pt${index % 3})`} className="hover:opacity-80 transition-opacity" />
                     ))}
                   </Pie>
-                  <Tooltip
-                    contentStyle={{ borderRadius: '12px', border: 'none', fontSize: '11px', fontWeight: 'bold' }}
-                  />
-                  <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: 'bold' }} />
+                  <Tooltip content={<CustomTooltip />} />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <div className="flex h-full items-center justify-center text-xs text-muted-foreground italic font-medium">
+              <div className="flex h-full items-center justify-center text-xs text-muted-foreground uppercase tracking-widest font-bold">
                 No transaction data
               </div>
             )}
           </div>
+          {statusData.length > 0 && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none pt-8">
+              <span className="text-3xl font-black tabular-nums bg-clip-text text-transparent bg-linear-to-br from-foreground to-muted-foreground">
+                {payments.length}
+              </span>
+              <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Txns</span>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -140,7 +140,37 @@ export async function cancelBookingAction(bookingId: string, reason?: string) {
   } catch (err: any) {
     return {
       success: false,
-      message: err.message || "Failed to cancel booking",
+    };
+  }
+}
+
+export async function cancelTutorRequestAction() {
+  try {
+    const res = await studentService.cancelTutorRequest();
+    return {
+      success: true,
+      message: res.message ?? "Request cancelled successfully",
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err.message || "Failed to cancel request",
+    };
+  }
+}
+
+export async function updateTutorRequestAction(payload: any) {
+  try {
+    const res = await studentService.updateMyTutorRequest(payload);
+    return {
+      success: true,
+      message: res.message ?? "Request updated successfully",
+      data: res.data ?? null,
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err.message || "Failed to update request",
     };
   }
 }

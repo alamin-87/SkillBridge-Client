@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 
@@ -145,9 +147,6 @@ export function StudentProfileView({ student }: { student: Student }) {
               <h3 className="font-semibold">Actions</h3>
               <Separator />
 
-              <Button asChild className="w-full">
-                <Link href="/#">Message</Link>
-              </Button>
               <Button asChild className="w-full">
                 <Link href="/#">Call</Link>
               </Button>

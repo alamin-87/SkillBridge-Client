@@ -164,7 +164,18 @@ export function NotificationBell() {
                           ? "bg-linear-to-br from-[#3b82f6] to-[#06b6d4] text-white shadow-sm" 
                           : "bg-muted text-muted-foreground"
                       }`}>
-                        {notification.type === 'PAYMENT' ? <CreditCardIcon className="h-4 w-4" /> : notification.type === 'BOOKING' ? <CheckIcon className="h-4 w-4" /> : <InfoIcon className="h-4 w-4" />}
+                        {notification.type === 'PAYMENT' ? (
+                          <CreditCardIcon className="h-4 w-4" />
+                        ) : notification.type === 'BOOKING' ? (
+                          <CheckIcon className="h-4 w-4" />
+                        ) : notification.type === 'ASSIGNMENT' ? (
+                          (() => {
+                            const Icon = getIconComponent("ClipboardList");
+                            return <Icon className="h-4 w-4" />;
+                          })()
+                        ) : (
+                          <InfoIcon className="h-4 w-4" />
+                        )}
                       </div>
                     </div>
                     

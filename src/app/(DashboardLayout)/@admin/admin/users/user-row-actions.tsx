@@ -1,7 +1,12 @@
 "use client";
 
+import Link from "next/link";
+
 import { useTransition, useState } from "react";
-import { updateAdminUserAction, deleteAdminUserAction } from "@/actions/admin-action";
+import {
+  updateAdminUserAction,
+  deleteAdminUserAction,
+} from "@/actions/admin-action";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,7 +15,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Ban, ShieldCheck, Trash2, Loader2, UserCog } from "lucide-react";
+import {
+  MoreHorizontal,
+  Ban,
+  ShieldCheck,
+  Trash2,
+  Loader2,
+  UserCog,
+} from "lucide-react";
 import { toast } from "sonner";
 
 export default function AdminUserRowActions({
@@ -59,11 +71,18 @@ export default function AdminUserRowActions({
 
   return (
     <div className="flex items-center justify-end gap-1">
-      {pending && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
+      {pending && (
+        <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
+      )}
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0" disabled={pending}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0"
+            disabled={pending}
+          >
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -117,7 +136,11 @@ export default function AdminUserRowActions({
           <DropdownMenuItem
             onClick={handleDelete}
             disabled={pending}
-            className={confirmDelete ? "text-red-600 bg-red-50 focus:bg-red-100" : "text-red-600"}
+            className={
+              confirmDelete
+                ? "text-red-600 bg-red-50 focus:bg-red-100"
+                : "text-red-600"
+            }
           >
             <Trash2 className="h-4 w-4 mr-2" />
             {confirmDelete ? "Click again to confirm!" : "Delete User"}

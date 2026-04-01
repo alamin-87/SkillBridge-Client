@@ -16,7 +16,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getSessionAction } from "@/actions/user-action";
 import { authClient } from "@/lib/auth-client";
 
 function getInitials(name: string = ""): string {
@@ -38,23 +37,24 @@ export function DashboardHeaderProfile({ initialUser }: { initialUser: any }) {
   const SettingsIcon = getIconComponent("Settings");
   const HelpCircleIcon = getIconComponent("HelpCircle");
 
-  React.useEffect(() => {
-    // Synchronize external prop with internal state securely
-    setUser(initialUser);
-  }, [initialUser]);
+  // Use Better Auth's client-side session for live updates
+  const { data: sessionData } = authClient.useSession();
 
   React.useEffect(() => {
-    const load = async () => {
-      try {
-        const res = await getSessionAction();
-        if (res.user) setUser(res.user);
-      } catch (err) {}
-    };
-
-    const handleProfileUpdate = () => load();
-    window.addEventListener("profile-updated", handleProfileUpdate);
-    return () => window.removeEventListener("profile-updated", handleProfileUpdate);
-  }, []);
+    // If the client-side session has user data, prefer it over the SSR prop
+    if (sessionData?.user) {
+      const u = sessionData.user as Record<string, unknown>;
+      setUser({
+        ...initialUser,
+        name: u.name || initialUser?.name,
+        email: u.email || initialUser?.email,
+        image: u.image || initialUser?.image,
+        role: u.role || initialUser?.role,
+      });
+    } else if (initialUser) {
+      setUser(initialUser);
+    }
+  }, [sessionData, initialUser]);
 
   const handleLogout = async () => {
     try {

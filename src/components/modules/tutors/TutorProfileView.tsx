@@ -9,6 +9,7 @@ import { BookSessionModal } from "./book-session-modal";
 import { getIconComponent, getGradientForString } from "@/lib/icon-mapper";
 
 export function TutorProfileView({ tutor }: { tutor: Tutor }) {
+  
   // Resolved Icons via Mapper
   const StarIcon = getIconComponent("Star");
   const ClockIcon = getIconComponent("Clock");
@@ -298,12 +299,6 @@ export function TutorProfileView({ tutor }: { tutor: Tutor }) {
                     hourlyRate={Number(tutor.hourlyRate ?? 0)}
                     openSlots={openSlots}
                   />
-
-                  <Button variant="outline" size="lg" className="w-full h-14 rounded-xl font-bold text-base border-border/60 hover:bg-muted" asChild>
-                    <Link href={`/messages?tutor=${tutor.id}`}>
-                      <MessageSquareIcon className="mr-2 h-5 w-5 shrink-0" /> Message Tutor
-                    </Link>
-                  </Button>
                 </div>
 
                 <div className="flex items-center justify-center gap-2 pt-4 border-t border-border/50">
